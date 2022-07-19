@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Slack Get User ID guide</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        .mainBg{
+            background-color: #D3D3D3;
+            width: 100%;
+            border-radius: 10px;
+        }
+        .textCenter {
+            text-align: center;
+        }
+        ul {
+            list-style-type: none;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 0px;
+        }
+        .small-additional-padding {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mainBg textCenter">
+        <h1>Getting Slack User ID:</h1>
+    </div>
+    <hr>
+    <div class="mainBg small-additional-padding">
+        <ul>
+            <b><li>Step 1</li></b>
+            <ul>
+                <li>To begin, make sure you have Slack opened, and that you're logged in.</li>
+            </ul>
+            <b><li>Step 2</li></b>
+            <ul>
+                <li>Go into any channel, or direct message, and type <b>"/userid"</b> without quotes.</li>
+            </ul>
+            <b><li>Step 3</li></b>
+            <ul>
+                <li>Under the "Apps" section on the sidebar, look for an app called "RequestApp". It should have an unread notification bubble next to it. Open it, and it will contain your UserID in a message.</li>
+            </ul>
+            <hr>
+            <b><li>Errors/Troubleshooting</li></b>
+            <ul>
+                <b><li>Cannot find "RequestApp" in the sidebar under "Apps".</li></b>
+                <ul>
+                    <li>Solution: Go to the very top of the sidebar. Press the triple vertical dots that says "More". Press "Apps". Look for "RequestApp" near the center of your screen, or search for it using the search bar near the top. Press it and it should bring you to the "Messages" tab of the app.</li>
+                </ul>
+                <b><li>"Timeout was reached"</li></b>
+                <ul>
+                    <li>Solution: Just wait. This is an issue with Heroku (the server hosting the app) automatically making the bot sleep after an hour. The bot should respond once it wakes up, otherwise, run <b>"/userid"</b> again. This should be resolved in the future, maybe.</li>
+                </ul>
+            </ul>
+        </ul>
+    </div>
+</body>
+</html>

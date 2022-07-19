@@ -1,0 +1,20 @@
+{
+  "name": "slackdemo2",
+  "version": "80.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node start.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "-"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@slack/bolt": "^3.11.3",
+    "axios": "^0.27.2",
+    "path": "^0.12.7"
+  }
+}
