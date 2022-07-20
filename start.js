@@ -203,13 +203,13 @@ app.event("reaction_added", async ({ event, client }) => {
 app.command("/userid", async ({ command, ack, say }) => {
   try {
     await ack();
-    if (command.text.includes("@") == false) {
+    if (command.text.includes("@") == false) { // this handles the event where the user doesn't specify a user account
       var userID = command.user_id;
       app.client.chat.postMessage({
         channel: userID,
         text: `Your user ID is ${userID}`,
       });
-    } else {
+    } else { //this handles the event where the user wants the UserID of another user.
       var commandExecuter = command.user_id;
       var userID = command.text.match(/<@.*>/)[0].split("@")[1].split(">")[0];
       if (userID.includes("|")) {
@@ -274,13 +274,6 @@ app.command("/request", async ({ command, ack, say }) => {
   }
 })
 
-//have no clue what this was for.
-// Other web requests are methods on receiver.router
-receiver.router.post('/slack_message/zapier/process', (req, res) => {
-  // You're working with an express req and res now.
-  res.send('yay!');
-});
-
 //sends the help page to user when they go to URL specified. 
 receiver.router.get('/slack/help/getUserID', (req, res) => {
   res.sendFile(path.join(__dirname, "html/userID2.html"));
@@ -289,11 +282,6 @@ receiver.router.get('/slack/help/getUserID', (req, res) => {
 //sends the help parge to user when they go to URL specified.
 receiver.router.get('/slack/help/GoogleDriveImagePerms', (req, res) => {
   res.sendFile(path.join(__dirname, "html/GoogleDriveImgPerms.html"));
-});
-
-//not entirely sure what this was for
-receiver.router.get('/zapier/test/webhook/receiver', (req, res) => {
-  res.send('Hello from the receiver!');
 });
 
 //this is to receive the get request that the bot sends to itself every 20 minutes to avoid sleeping.
