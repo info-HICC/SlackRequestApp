@@ -1,6 +1,6 @@
 {
   "name": "slackdemo2",
-  "version": "80.0.0",
+  "version": "5.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
