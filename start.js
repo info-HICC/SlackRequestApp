@@ -274,6 +274,10 @@ app.command("/request", async ({ command, ack, say }) => {
   }
 })
 
+receiver.router.use("*", (req, res) => {
+  res.redirect('https://' + req.headers.host + req.url);
+});
+
 //sends the help page to user when they go to URL specified. 
 receiver.router.get('/slack/help/getUserID', (req, res) => {
   res.sendFile(path.join(__dirname, "html/userID2.html"));
@@ -290,9 +294,9 @@ receiver.router.get('/nodecron-ping', (req, res) => {
 });
 
 receiver.router.use((req, res) => {
-  console.log(req);
   res.status(404).send('404 Page Not Found');
 });
+
 
 //this starts the bot
 (async () => {
