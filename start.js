@@ -1,6 +1,13 @@
 const { App, ExpressReceiver } = require('@slack/bolt');
 const axios = require('axios');
 const path = require('path');
+const nodecron = require('node-cron');
+
+// set up nodecron to ping the heroku server every once in a while within 30 minutes
+nodecron.schedule('*/20 * * * *', () => {
+  console.log("Pinging Heroku Server to keep alive app...");
+  axios.get('https://slack-requestapp.herokuapp.com/nodecron-ping');
+})();
 
 // Custom Receiver docs here: https://slack.dev/bolt-js/concepts#custom-routes
 //Using the template found in the docs linked above.
@@ -252,6 +259,10 @@ receiver.router.get('/slack/help/GoogleDriveImagePerms', (req, res) => {
 
 receiver.router.get('/zapier/test/webhook/receiver', (req, res) => {
   res.send('Hello from the receiver!');
+});
+
+receiver.router.get('/nodecron-ping', (req, res) => {
+  res.send('{"status": "ok"}');
 });
 
 (async () => {
