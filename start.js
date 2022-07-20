@@ -289,6 +289,10 @@ receiver.router.get('/nodecron-ping', (req, res) => {
   res.send('{"status": "ok"}');
 });
 
+receiver.router.use((req, res) => {
+  res.status(404).send('404 Page Not Found');
+})
+
 //this starts the bot
 (async () => {
   await app.start(process.env.PORT || 3000);
