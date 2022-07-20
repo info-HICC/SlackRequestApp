@@ -7,7 +7,7 @@ const nodecron = require('node-cron');
 nodecron.schedule('*/20 * * * *', () => {
   console.log("Pinging Heroku Server to keep alive app...");
   axios.get('https://slack-requestapp.herokuapp.com/nodecron-ping');
-})();
+});
 
 // Custom Receiver docs here: https://slack.dev/bolt-js/concepts#custom-routes
 //Using the template found in the docs linked above.
