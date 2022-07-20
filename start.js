@@ -54,10 +54,10 @@ app.event("reaction_added", async ({ event, client }) => {
       //reaction name without the two : marks on either side
       //item that the reaction was on.
         //we want item.channel and item.ts to get the contents of that message only if there's a specific reaction by a specific user. 
-    var allowedApproversIDsENV = process.env.allowedApproverIDs;
-    var allowedApproversIDsArray = allowedApproversIDsENV.split(",");
-    var reactorUserID = event.user;
-    var reactionName = event.reaction;
+    var allowedApproversIDsENV = process.env.allowedApproverIDs; //array found on heroku as env var.
+    var allowedApproversIDsArray = allowedApproversIDsENV.split(",");//splits on commas to get individual IDs.
+    var reactorUserID = event.user; //user ID of user who reacted
+    var reactionName = event.reaction; //reaction name without colons on either side
     var reactionTS = event.event_ts; //this is when the reaction happened
 
 
@@ -65,7 +65,7 @@ app.event("reaction_added", async ({ event, client }) => {
     if (allowedApproversIDsArray.includes(reactorUserID) == true && (reactionName == "white_check_mark" || reactionName == "negative_squared_cross_mark") && event.item.channel == process.env.requests_googleforms) {
       console.log("User reacted with a valid reaction in the allowed channel using an allowed user ID.");
       console.log("Starting to get content of message that the user reacted to.");
-      var channelReactedMessageIsIn = event.item.channel;
+      var channelReactedMessageIsIn = event.item.channel; //gets channel of reacted message
       var timestampOfMessage = event.item.ts; //this is when the message that was reacted to was sent.
       
       
@@ -82,6 +82,7 @@ app.event("reaction_added", async ({ event, client }) => {
 
       //Put a check on whether or not the RequestID is in the message, 
       //otherwise message reactor that the message they reacted to was invalid to prevent errors. 
+      //This basically ensures that the message they reacted to was a request message, even though nobody should be messaging inside the channel.
       if (messageText.includes("RequestID:") == true) {
 
         var messageRequestID = messageText.match(/```RequestID:.*```/)[0].split("```")[1].split(":")[1]; //returns string with Request ID from the reacted message
@@ -91,20 +92,20 @@ app.event("reaction_added", async ({ event, client }) => {
         //get the requester's userID from "messageText"
         var requesterUserID = messageText.match(/<@.*>/)[0].split("@")[1].split(">")[0];
 
+        //this handles the case where the request has been approved.
+        //else, shown below, there will be a POST req sent to Zapier where it'll DM the requester that their request was denied. 
         if (reactionName == "white_check_mark") {
-          //use the requestID to check if the additional details form has been filled out for the specified requestID, if request was approved. Otherwise, send a message to the approver (aka the user who reacted) telling them to fill it out then react again. 
-          //use function on line 52 called "checkIfFormFilledOut()" to check if the form has been filled out, by matching the requestID to messages sent within 30 minutes of the reaction. 
-          //if the form has been filled out, then it should continue the steps below, otherwise, it'll message and then encapsulate the stuff below this point
-          // into an if statement. So that it only runs if the form has been filled out.
-          //function to check if the approved messages has filled out the additional details form.
+          //This tries the grab the message containing the requestID inside the additional info channel. 
+          //if the message cannot be found, it will ask the reactor to fill it out and react within 30 minutes (time limit set)
           var additionalInfoText = "";
-          var ReactionTimestampMinus30Minutes = reactionTS - 1800;
+          var ReactionTimestampMinus30Minutes = reactionTS - 1800; //timestamp of reaction minus 30 minutes (basically scope of messages inside array that's returned)
           var AdditionalInfo_messagesArray = await client.conversations.history({
             channel: process.env.additionalInfoChannel,
             inclusive: true,
             latest: reactionTS,
             oldest: ReactionTimestampMinus30Minutes.toString(),
           });
+          //this is basically if there's a message that matches the previous parameters.
           if (AdditionalInfo_messagesArray.messages.length > 0) {
             for (i=0; i<AdditionalInfo_messagesArray.messages.length; i++) {
               if (JSON.parse(AdditionalInfo_messagesArray.messages[i].text).AdditionalInfoForReqID == messageRequestID) {
@@ -118,7 +119,7 @@ app.event("reaction_added", async ({ event, client }) => {
                 return;
               };
             };
-          } else {
+          } else { //otherwise, if there's no messages found, it'll ask the reactor to fill out the additional info form again.
             console.log("No additional info messages found for this requestID. DM'ing reactor to fill out the form.");
             await client.chat.postMessage({
               channel: reactorUserID,
@@ -166,7 +167,13 @@ app.event("reaction_added", async ({ event, client }) => {
           //this handles what happens if the reaction is a negative_squared_cross_mark
           console.log("Request was denied.");
           console.log("Making POST request to Zapier to let the requester know that their request was denied.");
-          axios
+          axios //this posts the requester's userID, the reaction name, the requestID that is being handled, 
+                //and a randomly generated appTokenHeader that's sent along so that Zapier will reject all
+                //requests that are made without this appTokenHeader.
+                //This is not an issue because as long as the token is stored in Heroku with the right env var name,
+                //it'll be accepted by Zapier. 
+                //token can be updated later is necessary.
+                //also to prevent unncessary triggers.
             .post(process.env.zapierGoogleFormsWorkflowPart2WebhookURL, {
               "requestUserID": `${requesterUserID}`,
               "requestReactionName": reactionName,
@@ -174,7 +181,7 @@ app.event("reaction_added", async ({ event, client }) => {
               "appTokenHeader": process.env.zapierWebhookRequestAppToken
             });
         };
-      } else {
+      } else { //this is what happens when the messages that's reacted to isn't a request message. 
         client.chat.postMessage({
           channel: reactorUserID,
           text: `Please make sure that the message you're reacting to is a request message from Zapier. Do not react to any other message.`,
@@ -192,6 +199,7 @@ app.event("reaction_added", async ({ event, client }) => {
 
 
 //handles /userid command
+//will basically DM the user with their user ID
 app.command("/userid", async ({ command, ack, say }) => {
   try {
     await ack();
@@ -206,6 +214,9 @@ app.command("/userid", async ({ command, ack, say }) => {
 });
 
 //handles /clearchannel command
+//requires additional params only on heroku to activate.
+  //this is to avoid people getting curious and causing chaos.
+//This is rate limited, so might not be so helpful.
 app.command("/clearchannel", async ({ command, ack, say }) => {
   try {
     await ack();
@@ -237,6 +248,7 @@ app.command("/clearchannel", async ({ command, ack, say }) => {
   }
 })
 
+//handles /request command. This just sends the link to the user that typed the command.
 app.command("/request", async ({ command, ack, say }) => {
   try {
     await ack();
@@ -250,28 +262,34 @@ app.command("/request", async ({ command, ack, say }) => {
   }
 })
 
+//have no clue what this was for.
 // Other web requests are methods on receiver.router
 receiver.router.post('/slack_message/zapier/process', (req, res) => {
   // You're working with an express req and res now.
   res.send('yay!');
 });
 
+//sends the help page to user when they go to URL specified. 
 receiver.router.get('/slack/help/getUserID', (req, res) => {
   res.sendFile(path.join(__dirname, "html/userID2.html"));
 });
 
+//sends the help parge to user when they go to URL specified.
 receiver.router.get('/slack/help/GoogleDriveImagePerms', (req, res) => {
   res.sendFile(path.join(__dirname, "html/GoogleDriveImgPerms.html"));
 });
 
+//not entirely sure what this was for
 receiver.router.get('/zapier/test/webhook/receiver', (req, res) => {
   res.send('Hello from the receiver!');
 });
 
+//this is to receive the get request that the bot sends to itself every 20 minutes to avoid sleeping.
 receiver.router.get('/nodecron-ping', (req, res) => {
   res.send('{"status": "ok"}');
 });
 
+//this starts the bot
 (async () => {
   await app.start(process.env.PORT || 3000);
   console.log('⚡️ Bolt app started');
