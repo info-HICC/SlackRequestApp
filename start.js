@@ -212,6 +212,9 @@ app.command("/userid", async ({ command, ack, say }) => {
     } else {
       var commandExecuter = command.user_id;
       var userID = command.text.match(/<@.*>/)[0].split("@")[1].split(">")[0];
+      if (userID.includes("|")) {
+        userID = userID.split("|")[0];
+      }
       app.client.chat.postMessage({
         channel: commandExecuter,
         text: `The user ID for <@${userID}> is ${userID}`,
