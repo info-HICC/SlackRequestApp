@@ -22,30 +22,6 @@ const app = new App({
 });
 
 
-// This is pretty much not used, but it's here for reference in the future if we ever need something like this.
-// //This is using the built-in Slack Workflow app
-// // Slack interactions are methods on app
-// app.event('message', async ({ event, client }) => {
-//   // Do some slack-specific stuff here
-//   if (event.channel == process.env.msgIntegrationChannel_Workflow) { //channel is called "request-workflow-logs", but need channel ID
-//     try {
-//         var msgFromWorkflow = event.text;
-//         console.log("Slack Request Workflow has posted a message to the channel called \"request-workflow-logs\".");
-//     axios
-//         .post(process.env.zapierWebhookURL, {
-//             "text": `${msgFromWorkflow}`
-//         })
-//         .then(function (response) {
-//             console.log("Response about POST request status from Zapier:\n");
-//             console.log(response.data.status);
-//         });
-//     } catch (error) {
-//         console.log(error);
-//     }
-//   }
-// });
-
-
 //This is for the Google Forms version of the app.
 app.event("reaction_added", async ({ event, client }) => {
   try {
@@ -196,8 +172,6 @@ app.event("reaction_added", async ({ event, client }) => {
   })
 }});
 
-
-
 //handles /userid command
 //will basically DM the user with their user ID
 app.command("/userid", async ({ command, ack, say }) => {
@@ -292,7 +266,6 @@ receiver.router.get('/nodecron-ping', (req, res) => {
 receiver.router.use((req, res) => {
   res.status(404).send('404 Page Not Found');
 });
-
 
 //this starts the bot
 (async () => {
