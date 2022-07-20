@@ -272,10 +272,6 @@ app.command("/request", async ({ command, ack, say }) => {
   } catch (error) {
     console.log(error);
   }
-})
-
-receiver.router.use("*", (req, res) => {
-  res.redirect('https://' + req.headers.host + req.url);
 });
 
 //sends the help page to user when they go to URL specified. 
