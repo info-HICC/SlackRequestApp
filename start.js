@@ -290,6 +290,7 @@ receiver.router.get('/nodecron-ping', (req, res) => {
 });
 
 receiver.router.use((req, res) => {
+  console.log(req);
   res.status(404).send('404 Page Not Found');
 });
 
