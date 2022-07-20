@@ -108,6 +108,7 @@ app.event("reaction_added", async ({ event, client }) => {
           //this is basically if there's a message that matches the previous parameters.
           if (AdditionalInfo_messagesArray.messages.length > 0) {
             for (i=0; i<AdditionalInfo_messagesArray.messages.length; i++) {
+              console.log(AdditionalInfo_messagesArray.messages[i].text);
               if (JSON.parse(AdditionalInfo_messagesArray.messages[i].text).AdditionalInfoForReqID == messageRequestID) {
                 additionalInfoText = AdditionalInfo_messagesArray.messages[i].text;
                 break;
