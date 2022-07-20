@@ -203,11 +203,20 @@ app.event("reaction_added", async ({ event, client }) => {
 app.command("/userid", async ({ command, ack, say }) => {
   try {
     await ack();
-    var userID = command.user_id;
-    app.client.chat.postMessage({
-      channel: userID,
-      text: `Your user ID is ${userID}`,
-    });
+    if (command.text.includes("@") == false) {
+      var userID = command.user_id;
+      app.client.chat.postMessage({
+        channel: userID,
+        text: `Your user ID is ${userID}`,
+      });
+    } else {
+      var commandExecuter = command.user_id;
+      var userID = command.text.match(/<@.*>/)[0].split("@")[1].split(">")[0];
+      app.client.chat.postMessage({
+        channel: commandExecuter,
+        text: `The user ID for <@${userID}> is ${userID}`,
+      });
+    }
   } catch (error) {
     console.log(error);
   };
