@@ -1,6 +1,6 @@
 {
-  "name": "slackdemo2",
-  "version": "5.0.0",
+  "name": "slack-requestapp",
+  "version": "6.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
