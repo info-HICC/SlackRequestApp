@@ -35,11 +35,11 @@
         <ul>
             <b><li>Step 1</li></b>
             <ul>
-                <li>To begin, make sure you have Slack opened, and that you're logged in.</li>
+                <li>To begin, make sure you have Slack opened, and that you're logged in. Also ensure you're using a full account, not a guest account. If you don't know if you're a guest account, you're probably not a guest account. Otherwise, doing the next step will result in an error.</li>
             </ul>
             <b><li>Step 2</li></b>
             <ul>
-                <li>Go into any channel, or direct message, and type <b>"/userid"</b> without quotes.</li>
+                <li>Go into any channel, or direct message, and type "<b>/userid</b>" without quotes.</li>
             </ul>
             <b><li>Step 3</li></b>
             <ul>
@@ -50,11 +50,11 @@
             <ul>
                 <b><li>Cannot find "RequestApp" in the sidebar under "Apps".</li></b>
                 <ul>
-                    <li>Solution: Go to the very top of the sidebar. Press the triple vertical dots that says "More". Press "Apps". Look for "RequestApp" near the center of your screen, or search for it using the search bar near the top. Press it and it should bring you to the "Messages" tab of the app.</li>
+                    <li>Solution: Go to the very top of the sidebar. Press the triple vertical dots that says "More". Press "Apps". Look for "RequestApp" near the center of your screen, or search for it using the search bar near the top. Press RequestApp and Slack should bring you to the "Messages" tab of the app.</li>
                 </ul>
                 <b><li>"Timeout was reached"</li></b>
                 <ul>
-                    <li>Solution: Just wait. This is an issue with Heroku (the server hosting the app) automatically making the bot sleep after an hour. The bot should respond once it wakes up, otherwise, run <b>"/userid"</b> again. This should be resolved in the future, maybe.</li>
+                    <li>Solution: Just wait. This is an issue with Heroku (the server hosting the app) automatically making the bot sleep after 30 minutes of inactivity. The bot should respond once it wakes up, otherwise, run "<b>/userid</b>" again. This should hopefully be resolved in the future.</li>
                 </ul>
             </ul>
         </ul>
