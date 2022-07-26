@@ -3,7 +3,7 @@ const axios = require('axios');
 const path = require('path');
 const nodecron = require('node-cron');
 
-// set up nodecron to ping the heroku server every once in a while within 30 minutes
+// set up nodecron to ping the heroku server every 20 minutes to avoid sleeping
 nodecron.schedule('*/20 * * * *', () => {
   console.log("Pinging Heroku Server to keep alive app...");
   axios.get('https://slack-requestapp.herokuapp.com/nodecron-ping');
@@ -56,12 +56,13 @@ app.event("reaction_added", async ({ event, client }) => {
       console.log("Message contents of reacted message obtained.")
       console.log("Starting regex check to get the request ID from the message.");
 
-      //Put a check on whether or not the RequestID is in the message, 
+      //Put a check on whether or not the "RequestID" is in the message, 
       //otherwise message reactor that the message they reacted to was invalid to prevent errors. 
       //This basically ensures that the message they reacted to was a request message, even though nobody should be messaging inside the channel.
       if (messageText.includes("RequestID:") == true) {
 
-        var messageRequestID = messageText.match(/```RequestID:.*```/)[0].split("```")[1].split(":")[1]; //returns string with Request ID from the reacted message
+        //returns string with Request ID from the reacted message
+        var messageRequestID = messageText.match(/```RequestID:.*```/)[0].split("```")[1].split(":")[1]; 
         console.log("Request ID obtained from message.");
         console.log("Starting to get JSON version of the request with the oldest message being as old as the original message that was reacted to, and the newest message being sent 5 seconds after the message that was reacted to.");
 
@@ -102,11 +103,11 @@ app.event("reaction_added", async ({ event, client }) => {
               text: `Please fill out the additional details form for this requestID \`${messageRequestID}\` before approving it. Please react to the request message again once you have filled it out.`,
             });
             return;
-          }
-          console.log("If this is reached, then the form has been filled out. Otherwise, this should not be reached.");
+          };
 
           //use the request ID to get the JSON version of the request by looking for a message
           //sent between the time the original, reacted message was sent and 5 seconds after it.
+          //this 5 second window is arbitrary, but generally Zapier seems to send the message within 5 seconds of sending the JSOn version of the request.
           var allMessages_JSONChannel = await client.conversations.history({
             channel: process.env.requests_googleforms_json,
             inclusive: true,
@@ -157,7 +158,7 @@ app.event("reaction_added", async ({ event, client }) => {
               "appTokenHeader": process.env.zapierWebhookRequestAppToken
             });
         };
-      } else { //this is what happens when the messages that's reacted to isn't a request message. 
+      } else { //this is what happens when the messages that's reacted to isn't a request message or doesn't contain a RequestID.
         client.chat.postMessage({
           channel: reactorUserID,
           text: `Please make sure that the message you're reacting to is a request message from Zapier. Do not react to any other message.`,
@@ -172,18 +173,24 @@ app.event("reaction_added", async ({ event, client }) => {
   })
 }});
 
-//handles /userid command
+//handles "/userid" command
 //will basically DM the user with their user ID
+//if user mentions another user, it will DM the slash command user with the user ID of the mentioned user.
 app.command("/userid", async ({ command, ack, say }) => {
   try {
     await ack();
     if (command.text.includes("@") == false) { // this handles the event where the user doesn't specify a user account
+      //gets userID of user who sent the slash command
+      //then DM's the user with their userID
       var userID = command.user_id;
       app.client.chat.postMessage({
         channel: userID,
         text: `Your user ID is ${userID}`,
       });
     } else { //this handles the event where the user wants the UserID of another user.
+      //gets userID of user who sent the slash command
+      //then splits the text of the slash command into arrays to just get the UserID portion. 
+      //then DM's the slash command user with the userID of the mentioned user, without mentioning the mentioned user. 
       var commandExecuter = command.user_id;
       var userID = command.text.match(/<@.*>/)[0].split("@")[1].split(">")[0];
       if (userID.includes("|")) {
@@ -199,42 +206,44 @@ app.command("/userid", async ({ command, ack, say }) => {
   };
 });
 
-//handles /clearchannel command
-//requires additional params only on heroku to activate.
-  //this is to avoid people getting curious and causing chaos.
-//This is rate limited, so might not be so helpful.
-app.command("/clearchannel", async ({ command, ack, say }) => {
-  try {
-    await ack();
-    var commandText = command.text; //text content of the command
-    var channelInCommandPOST = command.channel_id; //post req that slack sends
-    var commandTextAsArray = commandText.split(" "); //splits the command text into an array
-    var channelInCommand = commandTextAsArray[1]; //channel that is specified inside the command
-    var commandPhraseENV = process.env.command_phrase;
-    var commandPhraseInCommand = commandTextAsArray[0];
-    if (commandPhraseENV == commandPhraseInCommand && channelInCommand == channelInCommandPOST) {
-      console.log("Command phrase matches. Channel IDs match. Clearing channel.");
-      var channelToClear = channelInCommand;
-      var allMessages = await app.client.conversations.history({
-        channel: channelToClear,
-        token: process.env.SLACK_USER_TOKEN,
-      });
-      for (i=0; i<allMessages.messages.length; i++) {
-        var messageID = allMessages.messages[i].ts;
-        await app.client.chat.delete({
-          channel: channelToClear,
-          token: process.env.SLACK_USER_TOKEN,
-          ts: messageID,
-        });
-      }
-      console.log("Channel cleared.");
-    }
-  } catch (error) {
-    console.log(error);
-  }
-})
+// //handles /clearchannel command
+// //requires additional params only on heroku to activate.
+//   //this is to avoid people getting curious and causing chaos.
+// //This is rate limited, so might not be so helpful.
+// //command has been disabled via Slack's Bot Dashboard. 
+// app.command("/clearchannel", async ({ command, ack, say }) => {
+//   try {
+//     await ack();
+//     var commandText = command.text; //text content of the command
+//     var channelInCommandPOST = command.channel_id; //post req that slack sends
+//     var commandTextAsArray = commandText.split(" "); //splits the command text into an array
+//     var channelInCommand = commandTextAsArray[1]; //channel that is specified inside the command
+//     var commandPhraseENV = process.env.command_phrase;
+//     var commandPhraseInCommand = commandTextAsArray[0];
+//     if (commandPhraseENV == commandPhraseInCommand && channelInCommand == channelInCommandPOST) {
+//       console.log("Command phrase matches. Channel IDs match. Clearing channel.");
+//       var channelToClear = channelInCommand;
+//       var allMessages = await app.client.conversations.history({
+//         channel: channelToClear,
+//         token: process.env.SLACK_USER_TOKEN,
+//       });
+//       for (i=0; i<allMessages.messages.length; i++) {
+//         var messageID = allMessages.messages[i].ts;
+//         await app.client.chat.delete({
+//           channel: channelToClear,
+//           token: process.env.SLACK_USER_TOKEN,
+//           ts: messageID,
+//         });
+//       }
+//       console.log("Channel cleared.");
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// })
 
 //handles /request command. This just sends the link to the user that typed the command.
+//alternative to starting the request using Slack workflows. 
 app.command("/request", async ({ command, ack, say }) => {
   try {
     await ack();
@@ -253,16 +262,20 @@ receiver.router.get('/slack/help/getUserID', (req, res) => {
   res.sendFile(path.join(__dirname, "html/userID2.html"));
 });
 
-//sends the help parge to user when they go to URL specified.
+//sends the help page to user when they go to URL specified.
 receiver.router.get('/slack/help/GoogleDriveImagePerms', (req, res) => {
   res.sendFile(path.join(__dirname, "html/GoogleDriveImgPerms.html"));
 });
 
 //this is to receive the get request that the bot sends to itself every 20 minutes to avoid sleeping.
+//otherwise there would be a 404 not found error in the logs. 
 receiver.router.get('/nodecron-ping', (req, res) => {
   res.send('{"status": "ok"}');
 });
 
+//this handles when the page the user is requesting doesn't exist. 
+//it may be better to use an HTML file later, but for now,
+//it sends plain text to the user.
 receiver.router.use((req, res) => {
   res.status(404).send('404 Page Not Found');
 });
