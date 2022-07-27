@@ -295,9 +295,13 @@ app.command("/taskfinish", async ({ command, ack, say }) => {
     //it will always be the first message in the array, unless somehow there's two messages with the same timestamp 
     //in the same channel.
     if (messageArray.messages.length > 0) {
+      //this basically checks if the array is empty. If it is, then it just stops so that it doesn't hog time.
       var message = messageArray.messages[0];
-      var messageText_JSON = JSON.parse(message.text);
+      //this returns the first object because the timestamp is inclusive, and the first message is the latest one.
+      var messageText_JSON = JSON.parse(message.text);//parses JSON to use it later.
       if (messageText_JSON.reqID == commandReqID) {
+        //checks that the two reqIDs match. Otherwise we know that the message isn't the one, and there's likely
+        //not another one as two messages with the same timestamp is very unlikely.
         var messageText_JSON_reqID = messageText_JSON.reqID;
         var messageText_JSON_requesterUserID = messageText_JSON.requesterUserID;
         var messageText_JSON_requesteeUserID = messageText_JSON.requesteeUserID;
@@ -307,19 +311,25 @@ app.command("/taskfinish", async ({ command, ack, say }) => {
           channel: messageText_JSON_requesterUserID,
           text: `The task you assigned to \`<@${messageText_JSON_requesteeUserID}>\` has been completed. The request ID of the task is \`${messageText_JSON_reqID}\`. You can search for the task and its details using Slack's search inside of Slackbot's DM.`,
         });
+        //updates requester that their task has been completed.
+
+
         //this should then follow up and send a webhook to Zapier to delete the event from Google calendar.
         axios
           .post(process.env.zapierWebhookGoogleCalDeleteEvent, {
             "calendarID": `${messageText_JSON_calendarID}`,
             "calendarEventID": `${messageText_JSON_calendarEventID}`
           });
+          //this POSTs to Zapier which triggers a Zap to delete the event from Google calendar.
       } else {
+        //this handles when the two reqIDs don't match.
         app.client.chat.postMessage({
           channel: commandExecuter,
           text: `The request ID you entered does not match any of the tasks that were logged. Please check the requestID, or contact the person who assigned you the task and update them.`,
         });
       };
     } else {
+      //this handles when the array is empty meaning the timestamp is wrong as the timestamp is obtained from Slack's API.
       app.client.chat.postMessage({
         channel: commandExecuter,
         text: `The timestamp you entered (the number after the comma) does not match any of the tasks that were logged. Please check the requestID, or contact the person who assigned you the task and update them.`,
@@ -395,7 +405,7 @@ app.command("/tasknotfinish", async ({ command, ack, say }) => {
       //this also avoids crashing the app.
     });
   };
-})
+});
 
 //this handles when the page the user is requesting doesn't exist. 
 //it may be better to use an HTML file later, but for now,
