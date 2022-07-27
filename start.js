@@ -299,6 +299,8 @@ app.command("/taskfinish", async ({ command, ack, say }) => {
       var message = messageArray.messages[0];
       //this returns the first object because the timestamp is inclusive, and the first message is the latest one.
       var messageText_JSON = JSON.parse(message.text);//parses JSON to use it later.
+      console.log("messageText_JSON:");
+      console.log(messageText_JSON);
       if (messageText_JSON.reqID == commandReqID) {
         //checks that the two reqIDs match. Otherwise we know that the message isn't the one, and there's likely
         //not another one as two messages with the same timestamp is very unlikely.
