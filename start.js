@@ -318,7 +318,7 @@ app.command("/taskfinish", async ({ command, ack, say }) => {
         //returns a string like this:
         //<mailto:something@group.calendar.google.com|something@group.calendar.google.com>
         //the section below should return something@group.calendar.google.com
-        messageText_JSON_calendarID = messageText_JSON_calendarID.match(/mailto:.*\|/).split(":")[1].split("|")[0];
+        messageText_JSON_calendarID = messageText_JSON_calendarID.match(/mailto:.*\|/)[0].split(":")[1].split("|")[0];
 
         //this should then follow up and send a webhook to Zapier to delete the event from Google calendar.
         await axios
