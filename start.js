@@ -273,6 +273,130 @@ receiver.router.get('/nodecron-ping', (req, res) => {
   res.send('{"status": "ok"}');
 });
 
+
+//this section should be used to handle the slack to google calendar integration.
+//this should handle the command "/taskfinish", which has to be registered with the app via Slack. 
+app.command("/taskfinish", async ({ command, ack, say }) => {
+  try {
+    await ack();
+    var taskJSONChannelID = process.env.taskJSONChannelID;
+    var commandMessage = command.text;
+    var commandReqID = commandMessage.split(",")[0];
+    var commandJSONTimestamp = commandMessage.split(",")[1];
+    var commandExecuter = command.user_id;
+    var messageArray = await app.client.conversations.history({
+      channel: taskJSONChannelID,
+      token: process.env.SLACK_USER_TOKEN,
+      latest: commandJSONTimestamp,
+      inclusive: true,
+    });
+    //this will always match the JSON message that correlates with the request. The timestamp is inclusive
+    //and it's getting all messages up to the timestamp, including the message sent with that timestamp, so 
+    //it will always be the first message in the array, unless somehow there's two messages with the same timestamp 
+    //in the same channel.
+    if (messageArray.messages.length > 0) {
+      var message = messageArray.messages[0];
+      var messageText_JSON = JSON.parse(message.text);
+      if (messageText_JSON.reqID == commandReqID) {
+        var messageText_JSON_reqID = messageText_JSON.reqID;
+        var messageText_JSON_requesterUserID = messageText_JSON.requesterUserID;
+        var messageText_JSON_requesteeUserID = messageText_JSON.requesteeUserID;
+        var messageText_JSON_calendarID = messageText_JSON.calendarID;
+        var messageText_JSON_calendarEventID = messageText_JSON.calendarEventID;
+        await app.client.chat.postMessage({
+          channel: messageText_JSON_requesterUserID,
+          text: `The task you assigned to \`<@${messageText_JSON_requesteeUserID}>\` has been completed. The request ID of the task is \`${messageText_JSON_reqID}\`. You can search for the task and its details using Slack's search inside of Slackbot's DM.`,
+        });
+        //this should then follow up and send a webhook to Zapier to delete the event from Google calendar.
+        axios
+          .post(process.env.zapierWebhookGoogleCalDeleteEvent, {
+            "calendarID": `${messageText_JSON_calendarID}`,
+            "calendarEventID": `${messageText_JSON_calendarEventID}`
+          });
+      } else {
+        app.client.chat.postMessage({
+          channel: commandExecuter,
+          text: `The request ID you entered does not match any of the tasks that were logged. Please check the requestID, or contact the person who assigned you the task and update them.`,
+        });
+      };
+    } else {
+      app.client.chat.postMessage({
+        channel: commandExecuter,
+        text: `The timestamp you entered (the number after the comma) does not match any of the tasks that were logged. Please check the requestID, or contact the person who assigned you the task and update them.`,
+      });
+    };
+  } catch (error) {
+    console.log(error);
+    app.client.chat.postMessage({
+      channel: process.env.slackToGoogleCalendarErrorLogChannelID,
+      text: `Error in /taskfinish command. Error: \`\`\`${error}\`\`\``, 
+      //the escaped  backticks should make the error message show up as a code block.
+      //this also avoids crashing the app.
+    });
+  };
+});
+
+//this should handle the command "/tasknotfinish", which has to be registered with the app via Slack.
+app.command("/tasknotfinish", async ({ command, ack, say }) => {
+  try {
+    await ack();
+    var taskJSONChannelID = process.env.taskJSONChannelID;
+    var commandMessage = command.text;
+    var commandReqID = commandMessage.split(",")[0];
+    var commandJSONTimestamp = commandMessage.split(",")[1];
+    var commandExecuter = command.user_id;
+    var messageArray = await app.client.conversations.history({
+      channel: taskJSONChannelID,
+      token: process.env.SLACK_USER_TOKEN,
+      latest: commandJSONTimestamp,
+      inclusive: true,
+    });
+    //this will always match the JSON message that correlates with the request. The timestamp is inclusive
+    //and it's getting all messages up to the timestamp, including the message sent with that timestamp, so 
+    //it will always be the first message in the array, unless somehow there's two messages with the same timestamp 
+    //in the same channel.
+    if (messageArray.messages.length > 0) {
+      var message = messageArray.messages[0];
+      var messageText_JSON = JSON.parse(message.text);
+      if (messageText_JSON.reqID == commandReqID) {
+        var messageText_JSON_reqID = messageText_JSON.reqID;
+        var messageText_JSON_requesterUserID = messageText_JSON.requesterUserID;
+        var messageText_JSON_requesteeUserID = messageText_JSON.requesteeUserID;
+        var messageText_JSON_calendarID = messageText_JSON.calendarID;
+        var messageText_JSON_calendarEventID = messageText_JSON.calendarEventID;
+        await app.client.chat.postMessage({
+          channel: messageText_JSON_requesterUserID,
+          text: `The task you assigned to \`<@${messageText_JSON_requesteeUserID}>\` has not been completed. The request ID of the task is \`${messageText_JSON_reqID}\`. You can search for the task and its details using Slack's search inside of Slackbot's DM.`,
+        });
+        //this should then follow up and send a webhook to Zapier to delete the event from Google calendar.
+        axios
+          .post(process.env.zapierWebhookGoogleCalDeleteEvent, {
+            "calendarID": `${messageText_JSON_calendarID}`,
+            "calendarEventID": `${messageText_JSON_calendarEventID}`
+          });
+      } else {
+        app.client.chat.postMessage({
+          channel: commandExecuter,
+          text: `The request ID you entered does not match any of the tasks that were logged. Please check the requestID, or contact the person who assigned you the task and update them.`,
+        });
+      };
+    } else {
+      app.client.chat.postMessage({
+        channel: commandExecuter,
+        text: `The timestamp you entered (the number after the comma) does not match any of the tasks that were logged. Please check the requestID, or contact the person who assigned you the task and update them.`,
+      });
+    };
+  } catch (error) {
+    console.log(error);
+    app.client.chat.postMessage({
+      channel: process.env.slackToGoogleCalendarErrorLogChannelID,
+      text: `Error in /tasknotfinish command. Error: \`\`\`${error}\`\`\``, 
+      //the escaped  backticks should make the error message show up as a code block.
+      //this also avoids crashing the app.
+    });
+  };
+})
+
 //this handles when the page the user is requesting doesn't exist. 
 //it may be better to use an HTML file later, but for now,
 //it sends plain text to the user.
