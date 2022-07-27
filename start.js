@@ -320,6 +320,7 @@ app.command("/taskfinish", async ({ command, ack, say }) => {
             "calendarID": `${messageText_JSON_calendarID}`,
             "calendarEventID": `${messageText_JSON_calendarEventID}`
           });
+          console.log("RequestApp POSTed to Zapier")
           //this POSTs to Zapier which triggers a Zap to delete the event from Google calendar.
       } else {
         //this handles when the two reqIDs don't match.
