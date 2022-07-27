@@ -411,6 +411,25 @@ app.command("/tasknotfinish", async ({ command, ack, say }) => {
   };
 });
 
+//handle /createtask command
+app.command("/createtask", async ({ command, ack, say }) => {
+  try {
+    await ack();
+    var commandExecuter = command.user_id;
+    app.client.chat.postMessage({
+      channel: commandExecuter,
+      text: `Fill out this form, and the requestee will receive the request as an event in their Google Calendar. Form link: <${process.env.slackToGoogleCalendarFormLink}>`,
+      unfurl_links: false
+    });
+  } catch (error) {
+    console.log(error);
+    app.client.chat.postMessage({
+      channel: process.env.slackToGoogleCalendarErrorLogChannelID,
+      text: `Error in /createtask command. Error: \`\`\`${error}\`\`\``,
+    });
+  };
+});
+
 //this handles when the page the user is requesting doesn't exist. 
 //it may be better to use an HTML file later, but for now,
 //it sends plain text to the user.
