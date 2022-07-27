@@ -315,14 +315,18 @@ app.command("/taskfinish", async ({ command, ack, say }) => {
         });
         //updates requester that their task has been completed.
 
+        //returns a string like this:
+        //<mailto:something@group.calendar.google.com|something@group.calendar.google.com>
+        //the section below should return something@group.calendar.google.com
+        messageText_JSON_calendarID = messageText_JSON_calendarID.match(/mailto:.*\|/).split(":")[1].split("|")[0];
 
         //this should then follow up and send a webhook to Zapier to delete the event from Google calendar.
-        axios
+        await axios
           .post(process.env.zapierWebhookGoogleCalDeleteEvent, {
             "calendarID": `${messageText_JSON_calendarID}`,
             "calendarEventID": `${messageText_JSON_calendarEventID}`
           });
-          console.log("RequestApp POSTed to Zapier")
+          console.log("RequestApp POSTed to Zapier");
           //this POSTs to Zapier which triggers a Zap to delete the event from Google calendar.
       } else {
         //this handles when the two reqIDs don't match.
