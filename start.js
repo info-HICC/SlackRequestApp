@@ -467,6 +467,7 @@ app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
           },
           {
             "type": "input",
+            "block_id": "requesteeSelectBlock_BlockID",
             "element": {
               "type": "multi_users_select",
               "placeholder": {
@@ -475,7 +476,6 @@ app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
                 "emoji": true
               },
               "action_id": "requesteeSelectBlock_ActionID",
-              "block_id": "requesteeSelectBlock_BlockID",
             },
             "label": {
               "type": "plain_text",
