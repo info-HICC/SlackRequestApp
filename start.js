@@ -416,17 +416,18 @@ app.command("/tasknotfinish", async ({ command, ack, say }) => {
 });
 
 //handle /createtask command
-app.command("/createtask", async ({ command, ack, say, client}) => {
+app.command("/createtask", async ({ command, ack, say }) => {
   try {
     await ack();
-
-    await client.views.open({
-      trigger_id: shortcut.trigger_id,
-      view: modalViews.modalForm
+    var commandExecuter = command.user_id;
+    app.client.chat.postMessage({
+      channel: commandExecuter,
+      text: `Fill out this form, and the requestee will receive the request as an event in their Google Calendar. Form link: <${process.env.slackToGoogleCalendarFormLink}>`,
+      unfurl_links: false
     });
   } catch (error) {
     console.log(error);
-    client.chat.postMessage({
+    app.client.chat.postMessage({
       channel: process.env.slackToGoogleCalendarErrorLogChannelID,
       text: `Error in /createtask command. Error: \`\`\`${error}\`\`\``,
     });
