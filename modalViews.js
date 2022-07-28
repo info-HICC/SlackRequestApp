@@ -65,5 +65,5 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
 
 //export the modal view
 module.exports = {
-    requestAppModalView: modalForm
+    modalForm: requestAppModalView
 };
