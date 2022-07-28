@@ -34,6 +34,7 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
                 "text": "Select One User",
                 "emoji": true
             },
+            "max_selected_items": 1,
             "action_id": "requesteeSelectBlock_ActionID",
             },
             "label": {
