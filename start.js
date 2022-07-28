@@ -431,6 +431,8 @@ app.command("/createtask", async ({ command, ack, say }) => {
 });
 
 //this will hopefully handle the Create Google Cal event shortcut from Slack
+//this handles the pop up modal, but not submission of the form.
+//the next step should hopefully handle that second part.
 app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
   try {
     await ack();
@@ -439,6 +441,7 @@ app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
       trigger_id: shortcut.trigger_id,
       view: { //view created using Slack's interactive Block Kit Builder
         "type": "modal",
+        "callback_id": "create-google-cal-task",
         "title": {
           "type": "plain_text",
           "text": "Slack-RequestApp",
@@ -487,6 +490,12 @@ app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
   } catch (error) {
     console.log(error);
   }
+});
+
+app.view("create-google-cal-task", async ({ ack, body, view, client }) => {
+  await ack();
+
+  console.log(body);
 })
 
 //this handles when the page the user is requesting doesn't exist. 
