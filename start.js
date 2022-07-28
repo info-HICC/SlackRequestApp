@@ -473,6 +473,8 @@ app.view("create-google-cal-task", async ({ ack, body, view, client }) => {
     "taskDescription": `${taskDescription}`,
     "taskDueDate": `${taskDueDate}`,
     "TaskID": `${UUIDAndUnixTimeForTaskIDString}`
+  }).then(function (response) {
+    console.log(response);
   });
 
   console.log(body.view.state.values);
