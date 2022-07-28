@@ -471,14 +471,14 @@ app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
               "type": "multi_users_select",
               "placeholder": {
                 "type": "plain_text",
-                "text": "Select users",
+                "text": "Select One User",
                 "emoji": true
               },
-              "action_id": "multi_users_select-action"
+              "action_id": "requesteeSelectBlock"
             },
             "label": {
               "type": "plain_text",
-              "text": "Selected User",
+              "text": "Select One User",
               "emoji": true
             }
           }
