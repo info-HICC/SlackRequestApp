@@ -169,7 +169,7 @@ app.event("reaction_added", async ({ event, client }) => {
   console.log(error);
   app.client.chat.postMessage({
     channel: process.env.errorLogChannel,
-    text: `${error}`,
+    text: `Error when message was reacted to. \n\`\`\`${error}\`\`\``,// \n break line and \`\`\` is for code formatting.
   })
 }});
 
@@ -429,6 +429,65 @@ app.command("/createtask", async ({ command, ack, say }) => {
     });
   };
 });
+
+//this will hopefully handle the Create Google Cal event shortcut from Slack
+app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
+  try {
+    await ack();
+  
+    var results = await client.views.open({
+      trigger_id: shortcut.trigger_id,
+      view: { //view created using Slack's interactive Block Kit Builder
+        "type": "modal",
+        "title": {
+          "type": "plain_text",
+          "text": "Slack-RequestApp",
+          "emoji": true
+        },
+        "submit": {
+          "type": "plain_text",
+          "text": "Submit",
+          "emoji": true
+        },
+        "close": {
+          "type": "plain_text",
+          "text": "Cancel",
+          "emoji": true
+        },
+        "blocks": [
+          {
+            "type": "section",
+            "text": {
+              "type": "mrkdwn",
+              "text": "Select the user that the task will be assigned to. Only select ONE user."
+            }
+          },
+          {
+            "type": "input",
+            "element": {
+              "type": "multi_users_select",
+              "placeholder": {
+                "type": "plain_text",
+                "text": "Select users",
+                "emoji": true
+              },
+              "action_id": "multi_users_select-action"
+            },
+            "label": {
+              "type": "plain_text",
+              "text": "Selected User",
+              "emoji": true
+            }
+          }
+        ]
+      }
+    });
+    console.log("Results:")
+    console.log(results);
+  } catch (error) {
+    console.log(error);
+  }
+})
 
 //this handles when the page the user is requesting doesn't exist. 
 //it may be better to use an HTML file later, but for now,
