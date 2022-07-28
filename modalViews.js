@@ -28,36 +28,36 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
             "type": "input",
             "block_id": "requesteeSelectBlock_BlockID",
             "element": {
-            "type": "multi_users_select",
-            "placeholder": {
-                "type": "plain_text",
-                "text": "Select One User",
-                "emoji": true
-            },
-            "action_id": "requesteeSelectBlock_ActionID",
+                "type": "multi_users_select",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Select One User",
+                    "emoji": true
+                },
+                "action_id": "requesteeSelectBlock_ActionID",
             },
             "label": {
-            "type": "plain_text",
-            "text": "User who will be assigned task:",
-            "emoji": true
+                "type": "plain_text",
+                "text": "User who will be assigned task:",
+                "emoji": true
             }
         },
         {
             "type": "input",
             "block_id": "requesteeEmailAddress_BlockID",
             "element": {
-            "type": "plain_text_input",
-            "placeholder": {
-                "type": "plain_text",
-                "text": "Enter Email Address",
-                "emoji": true
-            },
-            "action_id": "requesteeEmailAddress_ActionID",
+                "type": "plain_text_input",
+                "placeholder": {
+                    "type": "plain_text",
+                    "text": "Enter Email Address",
+                    "emoji": true
+                },
+                "action_id": "requesteeEmailAddress_ActionID",
             },
             "label": {
-            "type": "plain_text",
-            "text": "Enter their email address, preferably a work address:",
-            "emoji": true
+                "type": "plain_text",
+                "text": "Enter their email address, preferably a work address:",
+                "emoji": true
             }
         },
         {
