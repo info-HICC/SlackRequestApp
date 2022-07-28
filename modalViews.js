@@ -26,6 +26,7 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
         },
         {
             "type": "input",
+            "max_selected_items": 1,
             "block_id": "requesteeSelectBlock_BlockID",
             "element": {
             "type": "multi_users_select",
