@@ -446,8 +446,6 @@ app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
       trigger_id: shortcut.trigger_id,
       view: modalViews.modalForm
     });
-    console.log("Results:")
-    console.log(results);
   } catch (error) {
     console.log(error);
   }
@@ -474,11 +472,9 @@ app.view("create-google-cal-task", async ({ ack, body, view, client }) => {
     "taskDueDate": `${taskDueDate}`,
     "TaskID": `${UUIDAndUnixTimeForTaskIDString}`
   }).then(function (response) {
-    console.log(response);
+    console.log(response.status + " " + response.statusText + " " + response.data.status);
   });
-
-  console.log(body.view.state.values);
-})
+});
 
 //this handles when the page the user is requesting doesn't exist. 
 //it may be better to use an HTML file later, but for now,
