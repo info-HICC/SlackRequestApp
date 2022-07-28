@@ -495,7 +495,7 @@ app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
 app.view("create-google-cal-task", async ({ ack, body, view, client }) => {
   await ack();
 
-  console.log(body);
+  console.log(body.view);
 })
 
 //this handles when the page the user is requesting doesn't exist. 
