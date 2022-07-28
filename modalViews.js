@@ -62,10 +62,10 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
         },
         {
             "type": "input",
-            "block_id": "TaskTitle_BlockID",
+            "block_id": "taskTitle_BlockID",
             "element": {
                 "type": "plain_text_input",
-                "action_id": "TaskTitle_ActionID"
+                "action_id": "taskTitle_ActionID"
             },
             "label": {
                 "type": "plain_text",
