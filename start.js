@@ -433,58 +433,14 @@ app.command("/createtask", async ({ command, ack, say }) => {
 //this will hopefully handle the Create Google Cal event shortcut from Slack
 //this handles the pop up modal, but not submission of the form.
 //the next step should hopefully handle that second part.
+const modalViews = require("./modalViews.js");
 app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
   try {
     await ack();
   
     var results = await client.views.open({
       trigger_id: shortcut.trigger_id,
-      view: { //view created using Slack's interactive Block Kit Builder
-        "type": "modal",
-        "callback_id": "create-google-cal-task",
-        "title": {
-          "type": "plain_text",
-          "text": "Slack-RequestApp",
-          "emoji": true
-        },
-        "submit": {
-          "type": "plain_text",
-          "text": "Submit",
-          "emoji": true
-        },
-        "close": {
-          "type": "plain_text",
-          "text": "Cancel",
-          "emoji": true
-        },
-        "blocks": [
-          {
-            "type": "section",
-            "text": {
-              "type": "mrkdwn",
-              "text": "Select the user that the task will be assigned to. Only select ONE user."
-            }
-          },
-          {
-            "type": "input",
-            "block_id": "requesteeSelectBlock_BlockID",
-            "element": {
-              "type": "multi_users_select",
-              "placeholder": {
-                "type": "plain_text",
-                "text": "Select One User",
-                "emoji": true
-              },
-              "action_id": "requesteeSelectBlock_ActionID",
-            },
-            "label": {
-              "type": "plain_text",
-              "text": "Select One User",
-              "emoji": true
-            }
-          }
-        ]
-      }
+      view: modalViews.modalForm
     });
     console.log("Results:")
     console.log(results);
