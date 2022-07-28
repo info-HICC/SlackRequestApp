@@ -2,6 +2,8 @@ const { App, ExpressReceiver } = require('@slack/bolt');
 const axios = require('axios');
 const path = require('path');
 const nodecron = require('node-cron');
+//import uuidv4
+const { v4: uuidv4 } = require('uuid');
 
 // set up nodecron to ping the heroku server every 20 minutes to avoid sleeping
 nodecron.schedule('*/20 * * * *', () => {
@@ -433,6 +435,8 @@ app.command("/createtask", async ({ command, ack, say }) => {
 //this will hopefully handle the Create Google Cal event shortcut from Slack
 //this handles the pop up modal, but not submission of the form.
 //the next step should hopefully handle that second part.
+
+//this require statement contains the modal view.
 const modalViews = require("./modalViews.js");
 app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
   try {
@@ -451,6 +455,25 @@ app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
 
 app.view("create-google-cal-task", async ({ ack, body, view, client }) => {
   await ack();
+  var formSubmittionValues = body.view.state.values;
+  var assignerUserID = body.user.id;
+  var assigneeUserID = formSubmittionValues.requesteeSelectBlock_BlockID.requesteeSelectBlock_ActionID.selected_users[0];
+  var assigneeEmailAddress = formSubmittionValues.requesteeEmailAddress_BlockID.requesteeEmailAddress_ActionID.value;
+  var taskTitle = formSubmittionValues.taskTitle_BlockID.taskTitle_ActionID.value;
+  var taskDescription = formSubmittionValues.taskDescription_BlockID.taskDescription_ActionID.value;
+  var taskDueDate = formSubmittionValues.taskDueDate_BlockID.taskDueDate_ActionID.selected_date;
+  var UUIDAndUnixTimeForTaskIDString = uuidv4();
+  UUIDAndUnixTimeForTaskIDString += Date.parse(new Date);
+
+  await axios.post(process.env.SlackToGoogleCalendarWebhookURL, {
+    "assignerUserID": `${assignerUserID}`,
+    "assigneeUserID": `${assigneeUserID}`,
+    "assigneeEmailAddress": `${assigneeEmailAddress}`,
+    "taskTitle": `${taskTitle}`,
+    "taskDescription": `${taskDescription}`,
+    "taskDueDate": `${taskDueDate}`,
+    "TaskID": `${UUIDAndUnixTimeForTaskIDString}`
+  });
 
   console.log(body.view.state.values);
 })
