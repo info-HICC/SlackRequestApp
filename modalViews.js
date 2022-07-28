@@ -56,7 +56,7 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
             },
             "label": {
             "type": "plain_text",
-            "text": "Label",
+            "text": "Enter their email address, preferably a work address:",
             "emoji": true
             }
         },
@@ -75,10 +75,10 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
         },
         {
             "type": "input",
-            "block_id": "TaskDescription_BlockID",
+            "block_id": "taskDescription_BlockID",
             "element": {
                 "type": "plain_text_input",
-                "action_id": "TaskDescription_ActionID"
+                "action_id": "taskDescription_ActionID"
             },
             "label": {
                 "type": "plain_text",
@@ -88,7 +88,7 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
         },
         {
 			"type": "input",
-            "block_id": "TaskDueDate_BlockID",
+            "block_id": "taskDueDate_BlockID",
 			"element": {
 				"type": "datepicker",
 				"initial_date": "2022-07-28",
@@ -97,7 +97,7 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
 					"text": "Select a date",
 					"emoji": true
 				},
-				"action_id": "TaskDueDate_ActionID"
+				"action_id": "taskDueDate_ActionID"
 			},
 			"label": {
 				"type": "plain_text",
