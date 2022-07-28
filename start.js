@@ -2,6 +2,8 @@ const { App, ExpressReceiver } = require('@slack/bolt');
 const axios = require('axios');
 const path = require('path');
 const nodecron = require('node-cron');
+//this require statement contains the modal view.
+const modalViews = require("./modalViews.js");
 //import uuidv4
 const { v4: uuidv4 } = require('uuid');
 
@@ -417,11 +419,10 @@ app.command("/tasknotfinish", async ({ command, ack, say }) => {
 app.command("/createtask", async ({ command, ack, say }) => {
   try {
     await ack();
-    var commandExecuter = command.user_id;
-    app.client.chat.postMessage({
-      channel: commandExecuter,
-      text: `Fill out this form, and the requestee will receive the request as an event in their Google Calendar. Form link: <${process.env.slackToGoogleCalendarFormLink}>`,
-      unfurl_links: false
+    
+    await client.views.open({
+      trigger_id: shortcut.trigger_id,
+      view: modalViews.modalForm
     });
   } catch (error) {
     console.log(error);
@@ -436,13 +437,11 @@ app.command("/createtask", async ({ command, ack, say }) => {
 //this handles the pop up modal, but not submission of the form.
 //the next step should hopefully handle that second part.
 
-//this require statement contains the modal view.
-const modalViews = require("./modalViews.js");
 app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
   try {
     await ack();
   
-    var results = await client.views.open({
+    await client.views.open({
       trigger_id: shortcut.trigger_id,
       view: modalViews.modalForm
     });
