@@ -474,7 +474,8 @@ app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
                 "text": "Select One User",
                 "emoji": true
               },
-              "action_id": "requesteeSelectBlock"
+              "action_id": "requesteeSelectBlock_ActionID",
+              "block_id": "requesteeSelectBlock_BlockID",
             },
             "label": {
               "type": "plain_text",
@@ -495,7 +496,7 @@ app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
 app.view("create-google-cal-task", async ({ ack, body, view, client }) => {
   await ack();
 
-  console.log(body.view);
+  console.log(body.view.state.values);
 })
 
 //this handles when the page the user is requesting doesn't exist. 
