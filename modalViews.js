@@ -21,14 +21,14 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": "Select the user that the task will be assigned to. Only the first selected user will receive the task."
+            "text": "Select the user that the task will be assigned to."
         }
         },
         {
             "type": "input",
             "block_id": "requesteeSelectBlock_BlockID",
             "element": {
-                "type": "multi_users_select",
+                "type": "users_select",
                 "placeholder": {
                     "type": "plain_text",
                     "text": "Select One User",
