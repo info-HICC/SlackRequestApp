@@ -455,7 +455,7 @@ app.view("create-google-cal-task", async ({ ack, body, view, client }) => {
   await ack();
   var formSubmittionValues = body.view.state.values;
   var assignerUserID = body.user.id;
-  var assigneeUserID = formSubmittionValues.requesteeSelectBlock_BlockID.requesteeSelectBlock_ActionID.selected_users[0];
+  var assigneeUserID = formSubmittionValues.requesteeSelectBlock_BlockID.requesteeSelectBlock_ActionID.selected_user;
   var assigneeEmailAddress = formSubmittionValues.requesteeEmailAddress_BlockID.requesteeEmailAddress_ActionID.value;
   var taskTitle = formSubmittionValues.taskTitle_BlockID.taskTitle_ActionID.value;
   var taskDescription = formSubmittionValues.taskDescription_BlockID.taskDescription_ActionID.value;
