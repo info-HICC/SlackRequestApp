@@ -92,7 +92,6 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
             "block_id": "taskDueDate_BlockID",
 			"element": {
 				"type": "datepicker",
-				"initial_date": "2022-07-28",
 				"placeholder": {
 					"type": "plain_text",
 					"text": "Select a date",
