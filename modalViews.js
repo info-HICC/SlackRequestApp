@@ -21,7 +21,7 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": "Select the user that the task will be assigned to."
+            "text": "This is used to assign a user tasks that need to be completed. The requests will be pushed to Google Calendar of the email address specified."
         }
         },
         {
