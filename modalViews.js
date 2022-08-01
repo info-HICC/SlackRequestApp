@@ -78,6 +78,7 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
             "block_id": "taskDescription_BlockID",
             "element": {
                 "type": "plain_text_input",
+                "multiline": true,
                 "action_id": "taskDescription_ActionID"
             },
             "label": {
