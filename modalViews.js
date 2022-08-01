@@ -65,7 +65,11 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
             "block_id": "taskTitle_BlockID",
             "element": {
                 "type": "plain_text_input",
-                "placeholder": "Enter the title of the task.",
+                "placeholder": {
+					"type": "plain_text",
+					"text": "Enter the title of the task.",
+					"emoji": true
+				},
                 "action_id": "taskTitle_ActionID"
             },
             "label": {
@@ -79,7 +83,11 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
             "block_id": "taskDescription_BlockID",
             "element": {
                 "type": "plain_text_input",
-                "placeholder": "Enter a description for this task. You should provide context, and describe what is required.",
+                "placeholder": {
+					"type": "plain_text",
+					"text": "Enter a description for this task. You should provide context, and describe what is required.",
+					"emoji": true
+				},
                 "multiline": true,
                 "action_id": "taskDescription_ActionID"
             },
