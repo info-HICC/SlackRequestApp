@@ -280,7 +280,7 @@ receiver.router.get('/nodecron-ping', (req, res) => {
 //handles webhook from Zapier.
 receiver.router.post('/slack/updateTaskeeOnTask', (req, res) => {
   console.log(req);
-  res.status(200);
+  res.status(200).send("Successfully POSTed");
 });
 
 
