@@ -321,7 +321,9 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
   //show another modal view here.
   for (i=0; i<body.message.blocks.length; i++) {
     if (JSONChannelTS_BlockID == body.message.blocks[i].block_id) {
-      timestamp = body.message.blocks[i].elements.text.match(/'[1-9].*\.[1-9].*'/).split("'")[1];
+      var text = body.message.blocks[i].elements.text;
+      console.log(text);
+      timestamp = text.match(/'[1-9].*\.[1-9].*'/).split("'")[1];
       console.log(timestamp)
     } else {
       continue;
