@@ -11,6 +11,7 @@ const { v4: uuidv4 } = require('uuid');
 
 //importing express just to use express.json() for parsing POST data
 const express = require('express');
+const { updateMessage } = require('./messageViews.js');
 
 // set up nodecron to ping the heroku server every 20 minutes to avoid sleeping
 nodecron.schedule('*/20 * * * *', () => {
@@ -288,9 +289,16 @@ receiver.router.post('/slack/updateTaskeeOnTask', express.json(), (req, res) => 
     res.status(200).send("Successfully POSTed");
     var POST_requestBody = req.body;
     console.log(messageViews.updateMessage);
-    app.client.chat.postMessage({
+    var message_template = `
+    >RequestID: \`${POST_requestBody}\`\n
+    >The name of the task: \`${task_title}\`.\n
+    >The description of the task: \`${task_description}\`\n
+    >The assigned due date is \`${task_due_date}\`.
+    `;
+    var message = JSON.stringify(messageViews.updateMessage);
+    await app.client.chat.postMessage({
       channel: POST_requestBody.task_assigner, //THIS HAS TO BE CHANGED TO ASSIGNEE, ASSIGNER IS USED FOR TESTING.
-      blocks: messageViews.updateMessage
+      blocks: messageViews.message
     })
   } else {
     res.status(403).sent("Not Allowed to access.")

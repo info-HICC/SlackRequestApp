@@ -1,9 +1,3 @@
-var message_template = `
->RequestID: \`${POST_requestBody}\`\n
->The name of the task: \`${task_title}\`.\n
->The description of the task: \`${task_description}\`\n
->The assigned due date is \`${task_due_date}\`.
-`;
 var taskeeUpdateMessage = {
 	"blocks": [
 		{
@@ -63,9 +57,9 @@ var taskeeUpdateMessage = {
 		}
 	]
 };
-var taskeeUpdateMessageAsString = JSON.stringify(taskeeUpdateMessage.blocks);
+// var taskeeUpdateMessageAsString = JSON.stringify(taskeeUpdateMessage.blocks);
 
 //export the modal view
 module.exports = {
-    updateMessage: taskeeUpdateMessageAsString
+    updateMessage: taskeeUpdateMessage
 };
