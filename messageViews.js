@@ -46,6 +46,7 @@ var taskeeUpdateMessage = {
 		}
 	]
 };
+var taskeeUpdateMessageAsString = JSON.stringify(taskeeUpdateMessage);
 
 //export the modal view
 module.exports = {
