@@ -1,5 +1,5 @@
 module.exports.updateMessageContent = function (task_id, task_title, task_description, task_due_date) {
-    var template = ```{
+    var template = `{
         "blocks": [
             {
                 "type": "context",
@@ -57,7 +57,7 @@ module.exports.updateMessageContent = function (task_id, task_title, task_descri
                 ]
             }
         ]
-    }```;
+    }`;
     return template;
 };
 
