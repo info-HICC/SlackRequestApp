@@ -1,3 +1,9 @@
+var message_template = `
+>RequestID: \`${POST_requestBody}\`\n
+>The name of the task: \`${task_title}\`.\n
+>The description of the task: \`${task_description}\`\n
+>The assigned due date is \`${task_due_date}\`.
+`;
 var taskeeUpdateMessage = {
 	"blocks": [
 		{
@@ -18,7 +24,7 @@ var taskeeUpdateMessage = {
 			"elements": [
 				{
 					"type": "mrkdwn",
-					"text": "*Cat* has approved this message."
+					"text": message_template
 				},
 				{
 					"type": "mrkdwn",
@@ -31,6 +37,7 @@ var taskeeUpdateMessage = {
 		},
 		{
 			"type": "actions",
+            "block_id": "TaskDoneOrNotDone_BlockID",
 			"elements": [
 				{
 					"type": "button",
@@ -39,8 +46,18 @@ var taskeeUpdateMessage = {
 						"text": "Click when done",
 						"emoji": true
 					},
-					"value": "click_me_123",
-					"action_id": "actionId-0"
+					"value": "TaskCompleted",
+					"action_id": "TaskDone_ActionID"
+				},
+                {
+					"type": "button",
+					"text": {
+						"type": "plain_text",
+						"text": "Click if task cannot be completed on time",
+						"emoji": true
+					},
+					"value": "TaskNotCompleted",
+					"action_id": "TaskNotDone_ActionID"
 				}
 			]
 		}
