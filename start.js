@@ -322,9 +322,9 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
   for (i=0; i<body.message.blocks.length; i++) {
     if (JSONChannelTS_BlockID == body.message.blocks[i].block_id) {
       var text = body.message.blocks[i].elements[0].text;
-      console.log(text);
-      timestamp = text.match(/'[1-9].*\.[1-9].*'/)[0].split("'")[1];
-      console.log(timestamp)
+      console.log(text.match(/'[1-9].*\.[1-9].*'/));
+      // timestamp = text.match(/'[1-9].*\.[1-9].*'/)[0].split("'")[1];
+      // console.log(timestamp)
     } else {
       continue;
     }
