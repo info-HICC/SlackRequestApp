@@ -277,6 +277,11 @@ receiver.router.get('/nodecron-ping', (req, res) => {
   res.send('{"status": "ok"}');
 });
 
+//handles webhook from Zapier.
+receiver.router.post('/slack/updateTaskeeOnTask', (req, res) => {
+  console.log(req.body)
+})
+
 
 //this section should be used to handle the slack to google calendar integration.
 //this should handle the command "/taskfinish", which has to be registered with the app via Slack. 
@@ -460,8 +465,8 @@ app.view("create-google-cal-task", async ({ ack, body, view, client }) => {
   var taskTitle = formSubmittionValues.taskTitle_BlockID.taskTitle_ActionID.value;
   var taskDescription = formSubmittionValues.taskDescription_BlockID.taskDescription_ActionID.value;
   var taskDueDate = formSubmittionValues.taskDueDate_BlockID.taskDueDate_ActionID.selected_date;
-  var UUIDAndUnixTimeForTaskIDString = uuidv4();
-  UUIDAndUnixTimeForTaskIDString += Date.parse(new Date);
+  var UUIDAndUnixTimeForTaskIDString = uuidv4(); //this is referenced as taskID
+  UUIDAndUnixTimeForTaskIDString += Date.parse(new Date); //this is referenced as taskID
 
   await axios.post(process.env.SlackToGoogleCalendarWebhookURL, {
     "assignerUserID": `${assignerUserID}`,
