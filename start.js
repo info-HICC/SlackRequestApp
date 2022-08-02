@@ -288,8 +288,12 @@ receiver.router.post('/slack/updateTaskeeOnTask', express.json(), async (req, re
   if (req.body.checksum == process.env.updateTaskeeOnTask_checksum) {
     res.status(200).send("Successfully POSTed");
     var POST_requestBody = req.body;
+    var task_id = POST_requestBody.task_id;
+    var task_title = POST_requestBody.task_title;
+    var task_description = POST_requestBody.task_description;
+    var task_due_date = POST_requestBody.task_due_date;
     console.log(messageViews.updateMessage);
-    var message = messageViews.updateMessageContent(POST_requestBody, task_title, task_description, task_due_date);
+    var message = await messageViews.updateMessageContent(task_id, task_title, task_description, task_due_date);
     var messageAsString = JSON.stringify(JSON.parse(message));
     await app.client.chat.postMessage({
       channel: POST_requestBody.task_assigner, //THIS HAS TO BE CHANGED TO ASSIGNEE, ASSIGNER IS USED FOR TESTING.

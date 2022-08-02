@@ -1,4 +1,4 @@
-module.exports.updateMessageContent = function (POST_requestBody, task_title, task_description, task_due_date) {
+module.exports.updateMessageContent = function (task_id, task_title, task_description, task_due_date) {
     var template = ```{
         "blocks": [
             {
@@ -19,7 +19,7 @@ module.exports.updateMessageContent = function (POST_requestBody, task_title, ta
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": ">RequestID: \`${POST_requestBody}\`\n>The name of the task: \`${task_title}\`.\n>The description of the task: \`${task_description}\`\n>The assigned due date is \`${task_due_date}\`."
+                        "text": ">RequestID: \`${task_id}\`\n>The name of the task: \`${task_title}\`.\n>The description of the task: \`${task_description}\`\n>The assigned due date is \`${task_due_date}\`."
                     },
                     {
                         "type": "mrkdwn",
