@@ -16,14 +16,41 @@ module.exports.updateMessageContent = function (task_id, task_title, task_descri
             },
             {
                 "type": "context",
+                "block_id": "task_id_BlockID",
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": ">RequestID: \`${task_id}\`\\n>The name of the task: \`${task_title}\`.\\n>The description of the task: \`${task_description}\`\\n>The assigned due date is \`${task_due_date}\`."
-                    },
+                        "text": ">RequestID: \`${task_id}\`"
+                    }
+                ]
+            },
+            {
+                "type": "context",
+                "block_id": "task_title_BlockID",
+                "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": "*Cat* has approved this message."
+                        "text": ">The name of the task: \`${task_title}\`."
+                    }
+                ]
+            },
+            {
+                "type": "context",
+                "block_id": "task_description_BlockID",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
+                        "text": ">The description of the task: \`${task_description}\`"
+                    }
+                ]
+            },
+            {
+                "type": "context",
+                "block_id": "task_due_date_BlockID",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
+                        "text": ">The assigned due date is \`${task_due_date}\`."
                     }
                 ]
             },
@@ -58,6 +85,7 @@ module.exports.updateMessageContent = function (task_id, task_title, task_descri
             }
         ]
     }`;
+    console.log(template);
     return template;
 };
 
