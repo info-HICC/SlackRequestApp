@@ -292,10 +292,8 @@ receiver.router.post('/slack/updateTaskeeOnTask', express.json(), async (req, re
     var task_title = POST_requestBody.task_title;
     var task_description = POST_requestBody.task_description;
     var task_due_date = POST_requestBody.task_due_date;
-    var message = await messageViews.updateMessageContent(task_id, task_title, task_description, task_due_date);
-    console.log(message);
-    console.log("\n");
-    console.log(JSON.parse(message))
+    var JSON_channel_ts = POST_requestBody.JSON_channel_ts;
+    var message = await messageViews.updateMessageContent(task_id, task_title, task_description, task_due_date, JSON_channel_ts);
     var messageAsString = JSON.stringify(JSON.parse(message).blocks);
     await app.client.chat.postMessage({
       channel: POST_requestBody.task_assigner, //THIS HAS TO BE CHANGED TO ASSIGNEE, ASSIGNER IS USED FOR TESTING.
@@ -305,6 +303,12 @@ receiver.router.post('/slack/updateTaskeeOnTask', express.json(), async (req, re
     res.status(403).sent("Not Allowed to access.")
   }
 });
+//handles the button presses from the message directly above this
+app.action("Update_Status_ActionID", async ({ ack, client, body }) => {
+  await ack();
+  //show another modal view here.
+  console.log(body);
+})
 
 
 //this section should be used to handle the slack to google calendar integration.
