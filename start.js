@@ -7,6 +7,9 @@ const modalViews = require("./modalViews.js");
 //import uuidv4
 const { v4: uuidv4 } = require('uuid');
 
+//importing express just to use express.json() for parsing POST data
+const express = require('express');
+
 // set up nodecron to ping the heroku server every 20 minutes to avoid sleeping
 nodecron.schedule('*/20 * * * *', () => {
   console.log("Pinging Heroku Server to keep alive app...");
@@ -278,8 +281,8 @@ receiver.router.get('/nodecron-ping', (req, res) => {
 });
 
 //handles webhook from Zapier.
-receiver.router.post('/slack/updateTaskeeOnTask', (req, res) => {
-  console.log(req);
+receiver.router.post('/slack/updateTaskeeOnTask', express.json(), (req, res) => {
+  console.log(req.body);
   res.status(200).send("Successfully POSTed");
 });
 
