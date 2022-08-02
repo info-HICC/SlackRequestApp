@@ -280,7 +280,7 @@ receiver.router.get('/nodecron-ping', (req, res) => {
 //handles webhook from Zapier.
 receiver.router.post('/slack/updateTaskeeOnTask', (req, res) => {
   console.log(req)
-})
+});
 
 
 //this section should be used to handle the slack to google calendar integration.
