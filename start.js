@@ -304,9 +304,29 @@ receiver.router.post('/slack/updateTaskeeOnTask', express.json(), async (req, re
   }
 });
 //handles the button presses from the message directly above this
+// app.action("Update_Status_ActionID", async ({ ack, client, body }) => {
+//   await ack();
+//   //show another modal view here.
+//   for (i=0; i<body.message.blocks.length; i++) {
+//     var info_blockIDArray = ["task_id_BlockID", "task_title_BlockID", "task_description_BlockID", "task_due_date_BlockID", "JSON_channel_ts_BlockID"]
+//     var action_blockIDArray = ["Update_Status_BlockID"]
+//   }
+//   console.log(body.message.blocks);
+// })
 app.action("Update_Status_ActionID", async ({ ack, client, body }) => {
   await ack();
+  var JSONChannelTS_BlockID = "JSON_channel_ts_BlockID"
+  var action_blockIDArray = ["TaskDone_TaskNotDone_BlockID"];
+  var timestamp = "";
   //show another modal view here.
+  for (i=0; i<body.message.blocks.length; i++) {
+    if (JSONChannelTS_BlockID == body.message.blocks[i].block_id) {
+      // timestamp = body.message.blocks[i].elements
+      console.log(body.message.blocks[i].elements)
+    } else {
+      continue;
+    }
+  }
   console.log(body.message.blocks);
 })
 

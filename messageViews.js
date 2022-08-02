@@ -69,17 +69,27 @@ module.exports.updateMessageContent = function (task_id, task_title, task_descri
             },
             {
                 "type": "actions",
-                "block_id": "Update_Status_BlockID",
+                "block_id": "TaskDone_TaskNotDone_BlockID",
                 "elements": [
                     {
                         "type": "button",
                         "text": {
                             "type": "plain_text",
-                            "text": "Update Status",
+                            "text": "Task Done",
                             "emoji": true
                         },
-                        "value": "UpdateStatus",
-                        "action_id": "Update_Status_ActionID"
+                        "value": "TaskDone",
+                        "action_id": "TaskDone_ActionID"
+                    },
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Task Not Done By Due Date",
+                            "emoji": true
+                        },
+                        "value": "TaskNotDone",
+                        "action_id": "TaskNotDone_ActionID"
                     }
                 ]
             }
