@@ -60,7 +60,7 @@ module.exports.updateMessageContent = function (task_id, task_title, task_descri
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": ">You can ignore this, it's just for reference: \`${task_due_date}\`."
+                        "text": ">You can ignore this, it's just for reference: \`${JSON_channel_ts}\`."
                     }
                 ]
             },
