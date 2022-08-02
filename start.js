@@ -4,6 +4,8 @@ const path = require('path');
 const nodecron = require('node-cron');
 //this require statement contains the modal view.
 const modalViews = require("./modalViews.js");
+//this require statement contains the messages with blocks.
+const messageViews = require("./messageViews.js");
 //import uuidv4
 const { v4: uuidv4 } = require('uuid');
 
@@ -282,8 +284,16 @@ receiver.router.get('/nodecron-ping', (req, res) => {
 
 //handles webhook from Zapier.
 receiver.router.post('/slack/updateTaskeeOnTask', express.json(), (req, res) => {
-  console.log(req.body);
-  res.status(200).send("Successfully POSTed");
+  if (req.body.checksum == process.env.updateTaskeeOnTask_checksum) {
+    res.status(200).send("Successfully POSTed");
+    var POST_requestBody = req.body;
+    app.client.chat.postMessage({
+      channel: POST_requestBody.task_assigner, //THIS HAS TO BE CHANGED TO ASSIGNEE, ASSIGNER IS USED FOR TESTING.
+      blocks: messageViews.updateMessage
+    })
+  } else {
+    res.status(403).sent("Not Allowed to access.")
+  }
 });
 
 
