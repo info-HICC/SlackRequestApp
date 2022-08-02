@@ -289,16 +289,11 @@ receiver.router.post('/slack/updateTaskeeOnTask', express.json(), async (req, re
     res.status(200).send("Successfully POSTed");
     var POST_requestBody = req.body;
     console.log(messageViews.updateMessage);
-    var message_template = `
-    >RequestID: \`${POST_requestBody}\`\n
-    >The name of the task: \`${task_title}\`.\n
-    >The description of the task: \`${task_description}\`\n
-    >The assigned due date is \`${task_due_date}\`.
-    `;
-    var message = JSON.stringify(messageViews.updateMessage);
+    var message = messageViews.updateMessageContent(POST_requestBody, task_title, task_description, task_due_date);
+    var messageAsString = JSON.stringify(JSON.parse(message));
     await app.client.chat.postMessage({
       channel: POST_requestBody.task_assigner, //THIS HAS TO BE CHANGED TO ASSIGNEE, ASSIGNER IS USED FOR TESTING.
-      blocks: messageViews.message
+      blocks: messageAsString
     })
   } else {
     res.status(403).sent("Not Allowed to access.")
