@@ -85,7 +85,6 @@ module.exports.updateMessageContent = function (task_id, task_title, task_descri
             }
         ]
     }`;
-    console.log(template);
     return template;
 };
 
