@@ -307,7 +307,7 @@ receiver.router.post('/slack/updateTaskeeOnTask', express.json(), async (req, re
 app.action("Update_Status_ActionID", async ({ ack, client, body }) => {
   await ack();
   //show another modal view here.
-  console.log(body);
+  console.log(body.message.blocks);
 })
 
 
