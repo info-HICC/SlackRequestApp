@@ -343,13 +343,50 @@ async function taskDone_NotDoneErrorFunc(error, status) {
 };
 
 //helper function for editing message to remove buttons afterwards
-async function newBlocksArrayForTaskDone_NotDone(blocksArray) {
+async function newBlocksArrayForTaskDone_NotDone(blocksArray, done_notDone) {
   var array = JSON.parse(blocksArray);
   var newArray = [];
   for (i=0; i<array.length; i++) {
     var block = array[i];
     if (block.block_id == "TaskDone_TaskNotDone_BlockID") {
       //might potentially add another block to update the msg with the option that was chosen.
+      var userSelectionBlock = "";
+      if (done_notDone == "done") {
+        userSelectionBlock = {
+          "type": "context",
+          "elements": [
+            {
+              "type": "mrkdwn",
+              "text": "You have marked this task as *Done*"
+            }
+          ]
+        };
+      } else if (done_notDone == "notDone") {
+        userSelectionBlock = {
+          "type": "context",
+          "elements": [
+            {
+              "type": "mrkdwn",
+              "text": "You have marked this task as *Not Done*"
+            }
+          ]
+        };
+      } else {
+        //basically just error handling, kind of
+        //it's so that the issue can be caught and so that the reason for not updating with the user's selection can be fixed.
+        //this will very likely not be used unless the function parameters are modified backend
+        //or if somehow, something breaks, or does something unintentional.
+        userSelectionBlock = {
+          "type": "context",
+          "elements": [
+            {
+              "type": "mrkdwn",
+              "text": "For some reason, there was no status update for this. I don't know whether you pressed done or not done. You might want to contact the person maintaining the bot to figure out what's going on. They may ask you to provide additional information (such as what you did) to help with fixing this."
+            }
+          ]
+        };
+      };
+      newArray.push(userSelectionBlock)
       continue;
     } else {
       newArray.push(block);
@@ -367,7 +404,7 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
     var channelWithMessageWithBlocks = body.channel.id;
     var blocksArray = body.message.blocks;
     //iterate over blocks array and return new set of blocks by removing the block containing the buttons
-    var newMsgWithoutButtonsBlock = await newBlocksArrayForTaskDone_NotDone(JSON.stringify(blocksArray));
+    var newMsgWithoutButtonsBlock = await newBlocksArrayForTaskDone_NotDone(JSON.stringify(blocksArray), "done");
     //then call chat.update API method to update the message using the info above.
     var msgUpdateResult = await app.client.chat.update({
       channel: channelWithMessageWithBlocks,
@@ -438,7 +475,7 @@ app.action("TaskNotDone_ActionID", async ({ ack, client, body }) => {
     var channelWithMessageWithBlocks = body.channel.id;
     var blocksArray = body.message.blocks;
     //iterate over blocks array and return new set of blocks by removing the block containing the buttons
-    var newMsgWithoutButtonsBlock = await newBlocksArrayForTaskDone_NotDone(JSON.stringify(blocksArray));
+    var newMsgWithoutButtonsBlock = await newBlocksArrayForTaskDone_NotDone(JSON.stringify(blocksArray), "notDone");
     //then call chat.update API method to update the message using the info above.
     var msgUpdateResult = await app.client.chat.update({
       channel: channelWithMessageWithBlocks,
