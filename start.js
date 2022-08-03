@@ -312,12 +312,12 @@ async function TaskDone_NotDoneFunc(status, requesterUserID, requesteeUserID, du
   if (status == "done") {
     await app.client.chat.postMessage({
       channel: requesterUserID,
-      text: `The task you assigned to \`<@${requesteeUserID}>\` has been completed. The due date of the task is ${dueDate}. The request ID of the task is \`${reqID}\`. You can search for the task and its details using Slack's search inside of Slackbot's DM.`,
+      text: `The task you assigned to \`<@${requesteeUserID}>\` has been completed. The due date of the task is \`${dueDate}\`. The request ID of the task is \`${reqID}\`. You can search for the task and its details using Slack's search inside of Slackbot's DM.`,
     });
   } else if (status == "notDone") {
     await app.client.chat.postMessage({
       channel: requesterUserID,
-      text: `The task you assigned to \`<@${requesteeUserID}>\` has not been completed, and will not be completed by the deadline assigned (${dueDate}). The request ID of the task is \`${reqID}\`. You can search for the task and its details using Slack's search inside of Slackbot's DM.`,
+      text: `The task you assigned to \`<@${requesteeUserID}>\` has not been completed, and will not be completed by the deadline assigned \`(${dueDate})\`. The request ID of the task is \`${reqID}\`. You can search for the task and its details using Slack's search inside of Slackbot's DM.`,
     });
   };
   return;
