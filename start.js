@@ -340,12 +340,16 @@ async function taskDone_NotDoneErrorFunc(error, status) {
     //the escaped  backticks should make the error message show up as a code block.
     //this also avoids crashing the app.
   });
-}
+};
+
+//helper function for editing message to remove buttons afterwards
+// async function 
 
 //handles the button presses from the message that is sent when a POST req goes to "/slack/updateTaskeeOnTask"
 app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
   try {
     await ack();
+    console.log(body)
     var JSONChannelTS_BlockID = "JSON_channel_ts_BlockID";
     var TaskID_BlockID = "task_id_BlockID";
     var timestamp = "";
