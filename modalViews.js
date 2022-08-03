@@ -61,6 +61,16 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
             }
         },
         {
+			"type": "context",
+			"elements": [
+				{
+					"type": "plain_text",
+					"text": "Try and use the same email address as you did before, if this isn't the first time you're assigning this user a task.",
+					"emoji": true
+				}
+			]
+		},
+        {
             "type": "input",
             "block_id": "taskTitle_BlockID",
             "element": {
