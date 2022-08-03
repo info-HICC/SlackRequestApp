@@ -358,7 +358,7 @@ async function newBlocksArrayForTaskDone_NotDone(blocksArray) {
     };
   };
   console.log(newArray);
-  return JSON.stringify(newArray);
+  return await JSON.stringify(newArray);
 };
 
 //handles the button presses from the message that is sent when a POST req goes to "/slack/updateTaskeeOnTask"
@@ -369,7 +369,7 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
     var channelWithMessageWithBlocks = body.channel.id;
     var blocksArray = body.message.blocks;
     //iterate over blocks array and return new set of blocks by removing the block containing the buttons
-    var newMsgWithoutButtonsBlock = newBlocksArrayForTaskDone_NotDone(JSON.stringify(blocksArray))[0];
+    var newMsgWithoutButtonsBlock = newBlocksArrayForTaskDone_NotDone(JSON.stringify(blocksArray));
     console.log("newMsgWithoutButtonsBlock")
     console.log(newMsgWithoutButtonsBlock)
     //then call chat.update API method to update the message using the info above.
