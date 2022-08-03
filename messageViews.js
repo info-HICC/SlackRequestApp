@@ -2,6 +2,14 @@ module.exports.updateMessageContent = function (task_id, task_title, task_descri
     var template = `{
         "blocks": [
             {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Task Assignment",
+                    "emoji": true
+                }
+            },
+            {
                 "type": "context",
                 "elements": [
                     {
