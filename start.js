@@ -375,7 +375,7 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
     //then call chat.update API method to update the message using the info above.
     var msgUpdateResult = await app.client.chat.update({
       channel: channelWithMessageWithBlocks,
-      ts: messageWithBlocksTS ,
+      ts: messageWithBlocksTS,
       blocks: newMsgWithoutButtonsBlock
     });
     console.log(msgUpdateResult);
