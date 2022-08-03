@@ -299,6 +299,7 @@ receiver.router.post('/slack/updateTaskeeOnTask', express.json(), async (req, re
     var messageAsString = JSON.stringify(JSON.parse(message).blocks);
     await app.client.chat.postMessage({
       channel: task_assignee,
+      text: "This message contains Blocks from Slack Block Kit which is used to send a message to the assignee about the task they have, and two buttons to either say the task is finished, or it won't be finished by the deadline.",
       blocks: messageAsString
     })
   } else {
