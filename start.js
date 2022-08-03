@@ -456,21 +456,22 @@ app.action("TaskNotDone_ActionID", async ({ ack, client, body }) => {
 
 //handle /createtask command
 app.command("/createtask", async ({ command, ack, say }) => {
-  try {
-    await ack();
-    var commandExecuter = command.user_id;
-    app.client.chat.postMessage({
-      channel: commandExecuter,
-      text: `Fill out this form, and the requestee will receive the request as an event in their Google Calendar. Form link: <${process.env.slackToGoogleCalendarFormLink}>`,
-      unfurl_links: false
-    });
-  } catch (error) {
-    console.log(error);
-    app.client.chat.postMessage({
-      channel: process.env.slackToGoogleCalendarErrorLogChannelID,
-      text: `Error in /createtask command. Error: \`\`\`${error}\`\`\``,
-    });
-  };
+  console.log(command);
+  // try {
+  //   await ack();
+  //   var commandExecuter = command.user_id;
+  //   app.client.chat.postMessage({
+  //     channel: commandExecuter,
+  //     text: `Fill out this form, and the requestee will receive the request as an event in their Google Calendar. Form link: <${process.env.slackToGoogleCalendarFormLink}>`,
+  //     unfurl_links: false
+  //   });
+  // } catch (error) {
+  //   console.log(error);
+  //   app.client.chat.postMessage({
+  //     channel: process.env.slackToGoogleCalendarErrorLogChannelID,
+  //     text: `Error in /createtask command. Error: \`\`\`${error}\`\`\``,
+  //   });
+  // };
 });
 
 //this will hopefully handle the Create Google Cal event shortcut from Slack
