@@ -346,12 +346,11 @@ async function taskDone_NotDoneErrorFunc(error, status) {
 async function newBlocksArrayForTaskDone_NotDone(blocksArray) {
   console.log(blocksArray);
   var array = JSON.parse(blocksArray);
+  console.log(array)
   var newArray = [];
   for (i=0; i<blocksArray.length; i++) {
     if (blocksArray[i].block_id == "TaskDone_TaskNotDone_BlockID") {
       //might potentially add another block to update the msg with the option that was chosen.
-      console.log(i)
-      console.log(blocksArray[i])
       continue;
     } else {
       newArray.push(blocksArray[i]);
