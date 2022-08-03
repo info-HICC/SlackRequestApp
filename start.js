@@ -350,6 +350,8 @@ async function newBlocksArrayForTaskDone_NotDone(blocksArray, done_notDone) {
     var block = array[i];
     if (block.block_id == "TaskDone_TaskNotDone_BlockID") {
       //might potentially add another block to update the msg with the option that was chosen.
+      // // getting time when function was run/when button was pressed
+      // var time = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
       var userSelectionBlock = "";
       if (done_notDone == "done") {
         userSelectionBlock = {
@@ -399,6 +401,7 @@ async function newBlocksArrayForTaskDone_NotDone(blocksArray, done_notDone) {
 app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
   try {
     await ack();
+    console.log(body);
   //this section handles updating messages to remove the button blocks.
     var messageWithBlocksTS = body.message.ts;
     var channelWithMessageWithBlocks = body.channel.id;
