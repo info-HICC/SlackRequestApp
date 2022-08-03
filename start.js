@@ -344,19 +344,23 @@ async function taskDone_NotDoneErrorFunc(error, status) {
 
 //helper function for editing message to remove buttons afterwards
 async function newBlocksArrayForTaskDone_NotDone(blocksArray) {
+  console.log("blocksArray")
   console.log(blocksArray);
   var array = JSON.parse(blocksArray);
+  console.log("array")
   console.log(array)
   var newArray = [];
   for (i=0; i<blocksArray.length; i++) {
-    if (blocksArray[i].block_id == "TaskDone_TaskNotDone_BlockID") {
+    var block = blocksArray[i];
+    if (block.block_id == "TaskDone_TaskNotDone_BlockID") {
       //might potentially add another block to update the msg with the option that was chosen.
+      console.log("block.block_id")
       continue;
     } else {
-      newArray.push(blocksArray[i]);
+      console.log("block")
+      newArray.push(block);
     }
   };
-  console.log(newArray)
   return JSON.stringify(newArray);
 };
 
