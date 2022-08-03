@@ -351,7 +351,7 @@ async function newBlocksArrayForTaskDone_NotDone(blocksArray) {
     if (blocksArray[i].block_id == "TaskDone_TaskNotDone_BlockID") {
       //might potentially add another block to update the msg with the option that was chosen.
       console.log(i)
-      console.log(blocksArray{i})
+      console.log(blocksArray[i])
       continue;
     } else {
       newArray.push(blocksArray[i]);
