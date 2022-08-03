@@ -343,13 +343,37 @@ async function taskDone_NotDoneErrorFunc(error, status) {
 };
 
 //helper function for editing message to remove buttons afterwards
-// async function 
+async function newBlocksArrayForTaskDone_NotDone(blocksArray) {
+  var array = JSON.parse(blocksArray);
+  var newArray = [];
+  for (i=0; i<blocksArray.length; i++) {
+    if (blocksArray[i].block_id == "TaskDone_TaskNotDone_BlockID") {
+      //might potentially add another block to update the msg with the option that was chosen.
+      continue;
+    } else {
+      newArray.push(blocksArray[i]);
+    }
+  };
+  return JSON.stringify(newArray);
+}
 
 //handles the button presses from the message that is sent when a POST req goes to "/slack/updateTaskeeOnTask"
 app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
   try {
     await ack();
-    console.log(body)
+    var messageWithBlocksTS = body.message.ts;
+    var channelWithMessageWithBlocks = body.channel.id;
+    var blocksArray = body.message.blocks;
+    //iterate over blocks array and return new set of blocks by removing the block containing the buttons
+    var newMsgWithoutButtonsBlock = newBlocksArrayForTaskDone_NotDone(blocksArray);
+    //then call chat.update API method to update the message using the info above.
+    var msgUpdateResult = await app.client.chat.update({
+      channel: channelWithMessageWithBlocks,
+      ts: messageWithBlocksTS ,
+      blocks: newMsgWithoutButtonsBlock
+    });
+    console.log(msgUpdateResult);
+
     var JSONChannelTS_BlockID = "JSON_channel_ts_BlockID";
     var TaskID_BlockID = "task_id_BlockID";
     var timestamp = "";
