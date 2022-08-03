@@ -365,6 +365,8 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
     var messageWithBlocksTS = body.message.ts;
     var channelWithMessageWithBlocks = body.channel.id;
     var blocksArray = body.message.blocks;
+    console.log("blocksArray");
+    console.log(blocksArray);
     //iterate over blocks array and return new set of blocks by removing the block containing the buttons
     var newMsgWithoutButtonsBlock = newBlocksArrayForTaskDone_NotDone(blocksArray);
     //then call chat.update API method to update the message using the info above.
