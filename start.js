@@ -350,14 +350,11 @@ async function newBlocksArrayForTaskDone_NotDone(blocksArray) {
     var block = array[i];
     if (block.block_id == "TaskDone_TaskNotDone_BlockID") {
       //might potentially add another block to update the msg with the option that was chosen.
-      console.log("block.block_id")
       continue;
     } else {
-      console.log(`block ${i}`)
       newArray.push(block);
     };
   };
-  console.log(newArray);
   return await JSON.stringify(newArray);
 };
 
@@ -370,15 +367,13 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
     var blocksArray = body.message.blocks;
     //iterate over blocks array and return new set of blocks by removing the block containing the buttons
     var newMsgWithoutButtonsBlock = await newBlocksArrayForTaskDone_NotDone(JSON.stringify(blocksArray));
-    console.log("newMsgWithoutButtonsBlock")
-    console.log(newMsgWithoutButtonsBlock)
     //then call chat.update API method to update the message using the info above.
     var msgUpdateResult = await app.client.chat.update({
       channel: channelWithMessageWithBlocks,
       ts: messageWithBlocksTS,
+      text: "This message has been updated to remove the button blocks.",
       blocks: newMsgWithoutButtonsBlock
     });
-    console.log(msgUpdateResult);
 
     var JSONChannelTS_BlockID = "JSON_channel_ts_BlockID";
     var TaskID_BlockID = "task_id_BlockID";
