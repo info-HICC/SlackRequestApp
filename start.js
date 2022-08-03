@@ -371,7 +371,7 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
     });
     var message = messageArray.messages[0];
     console.log(message);
-    var messageTextAsJSON = JSON.parse(message);
+    var messageTextAsJSON = JSON.parse(message.text);
     //list of variables to be used later if needed
     var messageTextAsJSON_reqID = messageTextAsJSON.reqID;
     var messageTextAsJSON_requesterUserID = messageTextAsJSON.requesterUserID;
