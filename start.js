@@ -343,15 +343,16 @@ async function taskDone_NotDoneErrorFunc(error, status) {
 };
 
 //helper function for editing message to remove buttons afterwards
-async function newBlocksArrayForTaskDone_NotDone(blocksArray, done_notDone) {
+async function newBlocksArrayForTaskDone_NotDone(blocksArray, userTz, done_notDone) {
   var array = JSON.parse(blocksArray);
   var newArray = [];
   for (i=0; i<array.length; i++) {
     var block = array[i];
     if (block.block_id == "TaskDone_TaskNotDone_BlockID") {
       //might potentially add another block to update the msg with the option that was chosen.
-      // // getting time when function was run/when button was pressed
-      // var time = new Date().toLocaleString("en-US", {timeZone: "America/New_York"});
+      // getting time when function was run/when button was pressed
+      var time = new Date().toLocaleString("en-US", {timeZone: userTz});
+
       var userSelectionBlock = "";
       if (done_notDone == "done") {
         userSelectionBlock = {
@@ -359,7 +360,7 @@ async function newBlocksArrayForTaskDone_NotDone(blocksArray, done_notDone) {
           "elements": [
             {
               "type": "mrkdwn",
-              "text": "You have marked this task as *Done*"
+              "text": `You have marked this task as *Done* at ${time}.`
             }
           ]
         };
@@ -369,7 +370,7 @@ async function newBlocksArrayForTaskDone_NotDone(blocksArray, done_notDone) {
           "elements": [
             {
               "type": "mrkdwn",
-              "text": "You have marked this task as *Not Done*"
+              "text": `You have marked this task as *Not Done* at ${time}.`
             }
           ]
         };
@@ -383,7 +384,7 @@ async function newBlocksArrayForTaskDone_NotDone(blocksArray, done_notDone) {
           "elements": [
             {
               "type": "mrkdwn",
-              "text": "For some reason, there was no status update for this. I don't know whether you pressed done or not done. You might want to contact the person maintaining the bot to figure out what's going on. They may ask you to provide additional information (such as what you did) to help with fixing this."
+              "text": `For some reason, there was no status update for this. I don't know whether you pressed done or not done. You might want to contact the person maintaining the bot to figure out what's going on. They may ask you to provide additional information (such as what you did) to help with fixing this. Time: ${time}`
             }
           ]
         };
@@ -401,13 +402,19 @@ async function newBlocksArrayForTaskDone_NotDone(blocksArray, done_notDone) {
 app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
   try {
     await ack();
-    console.log(body);
+    //get user id, then make API call to users.info to get user timezone, then pass that into function newBlocksArrayForTaskDone_NotDone
+    var userID = body.user.id;
+    var userInfoResult = await app.client.users.info({
+      user: userID
+    });
+    var userTz = userInfoResult.user.tz;
+
   //this section handles updating messages to remove the button blocks.
     var messageWithBlocksTS = body.message.ts;
     var channelWithMessageWithBlocks = body.channel.id;
     var blocksArray = body.message.blocks;
     //iterate over blocks array and return new set of blocks by removing the block containing the buttons
-    var newMsgWithoutButtonsBlock = await newBlocksArrayForTaskDone_NotDone(JSON.stringify(blocksArray), "done");
+    var newMsgWithoutButtonsBlock = await newBlocksArrayForTaskDone_NotDone(JSON.stringify(blocksArray), userTz, "done");
     //then call chat.update API method to update the message using the info above.
     var msgUpdateResult = await app.client.chat.update({
       channel: channelWithMessageWithBlocks,
@@ -473,12 +480,19 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
 app.action("TaskNotDone_ActionID", async ({ ack, client, body }) => {
   try {
     await ack();
+    //get user id, then make API call to users.info to get user timezone, then pass that into function newBlocksArrayForTaskDone_NotDone
+    var userID = body.user.id;
+    var userInfoResult = await app.client.users.info({
+      user: userID
+    });
+    var userTz = userInfoResult.user.tz;
+
   //this section handles updating messages to remove the button blocks.
     var messageWithBlocksTS = body.message.ts;
     var channelWithMessageWithBlocks = body.channel.id;
     var blocksArray = body.message.blocks;
     //iterate over blocks array and return new set of blocks by removing the block containing the buttons
-    var newMsgWithoutButtonsBlock = await newBlocksArrayForTaskDone_NotDone(JSON.stringify(blocksArray), "notDone");
+    var newMsgWithoutButtonsBlock = await newBlocksArrayForTaskDone_NotDone(JSON.stringify(blocksArray), userTz, "notDone");
     //then call chat.update API method to update the message using the info above.
     var msgUpdateResult = await app.client.chat.update({
       channel: channelWithMessageWithBlocks,
