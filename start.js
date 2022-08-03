@@ -344,6 +344,7 @@ async function taskDone_NotDoneErrorFunc(error, status) {
 
 //helper function for editing message to remove buttons afterwards
 async function newBlocksArrayForTaskDone_NotDone(blocksArray) {
+  console.log(blocksArray);
   var array = JSON.parse(blocksArray);
   var newArray = [];
   for (i=0; i<blocksArray.length; i++) {
@@ -355,7 +356,7 @@ async function newBlocksArrayForTaskDone_NotDone(blocksArray) {
     }
   };
   return JSON.stringify(newArray);
-}
+};
 
 //handles the button presses from the message that is sent when a POST req goes to "/slack/updateTaskeeOnTask"
 app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
