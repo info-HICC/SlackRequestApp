@@ -455,7 +455,7 @@ app.action("TaskNotDone_ActionID", async ({ ack, client, body }) => {
 });
 
 //handle /createtask command
-app.command("/createtask", async ({ command, ack, say }) => {
+app.command("/createtask", async ({ command, ack, say, client}) => {
   try {
     await ack();
   
