@@ -362,6 +362,7 @@ async function newBlocksArrayForTaskDone_NotDone(blocksArray) {
 app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
   try {
     await ack();
+  //this section handles updating messages to remove the button blocks.
     var messageWithBlocksTS = body.message.ts;
     var channelWithMessageWithBlocks = body.channel.id;
     var blocksArray = body.message.blocks;
@@ -379,7 +380,7 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
     var TaskID_BlockID = "task_id_BlockID";
     var timestamp = "";
     var reqID = "";
-    //show another modal view here.
+  //going through blocks to gather info like timestamp and taskID
     for (i=0; i<body.message.blocks.length; i++) {
       //the if statement below finds the timestamp.
       if (JSONChannelTS_BlockID == body.message.blocks[i].block_id) {
@@ -392,7 +393,7 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
         continue;
       };
     }
-    //now use timestamp and the JSON channel to look up the message contents
+  //now use timestamp and the JSON channel ID to look up the message contents which is stored in JSON form
     var messageArray = await app.client.conversations.history({
       channel: process.env.taskJSONChannelID,
       latest: timestamp,
@@ -432,6 +433,20 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
 app.action("TaskNotDone_ActionID", async ({ ack, client, body }) => {
   try {
     await ack();
+  //this section handles updating messages to remove the button blocks.
+    var messageWithBlocksTS = body.message.ts;
+    var channelWithMessageWithBlocks = body.channel.id;
+    var blocksArray = body.message.blocks;
+    //iterate over blocks array and return new set of blocks by removing the block containing the buttons
+    var newMsgWithoutButtonsBlock = await newBlocksArrayForTaskDone_NotDone(JSON.stringify(blocksArray));
+    //then call chat.update API method to update the message using the info above.
+    var msgUpdateResult = await app.client.chat.update({
+      channel: channelWithMessageWithBlocks,
+      ts: messageWithBlocksTS,
+      text: "This message has been updated to remove the button blocks.",
+      blocks: newMsgWithoutButtonsBlock
+    });
+
     var JSONChannelTS_BlockID = "JSON_channel_ts_BlockID";
     var TaskID_BlockID = "task_id_BlockID";
     var timestamp = "";
