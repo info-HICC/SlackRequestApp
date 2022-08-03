@@ -365,7 +365,7 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
     }
     //now use timestamp and the JSON channel to look up the message contents
     var messageArray = await app.client.conversations.history({
-      channel:taskJSONChannelID,
+      channel: process.env.taskJSONChannelID,
       latest: timestamp,
       inclusive: true
     });
@@ -395,7 +395,7 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
       //then it would be nice to potentially delete the two buttons to avoid changing responses/spamming.
     }
   } catch (error) {
-    console.log(`<${error}>`);
+    console.log(error);
     await taskDone_NotDoneErrorFunc(error, "Done");
   }
 });
@@ -422,7 +422,7 @@ app.action("TaskNotDone_ActionID", async ({ ack, client, body }) => {
     };
     //now use timestamp and the JSON channel to look up the message contents
     var messageArray = await app.client.conversations.history({
-      channel:taskJSONChannelID,
+      channel: process.env.taskJSONChannelID,
       latest: timestamp,
       inclusive: true
     });
