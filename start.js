@@ -140,7 +140,7 @@ app.event("reaction_added", async ({ event, client }) => {
           console.log("Obtained JSON messages that match the previous criteria.");
           console.log("Starting to loop through the messages array that was returned and find the message that has the same request ID as the reacted message.");
           for (i=0; i<allMessages_JSONChannel.messages.length; i++) {
-            console.log(allMessages_JSONChannel.messages[i].text.toString())
+            console.log(allMessages_JSONChannel.messages[i])
             var JSONMsgParsedToJSON = JSON.parse(allMessages_JSONChannel.messages[i].text);
             // console.log("JSONMsgParsedToJSON");
             // console.log(JSONMsgParsedToJSON);
