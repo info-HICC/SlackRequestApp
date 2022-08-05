@@ -63,7 +63,6 @@ app.event("reaction_added", async ({ event, client }) => {
         latest: timestampOfMessage,
       })
       var messageText = allMessages.messages[0].text;
-      console.log(messageText);
       console.log("Message contents of reacted message obtained.")
       console.log("Starting regex check to get the request ID from the message.");
 
@@ -98,6 +97,8 @@ app.event("reaction_added", async ({ event, client }) => {
             for (i=0; i<AdditionalInfo_messagesArray.messages.length; i++) {
               if (JSON.parse(AdditionalInfo_messagesArray.messages[i].text).AdditionalInfoForReqID == messageRequestID) {
                 additionalInfoText = AdditionalInfo_messagesArray.messages[i].text;
+                console.log("additionalInfoText");
+                console.log(additionalInfoText);
                 break;
               } else {
                 await client.chat.postMessage({
