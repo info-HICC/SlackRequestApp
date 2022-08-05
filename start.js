@@ -135,7 +135,12 @@ app.event("reaction_added", async ({ event, client }) => {
           for (i=0; i<allMessages_JSONChannel.messages.length; i++) {
             console.log("stringifying")
             var JSONMsgStringified = JSON.stringify(allMessages_JSONChannel.messages[i].text);
-            if (JSON.parse(JSONMsgStringified).reqID == messageRequestID) {
+            console.log("JSONMsgStringified");
+            console.log(JSONMsgStringified);
+            var JSONMsgParsedToJSON = JSON.parse(JSONMsgStringified);
+            console.log("JSONMsgParsedToJSON");
+            console.log(JSONMsgParsedToJSON);
+            if (JSONMsgParsedToJSON.reqID == messageRequestID) {
               console.log("Found message with reqID that matches the request ID found in the reacted message.");
               //checking if the reqID in the JSON mesage is the same as the requestID in the reacted message
               //if reqID doesn't exist in that message, it should just fail therefore this part wouldn't matter. 
