@@ -100,7 +100,10 @@ app.event("reaction_added", async ({ event, client }) => {
               var JSONMsgArrayAsString = JSON.stringify(AdditionalInfo_messagesArray.messages[i].text);
               console.log("Logging: JSONMsgArrayAsString->");
               console.log(JSONMsgArrayAsString);
-              if (JSON.parse(JSONMsgArrayAsString).AdditionalInfoForReqID == messageRequestID) {
+              var JSONMsgArray_parsed = JSON.parse(JSONMsgArrayAsString);
+              console.log("Logging: JSONMsgArray_parsed->");
+              console.log(JSONMsgArray_parsed);
+              if (JSONMsgArray_parsed.AdditionalInfoForReqID == messageRequestID) {
                 additionalInfoText = AdditionalInfo_messagesArray.messages[i].text;
                 console.log("additionalInfoText");
                 console.log(additionalInfoText);
