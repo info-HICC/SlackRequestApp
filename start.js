@@ -132,7 +132,7 @@ app.event("reaction_added", async ({ event, client }) => {
             channel: process.env.requests_googleforms_json,
             inclusive: true,
             oldest: timestampOfMessage,
-            latest: (parseInt(timestampOfMessage)+5).toString(), 
+            latest: (parseInt(timestampOfMessage)+50).toString(), 
             //the most recent message is the message that is sent, at most, 5 seconds after the message that was reacted to.
             //oldest combined with latest ensures that the messages that are returned are the messages that were sent after the original reacted message
             //which happens before the JSON version of the message is sent. 
