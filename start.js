@@ -95,6 +95,8 @@ app.event("reaction_added", async ({ event, client }) => {
           //this is basically if there's a message that matches the previous parameters.
           if (AdditionalInfo_messagesArray.messages.length > 0) {
             for (i=0; i<AdditionalInfo_messagesArray.messages.length; i++) {
+              console.log("AdditionalInfo_messagesArray.messages[i].text:")
+              console.log(AdditionalInfo_messagesArray.messages[i].text)
               if (JSON.parse(AdditionalInfo_messagesArray.messages[i].text).AdditionalInfoForReqID == messageRequestID) {
                 additionalInfoText = AdditionalInfo_messagesArray.messages[i].text;
                 console.log("additionalInfoText");
@@ -135,8 +137,8 @@ app.event("reaction_added", async ({ event, client }) => {
           for (i=0; i<allMessages_JSONChannel.messages.length; i++) {
             var JSONMsgStringified = JSON.stringify(allMessages_JSONChannel.messages[i].text);
             var JSONMsgParsedToJSON = JSON.parse(JSONMsgStringified);
-            console.log("JSONMsgParsedToJSON");
-            console.log(JSONMsgParsedToJSON);
+            // console.log("JSONMsgParsedToJSON");
+            // console.log(JSONMsgParsedToJSON);
             if (JSONMsgParsedToJSON.reqID == messageRequestID) {
               console.log("Found message with reqID that matches the request ID found in the reacted message.");
               //checking if the reqID in the JSON mesage is the same as the requestID in the reacted message
