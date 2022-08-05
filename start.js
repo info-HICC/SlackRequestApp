@@ -97,10 +97,7 @@ app.event("reaction_added", async ({ event, client }) => {
             console.log(AdditionalInfo_messagesArray.messages.length)
             for (i=0; i<AdditionalInfo_messagesArray.messages.length; i++) {
               console.log("AdditionalInfo_messagesArray.messages[i].text:");
-              var JSONMsgArrayAsString = JSON.stringify(AdditionalInfo_messagesArray.messages[i].text);
-              console.log("Logging: JSONMsgArrayAsString->");
-              console.log(JSONMsgArrayAsString);
-              var JSONMsgArray_parsed = JSON.parse(JSONMsgArrayAsString);
+              var JSONMsgArray_parsed = JSON.parse(AdditionalInfo_messagesArray.messages[i].text);
               console.log("Logging: JSONMsgArray_parsed->");
               console.log(JSONMsgArray_parsed);
               console.log(JSONMsgArray_parsed.AdditionalInfoForReqID);
