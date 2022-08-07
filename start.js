@@ -605,6 +605,17 @@ app.action("testActionButton", async ({ ack, client, body }) => {
     console.log(error);
   };
 });
+//handles submission of modal triggered by actionID of "testActionButton", which is used to test moving the request process from Google Forms to Slack entirely (at least for part 1)
+//createExpenseRequest-callback is the callbackID of the modal that's shown when the actionID "testActionButton" is called
+app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) => {
+  try {
+    await ack();
+    console.log(body);
+    
+  } catch (error) {
+    console.log(error);
+  };
+});
 
 //this handles when the page the user is requesting doesn't exist. 
 //it may be better to use an HTML file later, but for now,
