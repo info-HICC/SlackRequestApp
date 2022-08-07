@@ -19,6 +19,7 @@ nodecron.schedule('*/20 * * * *', () => {
   axios.get('https://slack-requestapp.herokuapp.com/nodecron-ping');
 });
 
+
 // Custom Receiver docs here: https://slack.dev/bolt-js/concepts#custom-routes
 //Using the template found in the docs linked above.
 
@@ -31,6 +32,8 @@ const app = new App({
   receiver
 });
 
+// set up a static server for serving images.
+app.use("/static", express.static(path.join(__dirname, 'docs/images')));
 
 //This is for the Google Forms version of the app.
 app.event("reaction_added", async ({ event, client }) => {
@@ -531,7 +534,7 @@ app.action("TaskNotDone_ActionID", async ({ ack, client, body }) => {
   }
 });
 
-//handle /createtask command
+//handle /createtask command (Slack => Google Calendar Task)
 app.command("/createtask", async ({ command, ack, say, client}) => {
   try {
     await ack();
@@ -548,6 +551,7 @@ app.command("/createtask", async ({ command, ack, say, client}) => {
 //this will hopefully handle the Create Google Cal event shortcut from Slack
 //this handles the pop up modal, but not submission of the form.
 //the next step should hopefully handle that second part.
+//this callbackID is specified inside of Slack's App Configuration page.
 app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
   try {
     await ack();
@@ -561,7 +565,7 @@ app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
   }
 });
 
-//handles form submission
+//handles form submission (callback id)
 app.view("create-google-cal-task-callback", async ({ ack, body, view, client }) => {
   await ack();
   var formSubmittionValues = body.view.state.values;
