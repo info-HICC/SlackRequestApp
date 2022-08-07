@@ -128,7 +128,153 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
     ]
 };
 
+var requestApp_CreateRequestModalView = {
+	"type": "modal",
+	"title": {
+		"type": "plain_text",
+		"text": "Slack-RequestApp",
+		"emoji": true
+	},
+	"submit": {
+		"type": "plain_text",
+		"text": "Submit",
+		"emoji": true
+	},
+	"close": {
+		"type": "plain_text",
+		"text": "Cancel",
+		"emoji": true
+	},
+	"blocks": [
+		{
+			"type": "divider"
+		},
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": "Enter a short description about what this request is for. Avoid using quotation marks, if possible. Use alternatives like parentheses, or brackets. "
+				}
+			]
+		},
+		{
+			"type": "input",
+			"element": {
+				"type": "plain_text_input",
+				"multiline": true,
+				"action_id": "plain_text_input-action"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Enter Description",
+				"emoji": true
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": "Enter the cost of the request. Use numbers so that it's easier to read. \nThere is no strict format, but try to express dollar amounts as you would normally like: \"$1.00\" or \"$10\"."
+				}
+			]
+		},
+		{
+			"type": "input",
+			"element": {
+				"type": "plain_text_input",
+				"action_id": "plain_text_input-action"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Enter Cost",
+				"emoji": true
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": "What date must the payment be made by, if approved?"
+				}
+			]
+		},
+		{
+			"type": "input",
+			"element": {
+				"type": "datepicker",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select a date",
+					"emoji": true
+				},
+				"action_id": "datepicker-action"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Select Date",
+				"emoji": true
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Add any optional images by linking to a Google Drive Image or Folder"
+			}
+		},
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": "Please make sure that your image links are viewable publicly (meaning not signed into a Google Account). Suggestion is to use Google Drive, but make sure the image is set to be viewable by anyone with link; you can find a guide for Google Drive Sharing here: \n[https://slack-requestapp.herokuapp.com/slack/help/GoogleDriveImagePerms]"
+				}
+			]
+		},
+		{
+			"type": "input",
+			"optional": true,
+			"element": {
+				"type": "plain_text_input",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Paste Link to Image or Folder",
+					"emoji": true
+				},
+				"action_id": "plain_text_input-action"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Paste Google Drive Link",
+				"emoji": true
+			}
+		}
+	]
+};
+
 //export the modal view
 module.exports = {
-    modalForm: requestAppModalView
+    modalForm: requestAppModalView,
+    createRequestView: requestApp_CreateRequestModalView
 };
