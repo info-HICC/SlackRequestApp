@@ -130,6 +130,7 @@ var requestAppModalView = { //view created using Slack's interactive Block Kit B
 
 var requestApp_CreateRequestModalView = {
 	"type": "modal",
+    "callback_id": "createExpenseRequest-callback",
 	"title": {
 		"type": "plain_text",
 		"text": "Slack-RequestApp",
@@ -160,10 +161,11 @@ var requestApp_CreateRequestModalView = {
 		},
 		{
 			"type": "input",
+            "block_id": "Description_BlockID",
 			"element": {
 				"type": "plain_text_input",
 				"multiline": true,
-				"action_id": "plain_text_input-action"
+				"action_id": "Description_ActionID"
 			},
 			"label": {
 				"type": "plain_text",
@@ -188,9 +190,10 @@ var requestApp_CreateRequestModalView = {
 		},
 		{
 			"type": "input",
+            "block_id": "Cost_BlockID",
 			"element": {
 				"type": "plain_text_input",
-				"action_id": "plain_text_input-action"
+				"action_id": "Cost_ActionID"
 			},
 			"label": {
 				"type": "plain_text",
@@ -215,6 +218,7 @@ var requestApp_CreateRequestModalView = {
 		},
 		{
 			"type": "input",
+            "block_id": "paymentDueByDate_BlockID",
 			"element": {
 				"type": "datepicker",
 				"placeholder": {
@@ -222,7 +226,7 @@ var requestApp_CreateRequestModalView = {
 					"text": "Select a date",
 					"emoji": true
 				},
-				"action_id": "datepicker-action"
+				"action_id": "paymentDueByDate_ActionID"
 			},
 			"label": {
 				"type": "plain_text",
@@ -254,6 +258,7 @@ var requestApp_CreateRequestModalView = {
 		},
 		{
 			"type": "input",
+            "block_id": "imageLink_BlockID",
 			"optional": true,
 			"element": {
 				"type": "plain_text_input",
@@ -262,7 +267,7 @@ var requestApp_CreateRequestModalView = {
 					"text": "Paste Link to Image or Folder",
 					"emoji": true
 				},
-				"action_id": "plain_text_input-action"
+				"action_id": "imageLink_ActionID"
 			},
 			"label": {
 				"type": "plain_text",

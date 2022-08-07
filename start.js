@@ -591,6 +591,20 @@ app.view("create-google-cal-task-callback", async ({ ack, body, view, client }) 
   });
 });
 
+//handles testActionButton which is used to test moving the request process from Google Forms to Slack entirely (at least for part 1)
+app.action("testActionButton", async ({ ack, client, body }) => {
+  try {
+    await ack();
+  
+    await client.views.open({
+      trigger_id: command.trigger_id,
+      view: modalViews.createRequestView
+    });
+  } catch (error) {
+    console.log(error);
+  };
+});
+
 //this handles when the page the user is requesting doesn't exist. 
 //it may be better to use an HTML file later, but for now,
 //it sends plain text to the user.
