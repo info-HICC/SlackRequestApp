@@ -33,7 +33,7 @@ const app = new App({
 });
 
 // set up a static server for serving images.
-app.use("/static", express.static(path.join(__dirname, 'docs/images')));
+app.use("/static", express.static(path.join(__dirname, '/docs/images')));
 
 //This is for the Google Forms version of the app.
 app.event("reaction_added", async ({ event, client }) => {
