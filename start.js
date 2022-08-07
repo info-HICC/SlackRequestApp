@@ -595,11 +595,12 @@ app.view("create-google-cal-task-callback", async ({ ack, body, view, client }) 
 app.action("testActionButton", async ({ ack, client, body }) => {
   try {
     await ack();
+    console.log(body)
   
-    await client.views.open({
-      trigger_id: command.trigger_id,
-      view: modalViews.createRequestView
-    });
+    // await client.views.open({
+    //   trigger_id: command.trigger_id,
+    //   view: modalViews.createRequestView
+    // });
   } catch (error) {
     console.log(error);
   };
