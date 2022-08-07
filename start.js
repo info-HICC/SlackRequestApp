@@ -231,41 +231,6 @@ app.command("/userid", async ({ command, ack, say }) => {
   };
 });
 
-// //handles /clearchannel command
-// //requires additional params only on heroku to activate.
-//   //this is to avoid people getting curious and causing chaos.
-// //This is rate limited, so might not be so helpful.
-// //command has been disabled via Slack's Bot Dashboard. 
-// app.command("/clearchannel", async ({ command, ack, say }) => {
-//   try {
-//     await ack();
-//     var commandText = command.text; //text content of the command
-//     var channelInCommandPOST = command.channel_id; //post req that slack sends
-//     var commandTextAsArray = commandText.split(" "); //splits the command text into an array
-//     var channelInCommand = commandTextAsArray[1]; //channel that is specified inside the command
-//     var commandPhraseENV = process.env.command_phrase;
-//     var commandPhraseInCommand = commandTextAsArray[0];
-//     if (commandPhraseENV == commandPhraseInCommand && channelInCommand == channelInCommandPOST) {
-//       console.log("Command phrase matches. Channel IDs match. Clearing channel.");
-//       var channelToClear = channelInCommand;
-//       var allMessages = await app.client.conversations.history({
-//         channel: channelToClear,
-//         token: process.env.SLACK_USER_TOKEN,
-//       });
-//       for (i=0; i<allMessages.messages.length; i++) {
-//         var messageID = allMessages.messages[i].ts;
-//         await app.client.chat.delete({
-//           channel: channelToClear,
-//           token: process.env.SLACK_USER_TOKEN,
-//           ts: messageID,
-//         });
-//       }
-//       console.log("Channel cleared.");
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// })
 
 //handles /request command. This just sends the link to the user that typed the command.
 //alternative to starting the request using Slack workflows. 
@@ -483,8 +448,6 @@ app.action("TaskDone_ActionID", async ({ ack, client, body }) => {
   
       //then trigger webhook on Zapier to delete calendar event
       await deleteGoogleCalendarEvent(messageTextAsJSON_calendarID, messageTextAsJSON_calendarEventID);
-  
-      //then it would be nice to potentially delete the two buttons to avoid changing responses/spamming.
     }
   } catch (error) {
     console.log(error);
@@ -561,8 +524,6 @@ app.action("TaskNotDone_ActionID", async ({ ack, client, body }) => {
   
       //then trigger webhook on Zapier to delete calendar event
       await deleteGoogleCalendarEvent(messageTextAsJSON_calendarID, messageTextAsJSON_calendarEventID);
-  
-      //then it would be nice to potentially delete the two buttons to avoid changing responses/spamming.
     }
   } catch (error) {
     console.log(error);
@@ -587,7 +548,6 @@ app.command("/createtask", async ({ command, ack, say, client}) => {
 //this will hopefully handle the Create Google Cal event shortcut from Slack
 //this handles the pop up modal, but not submission of the form.
 //the next step should hopefully handle that second part.
-
 app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
   try {
     await ack();
@@ -601,7 +561,8 @@ app.shortcut("create-google-cal-task", async ({ shortcut, ack, client }) => {
   }
 });
 
-app.view("create-google-cal-task", async ({ ack, body, view, client }) => {
+//handles form submission
+app.view("create-google-cal-task-callback", async ({ ack, body, view, client }) => {
   await ack();
   var formSubmittionValues = body.view.state.values;
   var assignerUserID = body.user.id;

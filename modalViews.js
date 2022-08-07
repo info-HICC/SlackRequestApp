@@ -1,6 +1,6 @@
 var requestAppModalView = { //view created using Slack's interactive Block Kit Builder
     "type": "modal",
-    "callback_id": "create-google-cal-task",
+    "callback_id": "create-google-cal-task-callback",
     "title": {
       "type": "plain_text",
       "text": "Slack-RequestApp",
