@@ -610,8 +610,16 @@ app.action("testActionButton", async ({ ack, client, body }) => {
 app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) => {
   try {
     await ack();
-    console.log(body);
-    
+    var formSubmittionValues = body.view.state.values;
+    var Description = formSubmittionValues.Description_BlockID.Description_ActionID;
+    console.log(Description);
+    var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID;
+    console.log(Cost);
+    var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID;
+    console.log(paymentDueByDate);
+    var imageLink = formSubmittionValues.imageLink_BlockID.imageLink_ActionID;
+    console.log(imageLink);
+
   } catch (error) {
     console.log(error);
   };
