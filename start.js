@@ -698,7 +698,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     \>https://forms.gle/KMaRm2Wj4WQdSSHj9
     \`\`\`Approvers, you can create your own channel to discuss whether or not to approve a request. You can use the RequestID to reference the request. Try and keep this channel free from chats, and only requests.\`\`\`
     `
-    
+    console.log(message)
     var messageResults = await app.client.chat.postMessage({
       channel: requesterUserID, //change this to use the approvers' channel
       unfurl_links: false,
