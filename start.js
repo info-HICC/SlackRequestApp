@@ -51,7 +51,7 @@ app.event("reaction_added", async ({ event, client }) => {
 
 
     //just initial check to make sure reaction is in channel we want, and that the user is in the list of allowed approvers, and that the reaction is one of the ones we want.
-    if (allowedApproversIDsArray.includes(reactorUserID) == true && (reactionName == "white_check_mark" || reactionName == "negative_squared_cross_mark") && event.item.channel == process.env.requests_googleforms) {
+    if (allowedApproversIDsArray.includes(reactorUserID) == true && (reactionName == "white_check_mark" || reactionName == "negative_squared_cross_mark") && event.item.channel == process.env.requests_googleforms_approvers) {
       console.log("User reacted with a valid reaction in the allowed channel using an allowed user ID.");
       console.log("Starting to get content of message that the user reacted to.");
       var channelReactedMessageIsIn = event.item.channel; //gets channel of reacted message
@@ -611,14 +611,17 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
   try {
     await ack();
     var formSubmittionValues = body.view.state.values;
-    var Description = formSubmittionValues.Description_BlockID.Description_ActionID;
+    var Description = formSubmittionValues.Description_BlockID.Description_ActionID.value;
     console.log(Description);
-    var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID;
+    var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID.value;
     console.log(Cost);
-    var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID;
+    var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID.selected_date;
     console.log(paymentDueByDate);
-    var imageLink = formSubmittionValues.imageLink_BlockID.imageLink_ActionID;
+    var imageLink = formSubmittionValues.imageLink_BlockID.imageLink_ActionID.value;
     console.log(imageLink);
+    var requestID = uuidv4(); //this is used to generate a unique ID that's dependent on a UUID v4 and current time
+    requestID += Date.parse(new Date); //this is used to generate a unique ID that's dependent on a UUID v4 and current time
+    console.log(requestID);
 
   } catch (error) {
     console.log(error);
