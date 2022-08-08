@@ -701,6 +701,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     
     var messageResults = await app.client.chat.postMessage({
       channel: requesterUserID, //change this to use the approvers' channel
+      unfurl_links: false,
       text: message
     });
     return messageResults;
