@@ -619,7 +619,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
         channel: requesterUserID,
         text: "Do not use the character \"\\\" in your task description. Please resubmit your request but without that character, or else, you will get another message like this."
       });
-      throw "User tried to use a character that's not allowed inside their description.";
+      throw "Error: User tried to use a character that's not allowed inside their description. (The backspace character).";
       //^ that should end the try statement by throwing an error
     };
     //escaping quotation marks inside of the description 
