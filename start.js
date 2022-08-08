@@ -619,7 +619,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     console.log(Description);
     console.log(DescriptionEscaped);
     var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID.value;
-    if (Cost.match(/\$/)) { //this basically checks if the $ character is present. If so, remove it. 
+    if (Cost.match(/\$/g)) { //this basically checks if the $ character is present. If so, remove it. 
       Cost = Cost.replace(/\$/g, "");
     }
     console.log(Cost);
@@ -694,8 +694,8 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     ${paymentDueByDate}
 
     \`\`\`Approvers, you can accept or deny requests by using the emojis :white_check_mark: to approve, or :negative_squared_cross_mark: to deny. If there is already a reaction, unless you're told to, DO NOT remove it and re-add a reaction.\`\`\`
-    >\`\`\`IF YOU ARE APPROVING THE REQUEST: fill out the form attached first, and then within 30 minutes of submitting the form, react with :white_check_mark: This is critical because I need additional information to push the data into QuickBooks Online. Otherwise, you will have to re-do the approval if I can't find the additional data.\`\`\`
-    >https://forms.gle/KMaRm2Wj4WQdSSHj9
+    \>\`\`\`IF YOU ARE APPROVING THE REQUEST: fill out the form attached first, and then within 30 minutes of submitting the form, react with :white_check_mark: This is critical because I need additional information to push the data into QuickBooks Online. Otherwise, you will have to re-do the approval if I can't find the additional data.\`\`\`
+    \>https://forms.gle/KMaRm2Wj4WQdSSHj9
     \`\`\`Approvers, you can create your own channel to discuss whether or not to approve a request. You can use the RequestID to reference the request. Try and keep this channel free from chats, and only requests.\`\`\`
     `
     
