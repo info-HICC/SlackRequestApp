@@ -715,18 +715,18 @@ ${paymentDueByDate}
     });
     return messageResults;
   };
-  
+
   async function sendJSONVersionOfMSG(requesterUserID, requestID, descriptionEscaped, cost, imageLink, paymentDueByDate) {
     var message = `
-    {
-      "requestedBy":"<@${requesterUserID}>",
-      "requestContent":"${descriptionEscaped}",
-      "requestCost":"${cost}",
-      "requestPaidForByDate":"${paymentDueByDate}",
-      "imageLinks":"${imageLink}",
-      "reqID":"${requestID}"
-    }
-    `
+{
+  "requestedBy":"<@${requesterUserID}>",
+  "requestContent":"${descriptionEscaped}",
+  "requestCost":"${cost}",
+  "requestPaidForByDate":"${paymentDueByDate}",
+  "imageLinks":"${imageLink}",
+  "reqID":"${requestID}"
+}
+`
     
     var messageResults = await app.client.chat.postMessage({
       channel: process.env.requests_googleforms_json,
