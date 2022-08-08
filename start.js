@@ -677,26 +677,26 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
   };
   async function messageApproversChannelWithReq(requesterUserID, requestID, description, cost, imageLink, paymentDueByDate) {
     var message = `
-    \`\`\`Request Submission\`\`\`
-    \`\`\`RequestID:${requestID}\`\`\`
-    Request By: <@${requesterUserID}>
+\`\`\`Request Submission\`\`\`
+\`\`\`RequestID:${requestID}\`\`\`
+Request By: <@${requesterUserID}>
 
-    *Request Content:*
-    ${description}
+*Request Content:*
+${description}
 
-    *Request Cost:*
-    $${cost}
+*Request Cost:*
+$${cost}
 
-    *Images Attached to request (if any):*
-    ${imageLink}
+*Images Attached to request (if any):*
+${imageLink}
 
-    *If approved, request must be paid by:*
-    ${paymentDueByDate}
+*If approved, request must be paid by:*
+${paymentDueByDate}
 
-    \`\`\`Approvers, you can accept or deny requests by using the emojis :white_check_mark: to approve, or :negative_squared_cross_mark: to deny. If there is already a reaction, unless you're told to, DO NOT remove it and re-add a reaction.\`\`\`
-    \>\`\`\`IF YOU ARE APPROVING THE REQUEST: fill out the form attached first, and then within 30 minutes of submitting the form, react with :white_check_mark: This is critical because I need additional information to push the data into QuickBooks Online. Otherwise, you will have to re-do the approval if I can't find the additional data.\`\`\`
-    \>https://forms.gle/KMaRm2Wj4WQdSSHj9
-    \`\`\`Approvers, you can create your own channel to discuss whether or not to approve a request. You can use the RequestID to reference the request. Try and keep this channel free from chats, and only requests.\`\`\`
+\`\`\`Approvers, you can accept or deny requests by using the emojis :white_check_mark: to approve, or :negative_squared_cross_mark: to deny. If there is already a reaction, unless you're told to, DO NOT remove it and re-add a reaction.\`\`\`
+>\`\`\`IF YOU ARE APPROVING THE REQUEST: fill out the form attached first, and then within 30 minutes of submitting the form, react with :white_check_mark: This is critical because I need additional information to push the data into QuickBooks Online. Otherwise, you will have to re-do the approval if I can't find the additional data.\`\`\`
+>https://forms.gle/KMaRm2Wj4WQdSSHj9
+\`\`\`Approvers, you can create your own channel to discuss whether or not to approve a request. You can use the RequestID to reference the request. Try and keep this channel free from chats, and only requests.\`\`\`
     `
     console.log(message)
     var messageResults = await app.client.chat.postMessage({
