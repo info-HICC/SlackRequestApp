@@ -654,20 +654,20 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
 //helper functions that are used by the function above to prevent cluttering
   async function DMRequesterAboutRequestSubmission(requesterUserID, requestID, description, cost, imageLink, paymentDueByDate) {
     var message = `
-    \`\`\`Here is the Google Forms Request that you submitted:\`\`\`
-    \`\`\`RequestID:${requestID}\`\`\`
-    Request Content:
-    ${description}
-    
-    Request Cost:
-    $${cost}
-    
-    Images Attached to request (if any):
-    ${imageLink}
-    
-    If approved, request must be paid by:
-    ${paymentDueByDate}
-    `
+\`\`\`Here is the Google Forms Request that you submitted:\`\`\`
+\`\`\`RequestID:${requestID}\`\`\`
+Request Content:
+${description}
+
+Request Cost:
+$${cost}
+
+Images Attached to request (if any):
+${imageLink}
+
+If approved, request must be paid by:
+${paymentDueByDate}
+`
     
     var messageResults = await app.client.chat.postMessage({
       channel: requesterUserID,
