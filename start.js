@@ -612,6 +612,8 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     await ack();
     var formSubmittionValues = body.view.state.values;
     var Description = formSubmittionValues.Description_BlockID.Description_ActionID.value;
+    //escaping quotation marks inside of the description 
+    Description = Description.replace(/"/g, '\\"')
     console.log(Description);
     var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID.value;
     console.log(Cost);
