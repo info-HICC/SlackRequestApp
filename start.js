@@ -614,14 +614,22 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     var requesterUserID = body.user.id;
     var formSubmittionValues = body.view.state.values;
     var Description = formSubmittionValues.Description_BlockID.Description_ActionID.value;
+    if (Description.match(/\\/)) {
+      app.client.chat.postMessage({
+        channel: requesterUserID,
+        text: "Do not use the character \"\\\" in your task description. Please resubmit your request but without that character, or else, you will get another message like this."
+      });
+      throw "User tried to use a character that's not allowed inside their description.";
+      //^ that should end the try statement by throwing an error
+    };
     //escaping quotation marks inside of the description 
-    var DescriptionEscaped = Description.replace(/"/g, '\\"')
+    var DescriptionEscaped = Description.replace(/"/g, '\\"');
     console.log(Description);
     console.log(DescriptionEscaped);
     var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID.value;
     if (Cost.match(/\$/g)) { //this basically checks if the $ character is present. If so, remove it. 
       Cost = Cost.replace(/\$/g, "");
-    }
+    };
     console.log(Cost);
     var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID.selected_date;
     console.log(paymentDueByDate);
@@ -644,7 +652,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
 
     //creating JSON version of msg
       //this function returns the results of the API call if that is something that's needed.
-    await sendJSONVersionOfMSG(requesterUserID, requestID, DescriptionEscaped, Cost, imageLink, paymentDueByDate)
+    await sendJSONVersionOfMSG(requesterUserID, requestID, DescriptionEscaped, Cost, imageLink, paymentDueByDate);
 
 
   } catch (error) {
@@ -675,6 +683,7 @@ ${paymentDueByDate}
     });
     return messageResults;
   };
+
   async function messageApproversChannelWithReq(requesterUserID, requestID, description, cost, imageLink, paymentDueByDate) {
     var message = `
 \`\`\`Request Submission\`\`\`
@@ -706,6 +715,7 @@ ${paymentDueByDate}
     });
     return messageResults;
   };
+  
   async function sendJSONVersionOfMSG(requesterUserID, requestID, descriptionEscaped, cost, imageLink, paymentDueByDate) {
     var message = `
     {
@@ -719,7 +729,7 @@ ${paymentDueByDate}
     `
     
     var messageResults = await app.client.chat.postMessage({
-      channel: requesterUserID, //change this to JSON channel
+      channel: process.env.requests_googleforms_json,
       text: message
     });
     return messageResults;

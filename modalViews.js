@@ -155,7 +155,7 @@ var requestApp_CreateRequestModalView = {
 			"elements": [
 				{
 					"type": "mrkdwn",
-					"text": "Enter a short description about what this request is for. Avoid using quotation marks, if possible. Use alternatives like parentheses, or brackets. "
+					"text": "Enter a short description about what this request is for. Avoid using quotation marks, if possible. Use alternatives like parentheses, or brackets. Also, do NOT use the \\ symbol. If you do, your request will be automatically stopped, and you will have to create another one."
 				}
 			]
 		},
