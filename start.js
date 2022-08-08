@@ -610,6 +610,7 @@ app.action("testActionButton", async ({ ack, client, body }) => {
 app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) => {
   try {
     await ack();
+    console.log(body);
     var formSubmittionValues = body.view.state.values;
     var Description = formSubmittionValues.Description_BlockID.Description_ActionID.value;
     //escaping quotation marks inside of the description 
