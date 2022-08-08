@@ -611,25 +611,118 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
   try {
     await ack();
     console.log(body);
+    var requesterUserID = body.user.id;
     var formSubmittionValues = body.view.state.values;
     var Description = formSubmittionValues.Description_BlockID.Description_ActionID.value;
     //escaping quotation marks inside of the description 
-    Description = Description.replace(/"/g, '\\"')
+    var DescriptionEscaped = Description.replace(/"/g, '\\"')
     console.log(Description);
+    console.log(DescriptionEscaped);
     var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID.value;
+    if (Cost.match(/\$/)) { //this basically checks if the $ character is present. If so, remove it. 
+      Cost = Cost.replace(/$/g, "");
+    }
     console.log(Cost);
     var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID.selected_date;
     console.log(paymentDueByDate);
     var imageLink = formSubmittionValues.imageLink_BlockID.imageLink_ActionID.value;
+    if (imageLink == null) {
+      imageLink = "";
+    };
     console.log(imageLink);
     var requestID = uuidv4(); //this is used to generate a unique ID that's dependent on a UUID v4 and current time
     requestID += Date.parse(new Date); //this is used to generate a unique ID that's dependent on a UUID v4 and current time
     console.log(requestID);
 
+    //DM requester about their submission
+      //this function returns the results of the API call if that is something that's needed.
+    await DMRequesterAboutRequestSubmission(requesterUserID, requestID, Description, Cost, imageLink, paymentDueByDate);
+
+    //Sending request to Approvers' channel
+      //this function returns the results of the API call if that is something that's needed.
+    await messageApproversChannelWithReq(requesterUserID, requestID, Description, Cost, imageLink, paymentDueByDate);
+
+    //creating JSON version of msg
+      //this function returns the results of the API call if that is something that's needed.
+    await sendJSONVersionOfMSG(requesterUserID, requestID, DescriptionEscaped, Cost, imageLink, paymentDueByDate)
+
+
   } catch (error) {
     console.log(error);
   };
 });
+//helper functions that are used by the function above to prevent cluttering
+  async function DMRequesterAboutRequestSubmission(requesterUserID, requestID, description, cost, imageLink, paymentDueByDate) {
+    var message = `
+    \`\`\`Here is the Google Forms Request that you submitted:\`\`\`
+    \`\`\`RequestID:${requestID}\`\`\`
+    Request Content:
+    ${description}
+    
+    Request Cost:
+    $${cost}
+    
+    Images Attached to request (if any):
+    ${imageLink}
+    
+    If approved, request must be paid by:
+    ${paymentDueByDate}
+    `
+    
+    var messageResults = await app.client.chat.postMessage({
+      channel: requesterUserID,
+      text: message
+    });
+    return messageResults;
+  };
+  async function messageApproversChannelWithReq(requesterUserID, requestID, description, cost, imageLink, paymentDueByDate) {
+    var message = `
+    \`\`\`Request Submission\`\`\`
+    \`\`\`RequestID:${requestID}\`\`\`
+    Request By: <@${requesterUserID}>
+
+    *Request Content:*
+    ${description}
+
+    *Request Cost:*
+    $${cost}
+
+    *Images Attached to request (if any):*
+    ${imageLink}
+
+    *If approved, request must be paid by:*
+    ${paymentDueByDate}
+
+    \`\`\`Approvers, you can accept or deny requests by using the emojis :white_check_mark: to approve, or :negative_squared_cross_mark: to deny. If there is already a reaction, unless you're told to, DO NOT remove it and re-add a reaction.\`\`\`
+    >\`\`\`IF YOU ARE APPROVING THE REQUEST: fill out the form attached first, and then within 30 minutes of submitting the form, react with :white_check_mark: This is critical because I need additional information to push the data into QuickBooks Online. Otherwise, you will have to re-do the approval if I can't find the additional data.\`\`\`
+    >https://forms.gle/KMaRm2Wj4WQdSSHj9
+    \`\`\`Approvers, you can create your own channel to discuss whether or not to approve a request. You can use the RequestID to reference the request. Try and keep this channel free from chats, and only requests.\`\`\`
+    `
+    
+    var messageResults = await app.client.chat.postMessage({
+      channel: requesterUserID, //change this to use the approvers' channel
+      text: message
+    });
+    return messageResults;
+  };
+  async function sendJSONVersionOfMSG(requesterUserID, requestID, descriptionEscaped, cost, imageLink, paymentDueByDate) {
+    var message = `
+    {
+      "requestedBy":"<@${requesterUserID}>",
+      "requestContent":"${descriptionEscaped}",
+      "requestCost":"${cost}",
+      "requestPaidForByDate":"${paymentDueByDate}",
+      "imageLinks":"${imageLink}",
+      "reqID":"${requestID}"
+    }
+    `
+    
+    var messageResults = await app.client.chat.postMessage({
+      channel: requesterUserID, //change this to JSON channel
+      text: message
+    });
+    return messageResults;
+  };
 
 //this handles when the page the user is requesting doesn't exist. 
 //it may be better to use an HTML file later, but for now,
