@@ -620,7 +620,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     console.log(DescriptionEscaped);
     var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID.value;
     if (Cost.match(/\$/)) { //this basically checks if the $ character is present. If so, remove it. 
-      Cost = Cost.replace(/$/g, "");
+      Cost = Cost.replace(/\$/g, "");
     }
     console.log(Cost);
     var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID.selected_date;
