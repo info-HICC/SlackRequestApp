@@ -197,7 +197,7 @@ var requestApp_CreateRequestModalView = {
 			"elements": [
 				{
 					"type": "mrkdwn",
-					"text": "Enter the cost of the request. Use numbers so that it's easier to read. \nThere is no strict format, but try to express dollar amounts as you would normally like: \"$1.00\" or \"$10\"."
+					"text": "Enter the cost of the request. You should not include the dollar ($) sign, but it's fine if you do.\nThere is no strict format, other than using only numbers and a single decimal point, but try to express dollar amounts as you would normally like: \"1.00\", \"10\" or even \"1.0\".\nUsage of characters that result in something that isn't a number will result in your request being automatically denied, and you being asked to re-fill out the form"
 				}
 			]
 		},

@@ -610,17 +610,16 @@ app.action("testActionButton", async ({ ack, client, body }) => {
 app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) => {
   try {
     await ack();
+    var customErrorMsg;
     var requesterUserID = body.user.id;
     var formSubmittionValues = body.view.state.values;
     var Description = formSubmittionValues.Description_BlockID.Description_ActionID.value;
     if (Description.match(/\\/)) {
       //prohibiting the use of the character "\"
       //alerting user that the character is not allowed.
-      app.client.chat.postMessage({
-        channel: requesterUserID,
-        text: "Do not use the character \"\\\" in your task description. Please resubmit your request but without that character, or else, you will get another message like this."
-      });
-      throw "Error: User tried to use a character that's not allowed inside their description. (The backspace character).";
+      customErrorMsg = "Do not use the character \"\\\" in your task description. Please resubmit your request but without that character, or else, you will get another message like this."
+      await sendErrorMessageOnThrow(requesterUserID, customErrorMsg);
+      throw "Error: User tried to use a character that's not allowed inside their description. (The backslash character).";
       //^ that should end the try statement by throwing an error
     };
     //escaping quotation marks inside of the description 
@@ -632,12 +631,25 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
       Cost = Cost.replace(/\$/g, "");
     };
     console.log(Cost);
+    if (isNaN(Cost) == true) {
+      customErrorMsg = "Please enter a valid number when entering the cost of a request. Please re-fill out the form, making sure that you put a number (like 1, 10, 100, 100.01, 100.91275) for the cost to submit a request, otherwise, you will receive this error message again."
+      await sendErrorMessageOnThrow(requesterUserID, customErrorMsg);
+      throw "Error: User tried to pass a value that isn't a number into the Cost parameter.";
+    }
     var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID.selected_date;
     console.log(paymentDueByDate);
     var VendorOrCustomer = formSubmittionValues.VendorOrCustomer_BlockID.VendorOrCustomer_ActionID;
     console.log(VendorOrCustomer);
     var productName = formSubmittionValues.ProductName_BlockID.ProductName_ActionID;
     console.log(productName);
+    if (productName.match(/\\/)) {
+      //prohibiting the use of the character "\"
+      //alerting user that the character is not allowed.
+      customErrorMsg = "Do not use the character \"\\\" in the product name of your request. Please resubmit your request but without that character, or else, you will get another message like this."
+      await sendErrorMessageOnThrow(requesterUserID, customErrorMsg);
+      throw "Error: User tried to use a character that's not allowed inside their product name. (The backslash character).";
+      //^ that should end the try statement by throwing an error
+    };
     var paymentMethod = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID;
     console.log(paymentMethod);
     var transactionType = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID;
@@ -647,8 +659,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
       imageLink = "";
     };
     console.log(imageLink);
-    var requestID = uuidv4(); //this is used to generate a unique ID that's dependent on a UUID v4 and current time
-    requestID += Date.parse(new Date); //this is used to generate a unique ID that's dependent on a UUID v4 and current time
+    var requestID = await generateRequestID();
     console.log(requestID);
 
     //DM requester about their submission
@@ -742,6 +753,20 @@ ${paymentDueByDate}
       text: message
     });
     return messageResults;
+  };
+
+  async function sendErrorMessageOnThrow(requesterUserID, errorMsg) {    
+    var messageResults = await app.client.chat.postMessage({
+      channel: requesterUserID,
+      text: errorMsg
+    });
+    return messageResults;
+  };
+
+  async function generateRequestID() {    
+    var requestID = uuidv4(); //this is used to generate a unique ID that's dependent on a UUID v4 and current time
+    requestID += Date.parse(new Date); //this is used to generate a unique ID that's dependent on a UUID v4 and current time
+    return requestID;
   };
 
 //this handles when the page the user is requesting doesn't exist. 
