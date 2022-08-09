@@ -195,7 +195,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
             }
         ]
     }`;
-    var templateParsed = JSON.stringify(JSON.parse(template).block);
+    var templateParsed = JSON.stringify(JSON.parse(template).blocks);
     console.log(templateParsed);
     slackApp.client.chat.postMessage({
         channel: requesterID,
