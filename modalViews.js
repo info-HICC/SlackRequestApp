@@ -366,7 +366,7 @@ var requestApp_CreateRequestModalView = {
 							"text": "Credit Card",
 							"emoji": true
 						},
-						"value": "Credit Card"
+						"value": "CreditCard"
 					}
 				],
 				"action_id": "PaymentMethod_ActionID"

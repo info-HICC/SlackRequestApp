@@ -610,7 +610,6 @@ app.action("testActionButton", async ({ ack, client, body }) => {
 app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) => {
   try {
     await ack();
-    console.log(body);
     var requesterUserID = body.user.id;
     var formSubmittionValues = body.view.state.values;
     var Description = formSubmittionValues.Description_BlockID.Description_ActionID.value;
@@ -635,6 +634,14 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     console.log(Cost);
     var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID.selected_date;
     console.log(paymentDueByDate);
+    var VendorOrCustomer = formSubmittionValues.VendorOrCustomer_BlockID.VendorOrCustomer_ActionID;
+    console.log(VendorOrCustomer);
+    var productName = formSubmittionValues.ProductName_BlockID.ProductName_ActionID;
+    console.log(productName);
+    var paymentMethod = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID;
+    console.log(paymentMethod);
+    var transactionType = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID;
+    console.log(transactionType);
     var imageLink = formSubmittionValues.imageLink_BlockID.imageLink_ActionID.value;
     if (imageLink == null) {
       imageLink = "";
