@@ -617,7 +617,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     var Description = formSubmittionValues.Description_BlockID.Description_ActionID.value;
     var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID.value;
     var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID.selected_date;
-    var VendorOrCustomer = formSubmittionValues.VendorOrCustomer_BlockID.VendorOrCustomer_ActionID.selected_option;
+    var VendorOrCustomer = formSubmittionValues.VendorOrCustomer_BlockID.VendorOrCustomer_ActionID.selected_option.value;
     var VendorOrCustomerName = formSubmittionValues.VendorOrCustomerName_BlockID.VendorOrCustomerName_ActionID.value;
     var productName = formSubmittionValues.ProductName_BlockID.ProductName_ActionID.value;
     var paymentMethod = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID.selected_option.value;
@@ -691,8 +691,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
 
     //creating JSON version of msg
       //this function returns the results of the API call if that is something that's needed.
-    var JSONMSGSentResult = await sendJSONVersionOfMSG(requesterUserID, requestID, DescriptionEscaped, Cost, VendorOrCustomer, productName, paymentMethod, transactionType, imageLink, paymentDueByDate);
-    //timestamp of JSON message
+    var JSONMSGSentResult = await sendJSONVersionOfMSG(requesterUserID, requestID, DescriptionEscaped, Cost, VendorOrCustomer, VendorOrCustomerName, productName, paymentMethod, transactionType, imageLink, paymentDueByDate);
     // console.log(JSONMSGSentResult.ts);
 
     //Sending request to Approvers' channel
