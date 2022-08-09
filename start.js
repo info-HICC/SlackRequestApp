@@ -714,7 +714,9 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
           makePaymentByDate: paymentDueByDate,
           imageLinksThatWereSubmitted: imageLink
         });
-    await messageApproversChannelWithReq(JSONWithData, requesterUserID);
+    var messageViewsResult = await messageViews.createRequestMessageForApprovers(JSONWithData);
+    console.log(messageViewsResult)
+    // await messageApproversChannelWithReq(JSONWithData, requesterUserID);
 
   } catch (error) {
     console.log(error);
@@ -773,11 +775,11 @@ ${paymentDueByDate}
     
     //the function call below should return JSON object.
     var approvers_requestMessageBlock = await messageViews.createRequestMessageForApprovers(JSONWithData);
-    // var messageResults = await app.client.chat.postMessage({
-    //   channel: requesterUserID, //change this to use the approvers' channel
-    //   unfurl_links: false,
-    //   text: approvers_requestMessageBlock,
-    // });
+    var messageResults = await app.client.chat.postMessage({
+      channel: requesterUserID, //change this to use the approvers' channel
+      unfurl_links: false,
+      text: approvers_requestMessageBlock,
+    });
     var messageResults = await app.client.chat.postMessage({
       channel: requesterUserID, //change this to use the approvers' channel
       unfurl_links: false,

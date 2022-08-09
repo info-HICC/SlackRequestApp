@@ -195,7 +195,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData) {
             }
         ]
     }`;
-    var templateParsed = JSON.parse(template);
+    var templateParsed = JSON.stringify(template);
     return templateParsed;
 }
 
