@@ -168,7 +168,7 @@ var requestApp_CreateRequestModalView = {
 			"elements": [
 				{
 					"type": "mrkdwn",
-					"text": "Enter a short description about what this request is for."
+					"text": "Enter a short description about what this request is for. This description will also be stored as the memo of this expense."
 				}
 			]
 		},
