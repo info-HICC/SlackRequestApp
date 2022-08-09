@@ -617,22 +617,13 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     var Description = formSubmittionValues.Description_BlockID.Description_ActionID.value;
     var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID.value;
     var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID.selected_date;
-    var VendorOrCustomer = formSubmittionValues.VendorOrCustomer_BlockID.VendorOrCustomer_ActionID;
+    var VendorOrCustomer = formSubmittionValues.VendorOrCustomer_BlockID.VendorOrCustomer_ActionID.selected_option.value;
+    var VendorOrCustomerName = formSubmittionValues.VendorOrCustomerName_BlockID.VendorOrCustomerName_ActionID.value;
     var productName = formSubmittionValues.ProductName_BlockID.ProductName_ActionID.value;
-    var paymentMethod = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID;
-    var transactionType = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID;
+    var paymentMethod = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID.selected_option.value;
+    var transactionType = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID.selected_option.value;
     var imageLink = formSubmittionValues.imageLink_BlockID.imageLink_ActionID.value;
     var requestID = await generateRequestID();
-    
-    // console.log(Description);
-    // console.log(DescriptionEscaped);
-    // console.log(paymentDueByDate);
-    // console.log(VendorOrCustomer);
-    // console.log(productName);
-    // console.log(paymentMethod);
-    // console.log(transactionType);
-    // console.log(imageLink);
-    // console.log(requestID);
     
     //checking input values and modifying them for usage.
     if (Description.match(/\\/)) {
@@ -686,6 +677,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     console.log(DescriptionEscaped);
     console.log(paymentDueByDate);
     console.log(VendorOrCustomer);
+    console.log(VendorOrCustomerName);
     console.log(productName);
     console.log(paymentMethod);
     console.log(transactionType);
@@ -769,7 +761,7 @@ ${paymentDueByDate}
     return messageResults;
   };
 
-  async function sendJSONVersionOfMSG(requesterUserID, requestID, descriptionEscaped, cost, vendorOrCustomer, productName, paymentMethod, transactionType, imageLink, paymentDueByDate) {
+  async function sendJSONVersionOfMSG(requesterUserID, requestID, descriptionEscaped, cost, vendorOrCustomer, vendorOrCustomerName, productName, paymentMethod, transactionType, imageLink, paymentDueByDate) {
     var message = `
 {
   "reqID":"${requestID}",
@@ -777,6 +769,7 @@ ${paymentDueByDate}
   "requestContent":"${descriptionEscaped}",
   "requestCost":"${cost}",
   "vendorOrCustomer":"${vendorOrCustomer}",
+  "vendorOrCustomerName":"${vendorOrCustomerName}",
   "productName":"${productName}",
   "paymentMethod":"${paymentMethod}",
   "transactionType":"${transactionType},

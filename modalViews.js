@@ -303,6 +303,33 @@ var requestApp_CreateRequestModalView = {
 		},
 		{
 			"type": "divider"
+		},{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": "Enter the name of the Vendor or Customer. If it's a Vendor, the phone number will be set at 0000000000."
+				}
+			]
+		},
+		{
+			"type": "input",
+            "block_id": "VendorOrCustomerName_BlockID",
+			"element": {
+				"type": "plain_text_input",
+				"action_id": "VendorOrCustomerName_ActionID"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Enter the Vendor or Customer's Name",
+				"emoji": true
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "divider"
 		},
 		{
 			"type": "context",
