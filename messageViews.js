@@ -190,7 +190,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                     {
                         "type": "mrkdwn",
                         "text": ">*Any images that may have been attached:*\\n>${imageLinksThatWereSubmitted}"
-                    },
+                    }
                 ]
             }
         ]
