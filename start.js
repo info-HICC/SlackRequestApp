@@ -773,7 +773,11 @@ ${paymentDueByDate}
     
     //the function call below should return JSON object.
     var approvers_requestMessageBlock = await messageViews.createRequestMessageForApprovers(JSONWithData);
-
+    var messageResults = await app.client.chat.postMessage({
+      channel: requesterUserID, //change this to use the approvers' channel
+      unfurl_links: false,
+      text: approvers_requestMessageBlock,
+    });
     var messageResults = await app.client.chat.postMessage({
       channel: requesterUserID, //change this to use the approvers' channel
       unfurl_links: false,
