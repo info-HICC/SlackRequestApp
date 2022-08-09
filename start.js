@@ -638,21 +638,21 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     }
     var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID.selected_date;
     console.log(paymentDueByDate);
-    var VendorOrCustomer = formSubmittionValues.VendorOrCustomer_BlockID.VendorOrCustomer_ActionID;
+    var VendorOrCustomer = formSubmittionValues.VendorOrCustomer_BlockID.VendorOrCustomer_ActionID.value;
     console.log(VendorOrCustomer);
-    var productName = formSubmittionValues.ProductName_BlockID.ProductName_ActionID;
+    var productName = formSubmittionValues.ProductName_BlockID.ProductName_ActionID.value;
     console.log(productName);
-    // if (productName.match(/\\/)) {
-    //   //prohibiting the use of the character "\"
-    //   //alerting user that the character is not allowed.
-    //   customErrorMsg = "Do not use the character \"\\\" in the product name of your request. Please resubmit your request but without that character, or else, you will get another message like this."
-    //   await sendErrorMessageOnThrow(requesterUserID, customErrorMsg);
-    //   throw "Error: User tried to use a character that's not allowed inside their product name. (The backslash character).";
-    //   //^ that should end the try statement by throwing an error
-    // };
-    var paymentMethod = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID;
+    if (productName.match(/\\/)) {
+      //prohibiting the use of the character "\"
+      //alerting user that the character is not allowed.
+      customErrorMsg = "Do not use the character \"\\\" in the product name of your request. Please resubmit your request but without that character, or else, you will get another message like this."
+      await sendErrorMessageOnThrow(requesterUserID, customErrorMsg);
+      throw "Error: User tried to use a character that's not allowed inside their product name. (The backslash character).";
+      //^ that should end the try statement by throwing an error
+    };
+    var paymentMethod = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID.value;
     console.log(paymentMethod);
-    var transactionType = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID;
+    var transactionType = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID.value;
     console.log(transactionType);
     var imageLink = formSubmittionValues.imageLink_BlockID.imageLink_ActionID.value;
     if (imageLink == null) {
