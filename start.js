@@ -700,7 +700,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
       //this function returns the results of the API call if that is something that's needed.
       //this is still set to msg requester with this info.
       // create JSON containing the variables required in the function messageViews.createRequestMessageForApprovers(): 
-        var JSONWithData = {
+        var JSONWithData = JSON.stringify({
           requesterID: requesterUserID,
           requestID: requestID,
           JSON_ts: JSONMSG_ts,
@@ -713,7 +713,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
           paymentToVendorOrCustomer_name: VendorOrCustomerName,
           makePaymentByDate: paymentDueByDate,
           imageLinksThatWereSubmitted: imageLink
-        }
+        });
     await messageApproversChannelWithReq(JSONWithData);
 
   } catch (error) {
