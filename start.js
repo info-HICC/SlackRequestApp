@@ -613,35 +613,57 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     var customErrorMsg;
     var requesterUserID = body.user.id;
     var formSubmittionValues = body.view.state.values;
+
     var Description = formSubmittionValues.Description_BlockID.Description_ActionID.value;
+    var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID.value;
+    var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID.selected_date;
+    var VendorOrCustomer = formSubmittionValues.VendorOrCustomer_BlockID.VendorOrCustomer_ActionID.value;
+    var productName = formSubmittionValues.ProductName_BlockID.ProductName_ActionID.value;
+    var paymentMethod = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID.value;
+    var transactionType = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID.value;
+    var imageLink = formSubmittionValues.imageLink_BlockID.imageLink_ActionID.value;
+    var requestID = await generateRequestID();
+    
+    // console.log(Description);
+    // console.log(DescriptionEscaped);
+    // console.log(paymentDueByDate);
+    // console.log(VendorOrCustomer);
+    // console.log(productName);
+    // console.log(paymentMethod);
+    // console.log(transactionType);
+    // console.log(imageLink);
+    // console.log(requestID);
+    
+    //checking input values and modifying them for usage.
     if (Description.match(/\\/)) {
       //prohibiting the use of the character "\"
-      //alerting user that the character is not allowed.
+      //alerting user that the "\" character is not allowed.
       customErrorMsg = "Do not use the character \"\\\" in your task description. Please resubmit your request but without that character, or else, you will get another message like this."
       await sendErrorMessageOnThrow(requesterUserID, customErrorMsg);
       throw "Error: User tried to use a character that's not allowed inside their description. (The backslash character).";
       //^ that should end the try statement by throwing an error
     };
-    //escaping quotation marks inside of the description 
+    //escaping quotation marks inside of the description, if any. 
     var DescriptionEscaped = Description.replace(/"/g, '\\"');
-    console.log(Description);
-    console.log(DescriptionEscaped);
-    var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID.value;
-    if (Cost.match(/\$/g)) { //this basically checks if the $ character is present. If so, remove it. 
+
+    //this basically checks if the $ character is present. If so, remove it. 
+    if (Cost.match(/\$/g)) {
       Cost = Cost.replace(/\$/g, "");
     };
-    console.log(Cost);
+    //this then checks if the cost provided is a valid number, if not, it throws an error and msgs the requester
+    //if so, it rounds the number to the nearest hundredths
     if (isNaN(Cost) == true) {
+      //run if Cost is not a number
       customErrorMsg = "Please enter a valid number when entering the cost of a request. Please re-fill out the form, making sure that you put a number (like 1, 10, 100, 100.01, 100.91275) for the cost to submit a request, otherwise, you will receive this error message again."
       await sendErrorMessageOnThrow(requesterUserID, customErrorMsg);
       throw "Error: User tried to pass a value that isn't a number into the Cost parameter.";
-    }
-    var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID.selected_date;
-    console.log(paymentDueByDate);
-    var VendorOrCustomer = formSubmittionValues.VendorOrCustomer_BlockID.VendorOrCustomer_ActionID.value;
-    console.log(VendorOrCustomer);
-    var productName = formSubmittionValues.ProductName_BlockID.ProductName_ActionID.value;
-    console.log(productName);
+    } else {
+      //else make the number into a money value format (like 10.00)
+      Cost = parseFloat(Cost).toFixed(2);
+      //changes a number like 1.195 into 1.20
+    };
+
+    //this is checking for "\" character inside of the productName provided, if it matches, it throws an error and msgs requester
     if (productName.match(/\\/)) {
       //prohibiting the use of the character "\"
       //alerting user that the character is not allowed.
@@ -650,30 +672,30 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
       throw "Error: User tried to use a character that's not allowed inside their product name. (The backslash character).";
       //^ that should end the try statement by throwing an error
     };
-    var paymentMethod = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID.value;
-    console.log(paymentMethod);
-    var transactionType = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID.value;
-    console.log(transactionType);
-    var imageLink = formSubmittionValues.imageLink_BlockID.imageLink_ActionID.value;
+    //this is just removing the quotation marks present in the product name, if there's a quotation mark present.
+    if (productName.match(/"/g)) {
+      productName = productName.replace(/"/g, '')
+    };
+
+    //this just sets the imageLink to nothing if the user didn't provide a link.
     if (imageLink == null) {
       imageLink = "";
     };
-    console.log(imageLink);
-    var requestID = await generateRequestID();
-    console.log(requestID);
 
+    const sectionSeperatorSymbol = "§"
     //DM requester about their submission
       //this function returns the results of the API call if that is something that's needed.
     await DMRequesterAboutRequestSubmission(requesterUserID, requestID, Description, Cost, imageLink, paymentDueByDate);
 
-    //Sending request to Approvers' channel
-      //this function returns the results of the API call if that is something that's needed.
-    await messageApproversChannelWithReq(requesterUserID, requestID, Description, Cost, imageLink, paymentDueByDate);
-
     //creating JSON version of msg
       //this function returns the results of the API call if that is something that's needed.
-    await sendJSONVersionOfMSG(requesterUserID, requestID, DescriptionEscaped, Cost, imageLink, paymentDueByDate);
-
+    var JSONMSGSentResult = await sendJSONVersionOfMSG(requesterUserID, requestID, DescriptionEscaped, Cost, VendorOrCustomer, productName, paymentMethod, transactionType, imageLink, paymentDueByDate);
+    console.log(JSONMSGSentResult);
+    
+    //Sending request to Approvers' channel
+      //this function returns the results of the API call if that is something that's needed.
+      //this is still set to msg requester with this info.
+    await messageApproversChannelWithReq(requesterUserID, requestID, Description, Cost, imageLink, paymentDueByDate);
 
   } catch (error) {
     console.log(error);
@@ -736,15 +758,19 @@ ${paymentDueByDate}
     return messageResults;
   };
 
-  async function sendJSONVersionOfMSG(requesterUserID, requestID, descriptionEscaped, cost, imageLink, paymentDueByDate) {
+  async function sendJSONVersionOfMSG(requesterUserID, requestID, descriptionEscaped, cost, vendorOrCustomer, productName, paymentMethod, transactionType, imageLink, paymentDueByDate) {
     var message = `
 {
+  "reqID":"${requestID}",
   "requestedBy":"<@${requesterUserID}>",
   "requestContent":"${descriptionEscaped}",
   "requestCost":"${cost}",
+  "vendorOrCustomer":"${vendorOrCustomer}",
+  "productName":"${productName}",
+  "paymentMethod":"${paymentMethod}",
+  "transactionType":"${transactionType},
   "requestPaidForByDate":"${paymentDueByDate}",
-  "imageLinks":"${imageLink}",
-  "reqID":"${requestID}"
+  "imageLinks":"${imageLink}"
 }
 `
     
