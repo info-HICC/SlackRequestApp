@@ -151,11 +151,18 @@ var requestApp_CreateRequestModalView = {
 			"type": "divider"
 		},
 		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Throughout the form, anywhere where you can input text, avoid using quotation marks, if possible. Use alternatives like parentheses, or brackets.\nAlso, do NOT use the \\ symbol. If you do, your request will be automatically rejected, and you will have to create another request without that character."
+			}
+		},
+		{
 			"type": "context",
 			"elements": [
 				{
 					"type": "mrkdwn",
-					"text": "Enter a short description about what this request is for. Avoid using quotation marks, if possible. Use alternatives like parentheses, or brackets. Also, do NOT use the \\ symbol. If you do, your request will be automatically stopped, and you will have to create another one."
+					"text": "Enter a short description about what this request is for."
 				}
 			]
 		},
@@ -309,7 +316,7 @@ var requestApp_CreateRequestModalView = {
 			},
 			"label": {
 				"type": "plain_text",
-				"text": "Enter Cost",
+				"text": "Enter Product Name",
 				"emoji": true
 			}
 		},
