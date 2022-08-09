@@ -617,10 +617,10 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     var Description = formSubmittionValues.Description_BlockID.Description_ActionID.value;
     var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID.value;
     var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID.selected_date;
-    var VendorOrCustomer = formSubmittionValues.VendorOrCustomer_BlockID.VendorOrCustomer_ActionID.value;
+    var VendorOrCustomer = formSubmittionValues.VendorOrCustomer_BlockID.VendorOrCustomer_ActionID;
     var productName = formSubmittionValues.ProductName_BlockID.ProductName_ActionID.value;
-    var paymentMethod = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID.value;
-    var transactionType = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID.value;
+    var paymentMethod = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID;
+    var transactionType = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID;
     var imageLink = formSubmittionValues.imageLink_BlockID.imageLink_ActionID.value;
     var requestID = await generateRequestID();
     
