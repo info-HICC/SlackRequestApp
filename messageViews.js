@@ -161,35 +161,35 @@ module.exports.createRequestMessageForApprovers = async function (inputData) {
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": ">*Product Name:*\n>${productName}"
+                        "text": ">*Product Name:*\\n>${productName}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": ">*Product Cost:*\n>$${productCost}"
+                        "text": ">*Product Cost:*\\n>$${productCost}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": ">*Expense Type/Category:*\n>${transactionType_asText}"
+                        "text": ">*Expense Type/Category:*\\n>${transactionType_asText}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": ">*Payment Method:*\n>${paymentMethod}"
+                        "text": ">*Payment Method:*\\n>${paymentMethod}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": ">*Vendor or Customer:*\n>${paymentToVendorOrCustomer}"
+                        "text": ">*Vendor or Customer:*\\n>${paymentToVendorOrCustomer}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": ">*Vendor or Customer Name:*\n>${paymentToVendorOrCustomer_name}"
+                        "text": ">*Vendor or Customer Name:*\\n>${paymentToVendorOrCustomer_name}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": ">*Payment should be made by:*\n>${makePaymentByDate}"
+                        "text": ">*Payment should be made by:*\\n>${makePaymentByDate}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": ">*Any images that may have been attached:*\n>${imageLinksThatWereSubmitted}"
+                        "text": ">*Any images that may have been attached:*\\n>${imageLinksThatWereSubmitted}"
                     },
                 ]
             }
