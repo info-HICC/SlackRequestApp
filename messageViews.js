@@ -136,7 +136,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "block_id": "approvers_requestID_BlockID",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*Request ID:*${requestID}"
+                    "text": "*Request ID:* ${requestID}"
                 }
             },
             {
@@ -144,7 +144,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "block_id": "approvers_JSONts_BlockID",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*Timestamp of JSON version of message:*${JSON_ts}"
+                    "text": "*Timestamp of JSON version of message:* ${JSON_ts}"
                 }
             },
             {
