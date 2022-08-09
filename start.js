@@ -615,6 +615,8 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     var formSubmittionValues = body.view.state.values;
     var Description = formSubmittionValues.Description_BlockID.Description_ActionID.value;
     if (Description.match(/\\/)) {
+      //prohibiting the use of the character "\"
+      //alerting user that the character is not allowed.
       app.client.chat.postMessage({
         channel: requesterUserID,
         text: "Do not use the character \"\\\" in your task description. Please resubmit your request but without that character, or else, you will get another message like this."

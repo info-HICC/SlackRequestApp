@@ -158,6 +158,12 @@ var requestApp_CreateRequestModalView = {
 			}
 		},
 		{
+			"type": "divider"
+		},
+		{
+			"type": "divider"
+		},
+		{
 			"type": "context",
 			"elements": [
 				{
