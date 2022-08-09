@@ -152,7 +152,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "block_id": "approvers_requestDescription_BlockID",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*Description (also part of Memo on Quickbooks Online):*\n${task_description}"
+                    "text": "*Description (also part of Memo on Quickbooks Online):*\\n${task_description}"
                 }
             },
             {
