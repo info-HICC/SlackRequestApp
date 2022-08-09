@@ -621,7 +621,9 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     var VendorOrCustomerName = formSubmittionValues.VendorOrCustomerName_BlockID.VendorOrCustomerName_ActionID.value;
     var productName = formSubmittionValues.ProductName_BlockID.ProductName_ActionID.value;
     var paymentMethod = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID.selected_option.value;
+    var paymentMethod_text = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID.selected_option.text.text;
     var transactionType = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID.selected_option.value;
+    var transactionType_text = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID.selected_option.text.text;
     var imageLink = formSubmittionValues.imageLink_BlockID.imageLink_ActionID.value;
     var requestID = await generateRequestID();
     
@@ -673,18 +675,18 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
       imageLink = "";
     };
 
-    console.log(Description);
-    console.log(DescriptionEscaped);
-    console.log(paymentDueByDate);
-    console.log(VendorOrCustomer);
-    console.log(VendorOrCustomerName);
-    console.log(productName);
-    console.log(paymentMethod);
-    console.log(transactionType);
-    console.log(imageLink);
-    console.log(requestID);
+    // console.log(Description);
+    // console.log(DescriptionEscaped);
+    // console.log(paymentDueByDate);
+    // console.log(VendorOrCustomer);
+    // console.log(VendorOrCustomerName);
+    // console.log(productName);
+    // console.log(paymentMethod);
+    // console.log(transactionType);
+    // console.log(imageLink);
+    // console.log(requestID);
 
-    const sectionSeperatorSymbol = "§"
+    // const sectionSeperatorSymbol = "§"
     //DM requester about their submission
       //this function returns the results of the API call if that is something that's needed.
     await DMRequesterAboutRequestSubmission(requesterUserID, requestID, Description, Cost, imageLink, paymentDueByDate);
@@ -692,12 +694,27 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     //creating JSON version of msg
       //this function returns the results of the API call if that is something that's needed.
     var JSONMSGSentResult = await sendJSONVersionOfMSG(requesterUserID, requestID, DescriptionEscaped, Cost, VendorOrCustomer, VendorOrCustomerName, productName, paymentMethod, transactionType, imageLink, paymentDueByDate);
-    // console.log(JSONMSGSentResult.ts);
+    var JSONMSG_ts = JSONMSGSentResult.ts;
 
     //Sending request to Approvers' channel
       //this function returns the results of the API call if that is something that's needed.
       //this is still set to msg requester with this info.
-    await messageApproversChannelWithReq(requesterUserID, requestID, Description, Cost, imageLink, paymentDueByDate);
+      // create JSON containing the variables required in the function messageViews.createRequestMessageForApprovers(): 
+        var JSONWithData = {
+          requesterID: requesterUserID,
+          requestID: requestID,
+          JSON_ts: JSONMSG_ts,
+          task_description: Description,
+          productName: productName,
+          productCost: Cost,
+          transactionType_asText: transactionType_text,
+          paymentMethod: paymentMethod_text,
+          paymentToVendorOrCustomer: VendorOrCustomer,
+          paymentToVendorOrCustomer_name: VendorOrCustomerName,
+          makePaymentByDate: paymentDueByDate,
+          imageLinksThatWereSubmitted: imageLink
+        }
+    await messageApproversChannelWithReq(JSONWithData);
 
   } catch (error) {
     console.log(error);
@@ -728,34 +745,40 @@ ${paymentDueByDate}
     return messageResults;
   };
 
-  async function messageApproversChannelWithReq(requesterUserID, requestID, description, cost, imageLink, paymentDueByDate) {
-    var message = `
-\`\`\`Request Submission\`\`\`
-\`\`\`RequestID:${requestID}\`\`\`
-Request By: <@${requesterUserID}>
+  async function messageApproversChannelWithReq(JSONWithData) {
+//ugh
+  //     var message = `
+  // \`\`\`Request Submission\`\`\`
+  // \`\`\`RequestID:${requestID}\`\`\`
+  // Request By: <@${requesterUserID}>
 
-*Request Content:*
-${description}
+  // *Request Content:*
+  // ${description}
 
-*Request Cost:*
-$${cost}
+  // *Request Cost:*
+  // $${cost}
 
-*Images Attached to request (if any):*
-${imageLink}
+  // *Images Attached to request (if any):*
+  // ${imageLink}
 
-*If approved, request must be paid by:*
-${paymentDueByDate}
+  // *If approved, request must be paid by:*
+  // ${paymentDueByDate}
 
-\`\`\`Approvers, you can accept or deny requests by using the emojis :white_check_mark: to approve, or :negative_squared_cross_mark: to deny. If there is already a reaction, unless you're told to, DO NOT remove it and re-add a reaction.\`\`\`
->\`\`\`IF YOU ARE APPROVING THE REQUEST: fill out the form attached first, and then within 30 minutes of submitting the form, react with :white_check_mark: This is critical because I need additional information to push the data into QuickBooks Online. Otherwise, you will have to re-do the approval if I can't find the additional data.\`\`\`
->https://forms.gle/KMaRm2Wj4WQdSSHj9
-\`\`\`Approvers, you can create your own channel to discuss whether or not to approve a request. You can use the RequestID to reference the request. Try and keep this channel free from chats, and only requests.\`\`\`
-    `
+  // \`\`\`Approvers, you can accept or deny requests by using the emojis :white_check_mark: to approve, or :negative_squared_cross_mark: to deny. If there is already a reaction, unless you're told to, DO NOT remove it and re-add a reaction.\`\`\`
+  // >\`\`\`IF YOU ARE APPROVING THE REQUEST: fill out the form attached first, and then within 30 minutes of submitting the form, react with :white_check_mark: This is critical because I need additional information to push the data into QuickBooks Online. Otherwise, you will have to re-do the approval if I can't find the additional data.\`\`\`
+  // >https://forms.gle/KMaRm2Wj4WQdSSHj9
+  // \`\`\`Approvers, you can create your own channel to discuss whether or not to approve a request. You can use the RequestID to reference the request. Try and keep this channel free from chats, and only requests.\`\`\`
+  //     `
     // console.log(message)
+    
+    //the function call below should return JSON object.
+    var approvers_requestMessageBlock = await messageViews.createRequestMessageForApprovers(JSONWithData);
+
     var messageResults = await app.client.chat.postMessage({
       channel: requesterUserID, //change this to use the approvers' channel
       unfurl_links: false,
-      text: message
+      text: "Pleaceholder message, check blocks for full details.",
+      blocks: JSON.stringify(JSON.parse(approvers_requestMessageBlock).blocks)
     });
     return messageResults;
   };
@@ -771,7 +794,7 @@ ${paymentDueByDate}
   "vendorOrCustomerName":"${vendorOrCustomerName}",
   "productName":"${productName}",
   "paymentMethod":"${paymentMethod}",
-  "transactionType":"${transactionType},
+  "transactionType":"${transactionType}",
   "requestPaidForByDate":"${paymentDueByDate}",
   "imageLinks":"${imageLink}"
 }
