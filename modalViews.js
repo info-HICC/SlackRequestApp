@@ -241,6 +241,211 @@ var requestApp_CreateRequestModalView = {
 			"type": "divider"
 		},
 		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": "Select whether this payment is being made to a Vendor (like Google), or a Customer. You can also opt for employee, but payment should be logged as a Vendor. Ensure you're making clear that the payment is for an employee reimbursement, and not a Vendor."
+				}
+			]
+		},
+		{
+			"type": "input",
+			"block_id": "VendorOrCustomer_BlockID",
+			"element": {
+				"type": "static_select",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select Vendor or Customer",
+					"emoji": true
+				},
+				"options": [
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Vendor",
+							"emoji": true
+						},
+						"value": "Vendor"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Customer",
+							"emoji": true
+						},
+						"value": "Customer"
+					}
+				],
+				"action_id": "VendorOrCustomer_ActionID"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Choose whether payment is to Vendor or Customer:",
+				"emoji": true
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": "Enter a VERY short (like 2 or 3 words) description of the product name (like Google Voice)."
+				}
+			]
+		},
+		{
+			"type": "input",
+            "block_id": "ProductName_BlockID",
+			"element": {
+				"type": "plain_text_input",
+				"action_id": "ProductName_ActionID"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Enter Cost",
+				"emoji": true
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": "How will this payment be made?"
+				}
+			]
+		},
+		{
+			"type": "input",
+			"block_id": "PaymentMethod_BlockID",
+			"element": {
+				"type": "static_select",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select Cash or Credit Card",
+					"emoji": true
+				},
+				"options": [
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Cash",
+							"emoji": true
+						},
+						"value": "Cash"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Credit Card",
+							"emoji": true
+						},
+						"value": "Credit Card"
+					}
+				],
+				"action_id": "PaymentMethod_ActionID"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Select whether payment is in cash or credit card:",
+				"emoji": true
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "mrkdwn",
+					"text": "What type of transaction is this?"
+				}
+			]
+		},
+		{
+			"type": "input",
+			"block_id": "TransactionType_BlockID",
+			"element": {
+				"type": "static_select",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select an option...",
+					"emoji": true
+				},
+				"options": [
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Advertising & Promotion",
+							"emoji": true
+						},
+						"value": "160"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Office Supplies",
+							"emoji": true
+						},
+						"value": "169"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Reimbursement",
+							"emoji": true
+						},
+						"value": "185"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Computer and Internet Expenses",
+							"emoji": true
+						},
+						"value": "163"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "Other (Uncategorized Expense)",
+							"emoji": true
+						},
+						"value": "199"
+					}
+				],
+				"action_id": "TransactionType_ActionID"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Select the type of this transaction:",
+				"emoji": true
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "divider"
+		},
+		{
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
