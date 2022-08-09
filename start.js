@@ -682,6 +682,16 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
       imageLink = "";
     };
 
+    console.log(Description);
+    console.log(DescriptionEscaped);
+    console.log(paymentDueByDate);
+    console.log(VendorOrCustomer);
+    console.log(productName);
+    console.log(paymentMethod);
+    console.log(transactionType);
+    console.log(imageLink);
+    console.log(requestID);
+
     const sectionSeperatorSymbol = "§"
     //DM requester about their submission
       //this function returns the results of the API call if that is something that's needed.
@@ -690,8 +700,9 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     //creating JSON version of msg
       //this function returns the results of the API call if that is something that's needed.
     var JSONMSGSentResult = await sendJSONVersionOfMSG(requesterUserID, requestID, DescriptionEscaped, Cost, VendorOrCustomer, productName, paymentMethod, transactionType, imageLink, paymentDueByDate);
-    console.log(JSONMSGSentResult);
-    
+    //timestamp of JSON message
+    // console.log(JSONMSGSentResult.ts);
+
     //Sending request to Approvers' channel
       //this function returns the results of the API call if that is something that's needed.
       //this is still set to msg requester with this info.
