@@ -238,6 +238,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData) {
             }
         ]
     }`;
+    console.log(template)
     return template;
 }
 
