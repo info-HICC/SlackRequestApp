@@ -238,8 +238,8 @@ module.exports.createRequestMessageForApprovers = async function (inputData) {
             }
         ]
     }`;
-    console.log(typeof template)
-    return template;
+    var templateParsed = JSON.parse(template);
+    return templateParsed;
 }
 
 // //export the modal view
