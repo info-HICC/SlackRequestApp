@@ -714,7 +714,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
           makePaymentByDate: paymentDueByDate,
           imageLinksThatWereSubmitted: imageLink
         });
-    var messageViewsResult = await messageViews.createRequestMessageForApprovers(JSONWithData);
+    var messageViewsResult = await messageViews.createRequestMessageForApprovers(JSONWithData, app);
     console.log(messageViewsResult)
     // await messageApproversChannelWithReq(JSONWithData, requesterUserID);
 

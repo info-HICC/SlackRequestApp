@@ -106,7 +106,7 @@ module.exports.updateMessageContent = function (task_id, task_title, task_descri
     return template;
 };
 
-module.exports.createRequestMessageForApprovers = async function (inputData) {
+module.exports.createRequestMessageForApprovers = async function (inputData, slackApp) {
     var inputData_parsed = JSON.parse(inputData);
     var requesterID = inputData_parsed.requesterID;
     var requestID = inputData_parsed.requestID;
@@ -195,8 +195,13 @@ module.exports.createRequestMessageForApprovers = async function (inputData) {
             }
         ]
     }`;
-    var templateParsed = JSON.stringify(template);
-    return templateParsed;
+    var templateParsed = JSON.stringify(JSON.parse(template).block);
+    slackApp.client.chat.postMessage({
+        channel: requesterID,
+        text: "This is a placeholder for the blocks that define the message. This is a request.",
+        blocks: templateParsed
+    })
+    return;
 }
 
 // //export the modal view
