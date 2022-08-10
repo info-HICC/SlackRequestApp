@@ -918,8 +918,9 @@ ${paymentDueByDate}
     return JSON.stringify(responseToReturn);
   }
 //handle POST requests that are meant to update the original request maker on the status of the request
-receiver.router.post("/slack/updateRequesterOnExpenseStatus", async (req, res) => {
-  console.log(req);
+receiver.router.post("/slack/updateRequesterOnExpenseStatus", express.json(), async (req, res) => {
+  var requestBody = req.body;
+  console.log(requestBody);
   res.send("Ok")
 })
 
