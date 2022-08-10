@@ -848,7 +848,8 @@ ${paymentDueByDate}
         newUpdatedBlocks.push(block);
       };
     };
-    var newUpdatedBlocks = JSON.stringify(newUpdatedBlocks);
+    newUpdatedBlocks = JSON.stringify(newUpdatedBlocks);
+    console.log(newUpdatedBlocks);
     var msgUpdateResult = await app.client.chat.update({
       channel: blockMessageChannelID,
       ts: messageBlocksTS,
