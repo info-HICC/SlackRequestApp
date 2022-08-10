@@ -867,7 +867,9 @@ ${paymentDueByDate}
       };
     };
     newUpdatedBlocks = JSON.stringify(newUpdatedBlocks);
-    console.log(newUpdatedBlocks);
+    // match &amp;lt; and &amp;gt; to < and >
+    newUpdatedBlocks = newUpdatedBlocks.replace(/&amp;lt;/g, '<');
+    newUpdatedBlocks = newUpdatedBlocks.replace(/&amp;gt;/g, '>');
     var msgUpdateResult = await app.client.chat.update({
       channel: blockMessageChannelID,
       ts: messageBlocksTS,

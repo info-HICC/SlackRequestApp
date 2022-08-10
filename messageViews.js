@@ -131,10 +131,10 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "alt_text": "A plain white image that's used to split messages."
             },
             {
-                "type": "header",
+                "type": "section",
                 "block_id": "approvers_requesterNotification_BlockID",
                 "text": {
-                    "type": "plain_text",
+                    "type": "mkdwn",
                     "text": "New Expense request from <@${requesterID}>"
                 }
             },
