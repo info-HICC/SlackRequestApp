@@ -832,7 +832,7 @@ ${paymentDueByDate}
                 "text": "*Current Request Status:*\\nApproved by <@${approverUserID}> at ${time}"
             }
           }`;
-          newUpdatedBlocks.push(newStatusBlock);
+          newUpdatedBlocks.push(JSON.stringify(newStatusBlock));
         } else if (decision == "denied") {
           var newStatusBlock = `{
             "type": "section",
