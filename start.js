@@ -733,8 +733,23 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     var channelWithMessageWithBlocks = body.channel.id;
 
     //this handles creating the updated message, and updating that message.
-    //returns the results of the API call if that is something that's needed.
-    var newMsgWithoutButtonsBlock = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "approved");
+    //returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
+      //this is to later find the JSON version of the message to POST to Zapier. 
+    var functionResponse = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "approved");
+    var functionResponse_parsed = JSON.parse(functionResponse);
+    var JSON_Message_ts = functionResponse_parsed.JSON_Message_ts;
+    var JSON_Message_Content_APIResult = app.client.conversations.history({
+      channel: process.env.requests_googleforms_json,
+      latest: JSON_Message_ts,
+      inclusive: true
+    });
+    JSON_Message_Content_APIResult = JSON.parse(JSON_Message_Content_APIResult);
+    await axios
+      .post(process.env.zapierProcessExpenseRequestPart2, {
+        appTokenHeader: process.env.zapierWebhookRequestAppToken,
+        requestContent_JSON: JSON_Message_Content_APIResult,
+        expense_decision: "approved"
+      })
   } catch (error) {
     console.log(error);
   };
@@ -750,8 +765,23 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
     var channelWithMessageWithBlocks = body.channel.id;
 
     //this handles creating the updated message, and updating that message.
-    //returns the results of the API call if that is something that's needed.
-    var newMsgWithoutButtonsBlock = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
+    //returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
+      //this is to later find the JSON version of the message to POST to Zapier. 
+    var functionResponse = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
+    var functionResponse_parsed = JSON.parse(functionResponse);
+    var JSON_Message_ts = functionResponse_parsed.JSON_Message_ts;
+    var JSON_Message_Content_APIResult = app.client.conversations.history({
+      channel: process.env.requests_googleforms_json,
+      latest: JSON_Message_ts,
+      inclusive: true
+    });
+    JSON_Message_Content_APIResult = JSON.parse(JSON_Message_Content_APIResult);
+    await axios
+      .post(process.env.zapierProcessExpenseRequestPart2, {
+        appTokenHeader: process.env.zapierWebhookRequestAppToken,
+        requestContent_JSON: JSON_Message_Content_APIResult,
+        expense_decision: "denied"
+      })
   } catch (error) {
     console.log(error);
   };
@@ -862,6 +892,9 @@ ${paymentDueByDate}
           }`;
           newUpdatedBlocks.push(JSON.parse(newStatusBlock));
         }
+      } else if (block.block_id == "approvers_JSONts_BlockID") {
+        //matches any string that's in the format of 123.123 but not 123 or 123.
+        var JSON_Message_ts = block.text.text.match(/[0-9]*\.[0-9]*/g)[0];
       } else {
         newUpdatedBlocks.push(block);
       };
@@ -877,7 +910,11 @@ ${paymentDueByDate}
       text: "This message has been updated to log the last decision.",
       blocks: newUpdatedBlocks
     });
-    return msgUpdateResult;
+    var responseToReturn = {
+      SlackAPIResponse: msgUpdateResult,
+      JSON_Message_ts: JSON_Message_ts
+    }
+    return JSON.stringify(responseToReturn);
   }
 
 //this handles when the page the user is requesting doesn't exist. 
