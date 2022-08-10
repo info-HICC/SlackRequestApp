@@ -675,17 +675,6 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
       imageLink = "";
     };
 
-    // console.log(Description);
-    // console.log(DescriptionEscaped);
-    // console.log(paymentDueByDate);
-    // console.log(VendorOrCustomer);
-    // console.log(VendorOrCustomerName);
-    // console.log(productName);
-    // console.log(paymentMethod);
-    // console.log(transactionType);
-    // console.log(imageLink);
-    // console.log(requestID);
-
     // const sectionSeperatorSymbol = "§"
     //DM requester about their submission
       //this function returns the results of the API call if that is something that's needed.
@@ -743,7 +732,6 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
       latest: JSON_Message_ts,
       inclusive: true
     });
-    console.log(JSON_Message_Content_APIResult)
     var JSON_Message_Content = JSON_Message_Content_APIResult.messages[0].text;
     await axios
       .post(process.env.zapierProcessExpenseRequestPart2, {
