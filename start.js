@@ -714,14 +714,31 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
           makePaymentByDate: paymentDueByDate,
           imageLinksThatWereSubmitted: imageLink
         });
+
+    //this function call returns the results of the API call to Slack to send a message to the approvers' channel. 
     var messageViewsResult = await messageViews.createRequestMessageForApprovers(JSONWithData, app);
-    console.log(messageViewsResult)
-    // await messageApproversChannelWithReq(JSONWithData, requesterUserID);
 
   } catch (error) {
     console.log(error);
   };
 });
+//handles when a request is approved using the approve button
+app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client }) => {
+  try {
+    ack();
+    var approverUserID = body.user.id;
+    
+    var messageBlocks = body.message.blocks;
+    var messageBlocksTS = body.message.ts;
+    var channelWithMessageWithBlocks = body.channel.id;
+
+    //this handles creating the updated message, and updating that message.
+    //returns the results of the API call if that is something that's needed.
+    var newMsgWithoutButtonsBlock = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "approved");
+  } catch (error) {
+    console.log(error);
+  };
+})
 //helper functions that are used by the function above to prevent cluttering
   async function DMRequesterAboutRequestSubmission(requesterUserID, requestID, description, cost, imageLink, paymentDueByDate) {
     var message = `
@@ -743,48 +760,6 @@ ${paymentDueByDate}
     var messageResults = await app.client.chat.postMessage({
       channel: requesterUserID,
       text: message
-    });
-    return messageResults;
-  };
-
-  async function messageApproversChannelWithReq(JSONWithData, requesterUserID) {
-//ugh
-  //     var message = `
-  // \`\`\`Request Submission\`\`\`
-  // \`\`\`RequestID:${requestID}\`\`\`
-  // Request By: <@${requesterUserID}>
-
-  // *Request Content:*
-  // ${description}
-
-  // *Request Cost:*
-  // $${cost}
-
-  // *Images Attached to request (if any):*
-  // ${imageLink}
-
-  // *If approved, request must be paid by:*
-  // ${paymentDueByDate}
-
-  // \`\`\`Approvers, you can accept or deny requests by using the emojis :white_check_mark: to approve, or :negative_squared_cross_mark: to deny. If there is already a reaction, unless you're told to, DO NOT remove it and re-add a reaction.\`\`\`
-  // >\`\`\`IF YOU ARE APPROVING THE REQUEST: fill out the form attached first, and then within 30 minutes of submitting the form, react with :white_check_mark: This is critical because I need additional information to push the data into QuickBooks Online. Otherwise, you will have to re-do the approval if I can't find the additional data.\`\`\`
-  // >https://forms.gle/KMaRm2Wj4WQdSSHj9
-  // \`\`\`Approvers, you can create your own channel to discuss whether or not to approve a request. You can use the RequestID to reference the request. Try and keep this channel free from chats, and only requests.\`\`\`
-  //     `
-    // console.log(message)
-    
-    //the function call below should return JSON object.
-    var approvers_requestMessageBlock = await messageViews.createRequestMessageForApprovers(JSONWithData);
-    var messageResults = await app.client.chat.postMessage({
-      channel: requesterUserID, //change this to use the approvers' channel
-      unfurl_links: false,
-      text: approvers_requestMessageBlock,
-    });
-    var messageResults = await app.client.chat.postMessage({
-      channel: requesterUserID, //change this to use the approvers' channel
-      unfurl_links: false,
-      text: "Pleaceholder message, check blocks for full details.",
-      blocks: JSON.stringify(JSON.parse(approvers_requestMessageBlock).blocks)
     });
     return messageResults;
   };
@@ -826,6 +801,53 @@ ${paymentDueByDate}
     requestID += Date.parse(new Date); //this is used to generate a unique ID that's dependent on a UUID v4 and current time
     return requestID;
   };
+
+  async function expenseRequest_UpdateRequestMSG(app, blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, decision) {
+    var blocks = JSON.parse(blocksArray);
+    var newUpdatedBlocks = [];
+    //this returns the current time in UTC in 24 hour clock format.
+      //returns something like this "2022-08-10T13:42:07.847Z"
+    var time = new Date().toISOString();
+    time = time.replace(/T/, ' ').replace(/\..+/, '');
+    //this replace changes the above example into something like this: "2022-08-10 13:42:07"
+
+    for (i=0; i<array.length; i++) {
+      var block = blocks[i];
+      if (block.block_id == "expenseRequestStatus_BlockID") {
+        if (decision == "approved") {
+          var newStatusBlock = `{
+            "type": "section",
+            "block_id": "expenseRequestStatus_BlockID",
+            "text": {
+                "type": "mrkdwn",
+                "text": "*Current Request Status:*\\nApproved by <@${approverUserID}> at ${time}"
+            }
+          }`;
+          newUpdatedBlocks.push(newStatusBlock);
+        } else if (decision == "denied") {
+          var newStatusBlock = `{
+            "type": "section",
+            "block_id": "expenseRequestStatus_BlockID",
+            "text": {
+                "type": "mrkdwn",
+                "text": "*Current Request Status:*\\nDenied by <@${approverUserID}> at ${time}"
+            }
+          }`;
+          newUpdatedBlocks.push(newStatusBlock);
+        }
+      } else {
+        newUpdatedBlocks.push(block);
+      };
+    };
+    var newUpdatedBlocks = JSON.stringify(newUpdatedBlocks);
+    var msgUpdateResult = await app.client.chat.update({
+      channel: blockMessageChannelID,
+      ts: messageBlocksTS,
+      text: "This message has been updated to log the last decision.",
+      blocks: newUpdatedBlocks
+    });
+    return msgUpdateResult;
+  }
 
 //this handles when the page the user is requesting doesn't exist. 
 //it may be better to use an HTML file later, but for now,

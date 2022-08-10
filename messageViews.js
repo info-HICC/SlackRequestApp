@@ -107,6 +107,7 @@ module.exports.updateMessageContent = function (task_id, task_title, task_descri
 };
 
 module.exports.createRequestMessageForApprovers = async function (inputData, slackApp) {
+    //the slackApp parameter is used to pass through Slack's Web APIs so that I can post the message into the channel without sending the msg back.
     var inputData_parsed = JSON.parse(inputData);
     var requesterID = inputData_parsed.requesterID;
     var requestID = inputData_parsed.requestID;
@@ -124,7 +125,12 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
     var template = `{
         "blocks": [
             {
-                "type": "section",
+                "type": "image",
+                "image_url": "https://slack-requestapp.herokuapp.com/static/whiteLine_600_50.png",
+                "alt_text": "A plain white image that's used to split messages."
+            },
+            {
+                "type": "header",
                 "block_id": "approvers_requesterNotification_BlockID",
                 "text": {
                     "type": "mrkdwn",
@@ -192,17 +198,71 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                         "text": ">*Any images that may have been attached:*\\n>${imageLinksThatWereSubmitted}"
                     }
                 ]
+            },
+            {
+                "type": "section",
+                "block_id": "expenseRequestStatus_BlockID",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*Current Request Status:*\\nNo Decision Yet"
+                }
+            },
+            {
+                "type": "actions",
+                "block_id": "approvers_ApproveDeny_BTN_BlockID",
+                "elements": [
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "emoji": true,
+                            "text": "Approve"
+                        },
+                        "confirm": {
+                            "title": {
+                                "type": "plain_text",
+                                "text": "Are you sure you want to approve this request?"
+                            },
+                            "text": {
+                                "type": "mrkdwn",
+                                "text": "Please make sure that someone else hasn't already approved this request. If someone has, make sure it hasn't been logged in QuickBooks Online, or else there will be two expenses in QuickBooks Online for the same expense request."
+                            },
+                            "confirm": {
+                                "type": "plain_text",
+                                "text": "Approve it!"
+                            },
+                            "deny": {
+                                "type": "plain_text",
+                                "text": "Go back, let me check."
+                            }
+                        },
+                        "style": "primary",
+                        "value": "Approve",
+                        "action_id": "approve_approvers_ApproveDeny_BTN_ActionID"
+                    },
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "emoji": true,
+                            "text": "Deny"
+                        },
+                        "style": "danger",
+                        "value": "Deny",
+                        "action_id": "deny_approvers_ApproveDeny_BTN_ActionID"
+                    }
+                ]
             }
         ]
     }`;
     var templateParsed = JSON.stringify(JSON.parse(template).blocks);
     console.log(templateParsed);
-    slackApp.client.chat.postMessage({
-        channel: requesterID,
+    var postMessageResult = slackApp.client.chat.postMessage({
+        channel: requesterID, //change this to the approvers' channel
         text: "This is a placeholder for the blocks that define the message. This is a request.",
         blocks: templateParsed
     })
-    return;
+    return postMessageResult;
 }
 
 // //export the modal view
