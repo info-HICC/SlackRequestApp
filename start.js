@@ -860,7 +860,7 @@ ${paymentDueByDate}
                 "text": "*Current Request Status:*\\nDenied by <@${approverUserID}> at ${time}"
             }
           }`;
-          newUpdatedBlocks.push(newStatusBlock);
+          newUpdatedBlocks.push(JSON.parse(newStatusBlock));
         }
       } else {
         newUpdatedBlocks.push(block);
