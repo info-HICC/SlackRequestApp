@@ -738,7 +738,24 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
   } catch (error) {
     console.log(error);
   };
-})
+});
+//handles when a request is approved using the approve button
+app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client }) => {
+  try {
+    ack();
+    var approverUserID = body.user.id;
+    
+    var messageBlocks = JSON.stringify(body.message.blocks);
+    var messageBlocksTS = body.message.ts;
+    var channelWithMessageWithBlocks = body.channel.id;
+
+    //this handles creating the updated message, and updating that message.
+    //returns the results of the API call if that is something that's needed.
+    var newMsgWithoutButtonsBlock = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
+  } catch (error) {
+    console.log(error);
+  };
+});
 //helper functions that are used by the function above to prevent cluttering
   async function DMRequesterAboutRequestSubmission(requesterUserID, requestID, description, cost, imageLink, paymentDueByDate) {
     var message = `
@@ -821,7 +838,7 @@ ${paymentDueByDate}
           "block_id": "image_BlockID",
           "image_url": "https://slack-requestapp.herokuapp.com/static/whiteLine_600_50.png",
           "alt_text": "A plain white image that's used to split messages."
-      };
+        };
         newUpdatedBlocks.push(newImageBlock);
       } else if (block.block_id == "expenseRequestStatus_BlockID") {
         if (decision == "approved") {
