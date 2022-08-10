@@ -852,6 +852,7 @@ ${paymentDueByDate}
     var msgUpdateResult = await app.client.chat.update({
       channel: blockMessageChannelID,
       ts: messageBlocksTS,
+      token: process.env.SLACK_BOT_TOKEN,
       text: "This message has been updated to log the last decision.",
       blocks: newUpdatedBlocks
     });
