@@ -134,7 +134,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "type": "section",
                 "block_id": "approvers_requesterNotification_BlockID",
                 "text": {
-                    "type": "mkdwn",
+                    "type": "mrkdwn",
                     "text": "New Expense request from <@${requesterID}>"
                 }
             },
