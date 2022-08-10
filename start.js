@@ -591,11 +591,10 @@ app.view("create-google-cal-task-callback", async ({ ack, body, view, client }) 
   });
 });
 
-//handles testActionButton which is used to test moving the request process from Google Forms to Slack entirely (at least for part 1)
-app.action("testActionButton", async ({ ack, client, body }) => {
+//handles createExpenseRequest which is used to test moving the request process from Google Forms to Slack entirely (at least for part 1)
+app.action("createExpenseRequest", async ({ ack, client, body }) => {
   try {
     await ack();
-    console.log(body)
   
     await client.views.open({
       trigger_id: body.trigger_id,
@@ -605,8 +604,8 @@ app.action("testActionButton", async ({ ack, client, body }) => {
     console.log(error);
   };
 });
-//handles submission of modal triggered by actionID of "testActionButton", which is used to test moving the request process from Google Forms to Slack entirely (at least for part 1)
-//createExpenseRequest-callback is the callbackID of the modal that's shown when the actionID "testActionButton" is called
+//handles submission of modal triggered by actionID of "createExpenseRequest", which is used to test moving the request process from Google Forms to Slack entirely (at least for part 1)
+//createExpenseRequest-callback is the callbackID of the modal that's shown when the actionID "createExpenseRequest" is called
 app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) => {
   try {
     await ack();
