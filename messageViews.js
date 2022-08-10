@@ -259,7 +259,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
     var templateParsed = JSON.stringify(JSON.parse(template).blocks);
     console.log(templateParsed);
     var postMessageResult = slackApp.client.chat.postMessage({
-        channel: requesterID, //change this to the approvers' channel
+        channel: process.env.requests_googleforms_approvers, //change this to the approvers' channel
         text: "This is a placeholder for the blocks that define the message. This is a request",
         blocks: templateParsed
     })
