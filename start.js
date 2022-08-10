@@ -728,7 +728,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     ack();
     var approverUserID = body.user.id;
     
-    var messageBlocks = body.message.blocks;
+    var messageBlocks = JSON.stringify(body.message.blocks);
     console.log(messageBlocks);
     var messageBlocksTS = body.message.ts;
     var channelWithMessageWithBlocks = body.channel.id;
