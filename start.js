@@ -748,7 +748,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     await axios
       .post(process.env.zapierProcessExpenseRequestPart2, {
         appTokenHeader: process.env.zapierWebhookRequestAppToken,
-        requestContent_JSON: JSON_Message_Content_APIResult,
+        requestContent_JSON: JSON_Message_Content,
         expense_decision: "approved"
       })
   } catch (error) {
@@ -780,7 +780,7 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
     await axios
       .post(process.env.zapierProcessExpenseRequestPart2, {
         appTokenHeader: process.env.zapierWebhookRequestAppToken,
-        requestContent_JSON: JSON_Message_Content_APIResult,
+        requestContent_JSON: JSON_Message_Content,
         expense_decision: "denied"
       })
   } catch (error) {
