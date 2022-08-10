@@ -743,6 +743,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
       latest: JSON_Message_ts,
       inclusive: true
     });
+    console.log(JSON_Message_Content_APIResult)
     JSON_Message_Content_APIResult = JSON.parse(JSON_Message_Content_APIResult);
     await axios
       .post(process.env.zapierProcessExpenseRequestPart2, {
