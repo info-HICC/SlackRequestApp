@@ -818,6 +818,7 @@ ${paymentDueByDate}
       if (block.block_id == "image_BlockID") {
         var newImageBlock = {
           "type": "image",
+          "block_id": "image_BlockID",
           "image_url": "https://slack-requestapp.herokuapp.com/static/whiteLine_600_50.png",
           "alt_text": "A plain white image that's used to split messages."
       };
