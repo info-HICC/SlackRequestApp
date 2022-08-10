@@ -738,7 +738,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     var functionResponse = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "approved");
     var functionResponse_parsed = JSON.parse(functionResponse);
     var JSON_Message_ts = functionResponse_parsed.JSON_Message_ts;
-    var JSON_Message_Content_APIResult = app.client.conversations.history({
+    var JSON_Message_Content_APIResult = await app.client.conversations.history({
       channel: process.env.requests_googleforms_json,
       latest: JSON_Message_ts,
       inclusive: true
@@ -771,7 +771,7 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
     var functionResponse = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
     var functionResponse_parsed = JSON.parse(functionResponse);
     var JSON_Message_ts = functionResponse_parsed.JSON_Message_ts;
-    var JSON_Message_Content_APIResult = app.client.conversations.history({
+    var JSON_Message_Content_APIResult = await app.client.conversations.history({
       channel: process.env.requests_googleforms_json,
       latest: JSON_Message_ts,
       inclusive: true
