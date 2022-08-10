@@ -729,6 +729,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     var approverUserID = body.user.id;
     
     var messageBlocks = body.message.blocks;
+    console.log(messageBlocks);
     var messageBlocksTS = body.message.ts;
     var channelWithMessageWithBlocks = body.channel.id;
 
@@ -811,7 +812,7 @@ ${paymentDueByDate}
     time = time.replace(/T/, ' ').replace(/\..+/, '');
     //this replace changes the above example into something like this: "2022-08-10 13:42:07"
 
-    for (i=0; i<array.length; i++) {
+    for (i=0; i<blocks.length; i++) {
       var block = blocks[i];
       if (block.block_id == "expenseRequestStatus_BlockID") {
         if (decision == "approved") {
