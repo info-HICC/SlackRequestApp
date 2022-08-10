@@ -729,7 +729,6 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     var approverUserID = body.user.id;
     
     var messageBlocks = JSON.stringify(body.message.blocks);
-    console.log(messageBlocks);
     var messageBlocksTS = body.message.ts;
     var channelWithMessageWithBlocks = body.channel.id;
 
@@ -814,7 +813,16 @@ ${paymentDueByDate}
 
     for (i=0; i<blocks.length; i++) {
       var block = blocks[i];
-      if (block.block_id == "expenseRequestStatus_BlockID") {
+      //potentially the image that is returned has invalid parameters?
+      //so, re-writing the image block
+      if (block.block_id == "image_BlockID") {
+        var newImageBlock = {
+          "type": "image",
+          "image_url": "https://slack-requestapp.herokuapp.com/static/whiteLine_600_50.png",
+          "alt_text": "A plain white image that's used to split messages."
+      };
+        newUpdatedBlocks.push(newImageBlock);
+      } else if (block.block_id == "expenseRequestStatus_BlockID") {
         if (decision == "approved") {
           var newStatusBlock = `{
             "type": "section",
