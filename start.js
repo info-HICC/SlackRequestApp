@@ -917,6 +917,10 @@ ${paymentDueByDate}
     }
     return JSON.stringify(responseToReturn);
   }
+//handle POST requests that are meant to update the original request maker on the status of the request
+receiver.router.post("/slack/updateRequesterOnExpenseStatus", async (req, res) => {
+  console.log(body);
+})
 
 //this handles when the page the user is requesting doesn't exist. 
 //it may be better to use an HTML file later, but for now,
