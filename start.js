@@ -919,10 +919,32 @@ ${paymentDueByDate}
   }
 //handle POST requests that are meant to update the original request maker on the status of the request
 receiver.router.post("/slack/updateRequesterOnExpenseStatus", express.json(), async (req, res) => {
-  var requestBody = req.body;
-  console.log(requestBody);
-  res.send("Ok")
-})
+  if (req.body.checksum == process.env.updateRequesterOnRequestStatus_checksum) {
+    var requestBody = req.body;
+    await app.client.chat.postMessage({
+      channel: requestBody.requesterUserID,
+      text: `Your request with the ID of ${requestBody.requestID} has been ${requestBody.decision}.`
+    });
+    
+    res.send("Ok")
+  } else {
+    res.status(403).send("Forbidden. Check auth code matches.");
+  }
+});
+//handles POST requests that are meant to update the approver about the request being logged in QBO.
+receiver.router.post("/slack/updateApproverOnRequest", express.json(), async (req, res) => {
+  if (req.body.checksum == process.env.updateRequesterOnRequestStatus_checksum) {
+    var requestBody = req.body;
+    await app.client.chat.postMessage({
+      channel: requestBody.requesterUserID,
+      text: `Your approval for the request with an ID of \`${requestBody.requestID}\` should have been logged in QuickBooks. Please check QuickBooks Online to confirm. Errors do occur.`
+    });
+    
+    res.send("Ok")
+  } else {
+    res.status(403).send("Forbidden. Check auth code matches.");
+  }
+});
 
 //this handles when the page the user is requesting doesn't exist. 
 //it may be better to use an HTML file later, but for now,
