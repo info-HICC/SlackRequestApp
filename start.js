@@ -744,7 +744,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
       inclusive: true
     });
     console.log(JSON_Message_Content_APIResult)
-    JSON_Message_Content_APIResult = JSON.parse(JSON_Message_Content_APIResult);
+    var JSON_Message_Content = JSON_Message_Content_APIResult.messages[0].text;
     await axios
       .post(process.env.zapierProcessExpenseRequestPart2, {
         appTokenHeader: process.env.zapierWebhookRequestAppToken,
@@ -776,7 +776,7 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
       latest: JSON_Message_ts,
       inclusive: true
     });
-    JSON_Message_Content_APIResult = JSON.parse(JSON_Message_Content_APIResult);
+    var JSON_Message_Content = JSON_Message_Content_APIResult.messages[0].text;
     await axios
       .post(process.env.zapierProcessExpenseRequestPart2, {
         appTokenHeader: process.env.zapierWebhookRequestAppToken,
