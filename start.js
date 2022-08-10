@@ -704,7 +704,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
           requesterID: requesterUserID,
           requestID: requestID,
           JSON_ts: JSONMSG_ts,
-          task_description: Description,
+          task_description: DescriptionEscaped,
           productName: productName,
           productCost: Cost,
           transactionType_asText: transactionType_text,
