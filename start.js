@@ -932,6 +932,21 @@ receiver.router.post("/slack/updateApproverOnRequest", express.json(), async (re
     res.status(403).send("Forbidden. Check auth code matches.");
   }
 });
+//handles POST requests that are meant to update the accountants channel with the new expenses coming.
+receiver.router.post("/slack/sendMsgToAccountantsCh", express.json(), async (req, res) => {
+  if (req.body.checksum == process.env.updateRequesterOnRequestStatus_checksum) {
+    var requestBody = req.body;
+    console.log(requestBody.testWithQuotes);
+    // await app.client.chat.postMessage({
+    //   channel: process.env.expense_accountants,
+    //   text: `Your approval for the request with an ID of \`${requestBody.requestID}\` should have been logged in QuickBooks. Please check QuickBooks Online to confirm. Errors do occur.`
+    // });
+    
+    res.send("Ok")
+  } else {
+    res.status(403).send("Forbidden. Check auth code matches.");
+  }
+});
 
 //this handles when the page the user is requesting doesn't exist. 
 //it may be better to use an HTML file later, but for now,
