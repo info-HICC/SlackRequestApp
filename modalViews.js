@@ -844,7 +844,7 @@ var requestApp_CreateRequestModalView_test = {
 		},
 		{
 			"type": "actions",
-			"block_id": "PaymentMethod_BlockID",
+			"block_id": "selectingRadioButtons_BlockID",
 			"elements": [
 				{
 					"type": "radio_buttons",
@@ -866,7 +866,7 @@ var requestApp_CreateRequestModalView_test = {
 							"value": "Cash"
 						}
 					],
-					"action_id": "PaymentMethod_ActionID"
+					"action_id": "selectingRadioButtons_ActionID"
 				}
 			]
 		},
