@@ -621,21 +621,25 @@ app.action("testActionButton", async ({ ack, client, body }) => {
 });
 //creating action handler for when user selects cash/credit card and updating view
 app.action("selectingRadioButtons_ActionID", async ({ ack, body, client }) => {
-  ack();
-  console.log(body);
-
-  //getting view ID
-  var viewID = body.view.id;
-  //getting the radio button pressed
-  var buttonPressed = body.actions[0].selected_option.value; //there's two options: Cash and CreditCard in those exact case.
-  //creating new view (aka if cash, show the other fields)
-  if (buttonPressed == "Cash") {
-    var newView = modalViews.requestApp_CreateRequestModalView_test_cash;
-    //call slack API to update the view
-    app.client.views.update({
-      view: newView,
-      view_id: viewID
-    })
+  try {
+    ack();
+    console.log(body);
+  
+    //getting view ID
+    var viewID = body.view.id;
+    //getting the radio button pressed
+    var buttonPressed = body.actions[0].selected_option.value; //there's two options: Cash and CreditCard in those exact case.
+    //creating new view (aka if cash, show the other fields)
+    if (buttonPressed == "Cash") {
+      var newView = modalViews.requestApp_CreateRequestModalView_test_cash;
+      //call slack API to update the view
+      app.client.views.update({
+        view: newView,
+        view_id: viewID
+      })
+    };
+  } catch (error) {
+    console.log(error);
   };
 })
 
