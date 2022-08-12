@@ -639,7 +639,7 @@ app.action("selectingRadioButtons_ActionID", async ({ ack, body, client }) => {
       });
       console.log(updateViewAPIResults);
     } else if (buttonPressed == "CreditCard") {
-      var newView = modalViews.requestApp_CreateRequestModalView_test;
+      var newView = modalViews.createRequestView_test;
       //call slack API to update the view
       var updateViewAPIResults = await app.client.views.update({
         view: newView,
