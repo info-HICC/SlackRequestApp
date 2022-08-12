@@ -623,6 +623,20 @@ app.action("testActionButton", async ({ ack, client, body }) => {
 app.action("selectingRadioButtons_ActionID", async ({ ack, body, client }) => {
   ack();
   console.log(body);
+  
+  //getting view ID
+  var viewID = body.view.id;
+  //getting the radio button pressed
+  var buttonPressed = body.actions.selected_option.value; //there's two options: Cash and CreditCard in those exact case.
+  //creating new view (aka if cash, show the other fields)
+  if (buttonPressed == "Cash") {
+    var newView = modalViews.requestApp_CreateRequestModalView_test_cash;
+    //call slack API to update the view
+    app.views.update({
+      view: newView,
+      view_id: viewID
+    })
+  };
 })
 
 //handles submission of modal triggered by actionID of "createExpenseRequest", which is used to test moving the request process from Google Forms to Slack entirely (at least for part 1)
