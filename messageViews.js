@@ -258,8 +258,15 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
     }`;
     var templateParsed = JSON.stringify(JSON.parse(template).blocks);
     console.log(templateParsed);
+    // //for production
+    // var postMessageResult = slackApp.client.chat.postMessage({
+    //     channel: process.env.requests_googleforms_approvers, 
+    //     text: "This is a placeholder for the blocks that define the message. This is a request",
+    //     blocks: templateParsed
+    // });
+    //for testing
     var postMessageResult = slackApp.client.chat.postMessage({
-        channel: process.env.requests_googleforms_approvers, //change this to the approvers' channel
+        channel: process.env.infoUserID,
         text: "This is a placeholder for the blocks that define the message. This is a request",
         blocks: templateParsed
     })

@@ -620,7 +620,7 @@ app.action("testActionButton", async ({ ack, client, body }) => {
   };
 });
 //creating action handler for when user selects cash/credit card and updating view
-app.action("selectingRadioButtons_ActionID", async ({ ack, body, client }) => {
+app.action("PaymentMethod_ActionID", async ({ ack, body, client }) => {
   try {
     ack();
     console.log(body);
@@ -631,7 +631,7 @@ app.action("selectingRadioButtons_ActionID", async ({ ack, body, client }) => {
     var buttonPressed = body.actions[0].selected_option.value; //there's two options: Cash and CreditCard in those exact case.
     //creating new view (aka if cash, show the other fields)
     if (buttonPressed == "Cash") {
-      var newView = modalViews.requestApp_CreateRequestModalView_test_cash;
+      var newView = modalViews.createRequestView_Cash; //change this variable depending on the selected option
       //call slack API to update the view
       var updateViewAPIResults = await app.client.views.update({
         view: newView,
@@ -639,7 +639,7 @@ app.action("selectingRadioButtons_ActionID", async ({ ack, body, client }) => {
       });
       console.log(updateViewAPIResults);
     } else if (buttonPressed == "CreditCard") {
-      var newView = modalViews.createRequestView_test;
+      var newView = modalViews.createRequestView; //change this variable depending on the selected option
       //call slack API to update the view
       var updateViewAPIResults = await app.client.views.update({
         view: newView,
@@ -661,6 +661,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     var requesterUserID = body.user.id;
     var formSubmittionValues = body.view.state.values;
 
+    var requestID = await generateRequestID();
     var Description = formSubmittionValues.Description_BlockID.Description_ActionID.value;
     var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID.value;
     var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID.selected_date;
@@ -668,11 +669,21 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     var VendorOrCustomerName = formSubmittionValues.VendorOrCustomerName_BlockID.VendorOrCustomerName_ActionID.value;
     var productName = formSubmittionValues.ProductName_BlockID.ProductName_ActionID.value;
     var paymentMethod = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID.selected_option.value;
+      //^this is the value (aka a custom set value that's not show to the user) of the radio button that's selected
     var paymentMethod_text = formSubmittionValues.PaymentMethod_BlockID.PaymentMethod_ActionID.selected_option.text.text;
+      //^this is the text (aka the text shown to the user) of the radio button that's selected
     var transactionType = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID.selected_option.value;
     var transactionType_text = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID.selected_option.text.text;
     var imageLink = formSubmittionValues.imageLink_BlockID.imageLink_ActionID.value;
-    var requestID = await generateRequestID();
+
+    if (paymentMethod == "Cash") { //this checks the value of the radio button that's selected, not the text
+      //these variable only apply to the "Cash" option, basically to obtain account+routing number and other details for the payment
+      var cash_accountName = formSubmittionValues.AccountName_Cash_BlockID.AccountName_Cash_ActionID.value;
+      var cash_bankName = formSubmittionValues.BankName_Cash_BlockID.BankName_Cash_ActionID.value;
+      var cash_AccountNumber = formSubmittionValues.AccountNumber_Cash_BlockID.AccountNumber_Cash_ActionID.value;
+      var cash_RoutingNumber = formSubmittionValues.RoutingNumber_Cash_BlockID.RoutingNumber_Cash_ActionID.value;
+      var cash_SWIFTCode = formSubmittionValues.SWIFTCode_Cash_BlockID.SWIFTCode_Cash_ActionID.value;
+    };
     
     //checking input values and modifying them for usage.
     if (Description.match(/\\/)) {
@@ -722,6 +733,27 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
       imageLink = "";
     };
 
+    //this just checks if payment type is Cash and if so, create a JSON object of additional fields, no clue if I need that
+    // then create a sentence using the additional information, and then add it to the description
+    if (paymentMethod_text == "Cash") {
+      var cashPayment_AdditionalInfo_JSON = {
+        "accountName": cash_accountName,
+        "bankName": cash_bankName,
+        "accountNumber": cash_AccountNumber,
+        "routingNumber": cash_RoutingNumber,
+        "swiftCode": cash_SWIFTCode
+      };
+      var cashPayment_AdditionalInfo_AddToDescription = `This request is using cash for payment. The details obtaining are as follows: Account Name: ${cash_accountName} | Bank Name: ${cash_bankName} | Account Number: ${cash_AccountNumber} | Routing Number: ${cash_RoutingNumber} | SWIFT Code: ${cash_SWIFTCode}.`
+      Description = Description + "\\n\\n" + cashPayment_AdditionalInfo_AddToDescription;
+    } else {
+      var cashPayment_AdditionalInfo_AddToDescription = `This expense is not paid in cash. There are no additional details that need to be added.`;
+      Description = Description + "\\n\\n" + cashPayment_AdditionalInfo_AddToDescription;
+    };
+
+    //updating DescriptionEscaped variable with the new description while escaping characters like quotation marks and newlines.
+    DescriptionEscaped = Description.replace(/"/g, '\\"').replace(/\n/g, '\\n');
+
+
     // const sectionSeperatorSymbol = "§"
     //DM requester about their submission
       //this function returns the results of the API call if that is something that's needed.
@@ -748,7 +780,8 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
           paymentToVendorOrCustomer: VendorOrCustomer,
           paymentToVendorOrCustomer_name: VendorOrCustomerName,
           makePaymentByDate: paymentDueByDate,
-          imageLinksThatWereSubmitted: imageLink
+          imageLinksThatWereSubmitted: imageLink,
+          cashPayment_AdditionalInfo: cashPayment_AdditionalInfo
         });
 
     //this function call returns the results of the API call to Slack to send a message to the approvers' channel. 
@@ -758,10 +791,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     console.log(error);
   };
 });
-app.view("createExpenseRequest-callback-test", async ({ ack, body, view, context }) => {
-  ack();
-  console.log(body);
-});
+
 //handles when a request is approved using the approve button
 app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client }) => {
   try {
@@ -843,9 +873,14 @@ ${imageLink}
 If approved, request must be paid by:
 ${paymentDueByDate}
 `
-    
+    // //for production
+    // var messageResults = await app.client.chat.postMessage({
+    //   channel: requesterUserID,
+    //   text: message
+    // });
+    //for testing
     var messageResults = await app.client.chat.postMessage({
-      channel: requesterUserID,
+      channel: process.env.infoUserID,
       text: message
     });
     return messageResults;
