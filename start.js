@@ -609,12 +609,10 @@ app.action("createExpenseRequest", async ({ ack, client, body }) => {
 app.action("testActionButton", async ({ ack, client, body }) => {
   try {
     await ack();
-
-    var view = await createRequestView_test();
   
     var APICallResults = await client.views.open({
       trigger_id: body.trigger_id,
-      view: view
+      view: modalViews.createRequestView_test
     });
     console.log(APICallResults);
   } catch (error) {
