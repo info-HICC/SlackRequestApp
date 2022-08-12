@@ -725,6 +725,10 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     console.log(error);
   };
 });
+app.view("createExpenseRequest-callback-test", async ({ ack, body, view, context }) => {
+  ack();
+  console.log(body);
+})
 //handles when a request is approved using the approve button
 app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client }) => {
   try {

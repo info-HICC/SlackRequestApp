@@ -529,7 +529,7 @@ var requestApp_CreateRequestModalView = {
 
 var requestApp_CreateRequestModalView_test = {
 	"type": "modal",
-    "callback_id": "createExpenseRequest-callback",
+    "callback_id": "createExpenseRequest-callback-test",
 	"title": {
 		"type": "plain_text",
 		"text": "Slack-RequestApp",
