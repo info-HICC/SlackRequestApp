@@ -781,7 +781,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
           paymentToVendorOrCustomer_name: VendorOrCustomerName,
           makePaymentByDate: paymentDueByDate,
           imageLinksThatWereSubmitted: imageLink,
-          cashPayment_AdditionalInfo: cashPayment_AdditionalInfo
+          cashPayment_AdditionalInfo: cashPayment_AdditionalInfo_JSON
         });
 
     //this function call returns the results of the API call to Slack to send a message to the approvers' channel. 
