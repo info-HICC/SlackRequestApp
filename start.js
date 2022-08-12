@@ -633,7 +633,7 @@ app.action("selectingRadioButtons_ActionID", async ({ ack, body, client }) => {
     if (buttonPressed == "Cash") {
       var newView = modalViews.requestApp_CreateRequestModalView_test_cash;
       //call slack API to update the view
-      var updateViewAPIResults = app.client.views.update({
+      var updateViewAPIResults = await app.client.views.update({
         view: newView,
         view_id: viewID
       });
