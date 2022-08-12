@@ -859,7 +859,7 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
 //helper functions that are used by the functions above to prevent cluttering, also just reusability.
   async function DMRequesterAboutRequestSubmission(requesterUserID, requestID, description, cost, imageLink, paymentDueByDate) {
     var message = `
-\`\`\`Here is the Google Forms Request that you submitted:\`\`\`
+\`\`\`Here is the expense request you submitted:\`\`\`
 \`\`\`RequestID:${requestID}\`\`\`
 Request Content:
 ${description}
