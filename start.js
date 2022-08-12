@@ -609,10 +609,12 @@ app.action("createExpenseRequest", async ({ ack, client, body }) => {
 app.action("testActionButton", async ({ ack, client, body }) => {
   try {
     await ack();
+
+    var view = await createRequestView_test();
   
     var APICallResults = await client.views.open({
       trigger_id: body.trigger_id,
-      view: modalViews.createRequestView_test
+      view: view
     });
     console.log(APICallResults);
   } catch (error) {
@@ -728,7 +730,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
 app.view("createExpenseRequest-callback-test", async ({ ack, body, view, context }) => {
   ack();
   console.log(body);
-})
+});
 //handles when a request is approved using the approve button
 app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client }) => {
   try {
