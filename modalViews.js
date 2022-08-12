@@ -1375,5 +1375,6 @@ var requestApp_CreateRequestModalView_test_cash = {
 module.exports = {
     modalForm: requestAppModalView,
     createRequestView: requestApp_CreateRequestModalView,
-	createRequestView_test: requestApp_CreateRequestModalView_test
+	createRequestView_test: requestApp_CreateRequestModalView_test,
+	requestApp_CreateRequestModalView_test_cash,
 };
