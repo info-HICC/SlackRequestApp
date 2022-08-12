@@ -621,6 +621,12 @@ app.action("testActionButton", async ({ ack, client, body }) => {
     console.log(error);
   };
 });
+//creating action handler for when user selects cash/credit card and updating view
+app.action("selectingRadioButtons_ActionID", async ({ ack, body, client }) => {
+  ack();
+  console.log(body);
+})
+
 //handles submission of modal triggered by actionID of "createExpenseRequest", which is used to test moving the request process from Google Forms to Slack entirely (at least for part 1)
 //createExpenseRequest-callback is the callbackID of the modal that's shown when the actionID "createExpenseRequest" is called
 app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) => {
@@ -795,7 +801,7 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
     console.log(error);
   };
 });
-//helper functions that are used by the function above to prevent cluttering
+//helper functions that are used by the functions above to prevent cluttering, also just reusability.
   async function DMRequesterAboutRequestSubmission(requesterUserID, requestID, description, cost, imageLink, paymentDueByDate) {
     var message = `
 \`\`\`Here is the Google Forms Request that you submitted:\`\`\`
@@ -948,6 +954,34 @@ ${paymentDueByDate}
         "emoji": true
       },
       "blocks": [
+        {
+          "type": "actions",
+          "block_id": "selectingRadioButtons_BlockID",
+          "elements": [
+            {
+              "type": "radio_buttons",
+              "options": [
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Cash?",
+                    "emoji": true
+                  },
+                  "value": "cash§" + uuid
+                },
+                {
+                  "text": {
+                    "type": "plain_text",
+                    "text": "Card?",
+                    "emoji": true
+                  },
+                  "value": "card§" + uuid
+                }
+              ],
+              "action_id": "selectingRadioButtons_ActionID"
+            }
+          ]
+        },
         {
           "type": "divider"
         },
