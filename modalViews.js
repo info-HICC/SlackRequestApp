@@ -1,5 +1,5 @@
 //add uuidv4 for custom externalIDs for views
-var uuidv4 = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 var requestAppModalView = { //view created using Slack's interactive Block Kit Builder
     "type": "modal",
