@@ -917,6 +917,7 @@ var requestApp_CreateRequestModalView_paymentMethod_cash_View = {
 		{
 			"type": "input",
 			"block_id": "SWIFTCode_Cash_BlockID",
+			"optional": true,
 			"element": {
 				"type": "plain_text_input",
 				"action_id": "SWIFTCode_Cash_ActionID"
