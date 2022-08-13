@@ -858,11 +858,13 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
 });
 //helper functions that are used by the functions above to prevent cluttering, also just reusability.
   async function DMRequesterAboutRequestSubmission(requesterUserID, requestID, description, cost, imageLink, paymentDueByDate) {
+    //removing the newline character from the description
+    var description_withoutNewline = description.replace(/\n/g, '');
     var message = `
 \`\`\`Here is the expense request you submitted:\`\`\`
 \`\`\`RequestID:${requestID}\`\`\`
 Request Content:
-${description}
+${description_withoutNewline}
 
 Request Cost:
 $${cost}
