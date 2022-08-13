@@ -861,16 +861,17 @@ ${imageLink}
 If approved, request must be paid by:
 ${paymentDueByDate}
 `
-    // //for production
-    // var messageResults = await app.client.chat.postMessage({
-    //   channel: requesterUserID,
-    //   text: message
-    // });
-    //for testing
+    //for production
     var messageResults = await app.client.chat.postMessage({
-      channel: process.env.infoUserID,
+      channel: requesterUserID,
       text: message
     });
+    // //for testing
+    // var messageResults = await app.client.chat.postMessage({
+    //   channel: process.env.infoUserID,
+    //   text: message
+    // });
+
     return messageResults;
   };
 
