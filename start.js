@@ -743,7 +743,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
         "routingNumber": cash_RoutingNumber,
         "swiftCode": cash_SWIFTCode
       };
-      var cashPayment_AdditionalInfo_AddToDescription = `This request is using cash for payment. The details obtaining are as follows: Account Name: ${cash_accountName} | Bank Name: ${cash_bankName} | Account Number: ${cash_AccountNumber} | Routing Number: ${cash_RoutingNumber} | SWIFT Code: ${cash_SWIFTCode}.`
+      var cashPayment_AdditionalInfo_AddToDescription = `This request is using cash for payment. The details obtained are as follows: Account Name: ${cash_accountName} | Bank Name: ${cash_bankName} | Account Number: ${cash_AccountNumber} | Routing Number: ${cash_RoutingNumber} | SWIFT Code: ${cash_SWIFTCode}.`
       Description = Description + "\\n\\n" + cashPayment_AdditionalInfo_AddToDescription;
     } else {
       var cashPayment_AdditionalInfo_AddToDescription = `This expense is not paid in cash. There are no additional details that need to be added.`;
@@ -859,7 +859,7 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
 //helper functions that are used by the functions above to prevent cluttering, also just reusability.
   async function DMRequesterAboutRequestSubmission(requesterUserID, requestID, description, cost, imageLink, paymentDueByDate) {
     //removing the newline character from the description
-    var description_withoutNewline = description.replace(/\n/g, '');
+    var description_withoutNewline = description.replace(/\n/g, ' ');
     var message = `
 \`\`\`Here is the expense request you submitted:\`\`\`
 \`\`\`RequestID:${requestID}\`\`\`
