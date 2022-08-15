@@ -1010,6 +1010,15 @@ receiver.router.post("/slack/updateApproverOnRequest", express.json(), async (re
     res.status(403).send("Forbidden. Check auth code matches.");
   }
 });
+receiver.router.post("/slack/msgAccountantsChannel", express.json(), async (req, res) => {
+  if (req.body.checksum == process.env.receiver_POST_checksum) {
+    console.log(req.body);
+    res.send("Ok")
+  } else {
+    res.status(403).send("Forbidden. Check auth code matches.");
+  }
+})
+
 // //handles POST requests that are meant to update the accountants channel with the new expenses coming.
 // receiver.router.post("/slack/sendMsgToAccountantsCh", express.json(), async (req, res) => {
 //   if (req.body.checksum == process.env.updateRequesterOnRequestStatus_checksum) {
