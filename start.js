@@ -1012,8 +1012,28 @@ receiver.router.post("/slack/updateApproverOnRequest", express.json(), async (re
 });
 receiver.router.post("/slack/msgAccountantsChannel", express.json(), async (req, res) => {
   if (req.body.checksum == process.env.receiver_POST_checksum) {
-    console.log(req.body);
-    res.send("Ok")
+    var cost = req.body.request_cost;
+    var customerOrVendor = req.body.request_customer_or_vendor;
+    var customerOrVendorName = req.body.request_customer_vendor_name;
+    var description = req.body.request_description;
+    var payByDate = req.body.request_pay_by_date;
+    var paymentMethod = req.body.request_paymentMethod;
+    var productName = req.body.request_product_name;
+    var requestID = req.body.request_id;
+
+    //create message to send to accountants channel
+    var messageToSend = `An expense has been approved. The details are as follows: \n\nIt is a ${customerOrVendor} expense. \n\nThe ${customerOrVendor} is ${customerOrVendorName}. \n\nThe product is ${productName}. \n\nThe cost is $${cost}. \n\nThe payment method is ${paymentMethod}. \n\nThe payment is due by ${payByDate}. \n\nThe description is: ${description}. \n\nPlease pay the expense request by the due date, if you need additional details, you can reference the requestID of ${requestID}.`;
+    
+    //send message to accountants channel
+    var slackAPIResponse = await app.client.chat.postMessage({
+      channel: process.env.accountantsChannelID,
+      text: messageToSend
+    });
+    var creatingResponse = {
+      slackAPIResponse: slackAPIResponse,
+    }
+
+    res.status(200).send(creatingResponse);
   } else {
     res.status(403).send("Forbidden. Check auth code matches.");
   }
