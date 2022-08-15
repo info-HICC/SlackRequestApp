@@ -2,6 +2,8 @@ const { App, ExpressReceiver } = require('@slack/bolt');
 const axios = require('axios');
 const path = require('path');
 const nodecron = require('node-cron');
+//this references the testStatus.js file 
+const testStatusFile = require('./testStatus.js');
 //this require statement contains the modal view.
 const modalViews = require("./modalViews.js");
 //this require statement contains the messages with blocks.
@@ -845,7 +847,7 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
 //helper functions that are used by the functions above to prevent cluttering, also just reusability.
   async function DMRequesterAboutRequestSubmission(requesterUserID, requestID, description, cost, imageLink, paymentDueByDate) {
     //removing the newline character from the description
-    var description_withoutNewline = description.replace(/\n/g, ' ');
+    var description_withoutNewline = description.replace(/\\n/g, ' ');
     var message = `
 \`\`\`Here is the expense request you submitted:\`\`\`
 \`\`\`RequestID:${requestID}\`\`\`
@@ -861,17 +863,21 @@ ${imageLink}
 If approved, request must be paid by:
 ${paymentDueByDate}
 `
+
+  if (testStatusFile.test == "false") {
     //for production
     var messageResults = await app.client.chat.postMessage({
       channel: requesterUserID,
       text: message
     });
-    // //for testing
-    // var messageResults = await app.client.chat.postMessage({
-    //   channel: process.env.infoUserID,
-    //   text: message
-    // });
+  } else if (testStatusFile.test == "true") {
+      //for testing
+      var messageResults = await app.client.chat.postMessage({
+        channel: process.env.infoUserID,
+        text: message
+      });
 
+    }
     return messageResults;
   };
 
@@ -1011,54 +1017,46 @@ receiver.router.post("/slack/updateApproverOnRequest", express.json(), async (re
   }
 });
 receiver.router.post("/slack/msgAccountantsChannel", express.json(), async (req, res) => {
-  if (req.body.checksum == process.env.receiver_POST_checksum) {
-    var cost = req.body.request_cost;
-    var customerOrVendor = req.body.request_customer_or_vendor;
-    var customerOrVendorName = req.body.request_customer_vendor_name;
-    var description = req.body.request_description;
-    var payByDate = req.body.request_pay_by_date;
-    var paymentMethod = req.body.request_paymentMethod;
-    var productName = req.body.request_product_name;
-    var requestID = req.body.request_id;
-
-    //create message to send to accountants channel
-    var messageToSend = `An expense has been approved. The details are as follows: \n\nIt is a ${customerOrVendor} expense. \n\nThe ${customerOrVendor} is ${customerOrVendorName}. \n\nThe product is ${productName}. \n\nThe cost is $${cost}. \n\nThe payment method is ${paymentMethod}. \n\nThe payment is due by ${payByDate}. \n\nThe description is: ${description}. \n\nPlease pay the expense request by the due date, if you need additional details, you can reference the requestID of ${requestID}.`;
-    
-    //send message to accountants channel
-    var slackAPIResponse = await app.client.chat.postMessage({
-      channel: process.env.accountantsChannelID,
-      text: messageToSend
-    });
-    var creatingResponse = {
-      slackAPIResponse: slackAPIResponse,
+  try {
+    if (req.body.checksum == process.env.receiver_POST_checksum) {
+      var cost = req.body.request_cost;
+      var customerOrVendor = req.body.request_customer_or_vendor;
+      var customerOrVendorName = req.body.request_customer_vendor_name;
+      var description = req.body.request_description;
+      var payByDate = req.body.request_pay_by_date;
+      var paymentMethod = req.body.request_paymentMethod;
+      var productName = req.body.request_product_name;
+      var requestID = req.body.request_id;
+  
+      //create message to send to accountants channel
+      var messageToSend = `An expense has been approved. The details are as follows: \n\nIt is a ${customerOrVendor} expense. \n\nThe ${customerOrVendor} is ${customerOrVendorName}. \n\nThe product is ${productName}. \n\nThe cost is $${cost}. \n\nThe payment method is ${paymentMethod}. \n\nThe payment is due by ${payByDate}. \n\nThe description is: ${description} \n\nPlease pay the expense request by the due date, if you need additional details, you can reference the requestID of ${requestID}.`;
+      
+      if (testStatusFile.test == "false") {
+        //send message to accountants channel
+        var slackAPIResponse = await app.client.chat.postMessage({
+          channel: process.env.accountantsChannelID,
+          text: messageToSend
+        });
+      } else if (testStatusFile.test == "true") {
+        var slackAPIResponse = await app.client.chat.postMessage({
+          channel: process.env.infoUserID,
+          text: messageToSend
+        });
+      }
+      var creatingResponse = {
+        slackAPIResponse: slackAPIResponse,
+      }
+  
+      res.status(200).send(creatingResponse);
+    } else {
+      res.status(403).send("Forbidden. Check auth code matches.");
     }
-
-    res.status(200).send(creatingResponse);
-  } else {
-    res.status(403).send("Forbidden. Check auth code matches.");
   }
-})
-
-// //handles POST requests that are meant to update the accountants channel with the new expenses coming.
-// receiver.router.post("/slack/sendMsgToAccountantsCh", express.json(), async (req, res) => {
-//   if (req.body.checksum == process.env.updateRequesterOnRequestStatus_checksum) {
-//     var requestBody = req.body;
-//     var requestDescription = requestBody.Description;
-//     var requestAmount = requestBody.Amount;
-//     var requestPayByDate = requestBody.Date;
-//     var requestPayeeType = requestBody.PayeeType; //this is either "Vendor" or "Customer"
-//     var requestPayeeName = requestBody.PayeeName;
-//     var requestPaymentMethod = requestBody.PaymentMethod;
-//     // await app.client.chat.postMessage({
-//     //   channel: process.env.expense_accountants,
-//     //   text: `Your approval for the request with an ID of \`${requestBody.requestID}\` should have been logged in QuickBooks. Please check QuickBooks Online to confirm. Errors do occur.`
-//     // });
-    
-//     res.send("Ok")
-//   } else {
-//     res.status(403).send("Forbidden. Check auth code matches.");
-//   }
-// });
+  catch (error) {
+    console.log(error);
+    res.status(500).send("Internal Server Error, something messed up. Please remember what you did before this.");
+  }
+});
 
 //this handles when the page the user is requesting doesn't exist. 
 //it may be better to use an HTML file later, but for now,
