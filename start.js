@@ -994,7 +994,7 @@ receiver.router.post("/slack/updateRequesterOnExpenseStatus", express.json(), as
     var requestBody = req.body;
     await app.client.chat.postMessage({
       channel: requestBody.requesterUserID,
-      text: `Your request with the ID of ${requestBody.requestID} has been ${requestBody.decision}.`
+      text: `Your request with the ID of \`${requestBody.requestID}\` has been ${requestBody.decision}.`
     });
     
     res.send("Ok")
