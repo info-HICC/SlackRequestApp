@@ -229,7 +229,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "block_id": "expenseRequestStatus_numberOfApproversNeeded_BlockID",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*Number of Additional Approvers Needed:*\\${numberOfApproversNeeded}"
+                    "text": "*Number of Additional Approvers Needed:*\\n${numberOfApproversNeeded}"
                 }
             },
             {
