@@ -203,6 +203,39 @@ app.event("reaction_added", async ({ event, client }) => {
   })
 }});
 
+//listen for when user opens the home tab
+//show test status of application
+app.event('app_home_opened', async ({ event, client }) => {
+  try {
+    var ApplicationStatus = "";
+    if (testStatusFile.test == "true") {
+      ApplicationStatus = "Test Mode";
+    } else {
+      ApplicationStatus = "Production Mode";
+    }
+    // Call views.publish with the built-in client
+    const result = await client.views.publish({
+      // Use the user ID associated with the event
+      user_id: event.user,
+      view: {
+        "type": "home",
+        "blocks": [
+          {
+            "type": "section",
+            "text": {
+              "type": "mrkdwn",
+              "text": "Hello there! :wave: Application Status:" + ApplicationStatus
+            }
+          }
+        ]
+      }
+    });
+  }
+  catch (error) {
+    console.error(error);
+  }
+});
+
 //handles "/userid" command
 //will basically DM the user with their user ID
 //if user mentions another user, it will DM the slash command user with the user ID of the mentioned user.
