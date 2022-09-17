@@ -1149,7 +1149,7 @@ ${paymentDueByDate}
         for (i=0; i<listOfApprovers.length; i++) {
           var approver = listOfApprovers[i];
           var approverTimestamp = listOfApproversTimestamps[i];
-          var newListOfApproversWithTimestamps = `<@${approver}> - ${approverTimestamp}\\n`;
+          var newListOfApproversWithTimestamps = `'<@${approver}> - ${approverTimestamp}\\n'`;
           newListOfApproversWithTimestampsFormatted.push(newListOfApproversWithTimestamps);
         };
         var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted);
