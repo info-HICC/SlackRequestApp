@@ -1141,7 +1141,9 @@ ${paymentDueByDate}
       } else if (block.block_id == "expenseRequestStatus_ListOfApproversTimestamps_BlockID") {
         var newListOfApproversWithTimestampsFormatted = "";
         console.log(listOfApprovers);
+        console.log(listOfApprovers[0]);
         console.log(listOfApproversTimestamps);
+        console.log(listOfApproversTimestamps[0]);
         console.log(listOfApprovers.length);
         console.log(listOfApproversTimestamps.length);
         // for (i=1; i<listOfApprovers.length; i++) {
