@@ -207,6 +207,7 @@ app.event("reaction_added", async ({ event, client }) => {
 //show test status of application
 app.event('app_home_opened', async ({ event, client }) => {
   try {
+    console.log("app_home_opened event triggered.");
     var ApplicationStatus = "";
     if (testStatusFile.test == "true") {
       ApplicationStatus = "Test Mode";
