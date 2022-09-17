@@ -850,7 +850,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     var originalMessageText = messageMetadata.messages[0].text;
     if (metadataRequestCost >= 10000) { //this checks if the request is over or equal to $10,000 
       //this part can be fixed later to use the modulus (%) operator.
-      if (metadataPreviousApproverID.contains(approverUserID.toUpperCase())) {
+      if (metadataPreviousApproverID.includes(approverUserID.toUpperCase())) {
         //if the user has already approved this request, then don't do anything, but send them a message saying that they've already approved this request, and include the requestID.
         var requestID = messageMetadata.messages[0].metadata.event_payload.requestID;
         var message = `You've already approved this request. You cannot approve the request twice. The request ID is ${requestID}.`;
