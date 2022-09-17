@@ -1084,6 +1084,7 @@ ${paymentDueByDate}
             "text": {
                 "type": "mrkdwn",
                 "text": "*Number of Approvers Needed:*\\n${newNumberOfApproversNeeded}"
+            }
           }`
           newUpdatedBlocks.push(JSON.parse(newStatus_numberOfApproversNeeded_Block));
         } else {
