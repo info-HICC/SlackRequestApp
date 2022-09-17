@@ -1075,6 +1075,7 @@ ${paymentDueByDate}
       } else if (block.block_id == "expenseRequestStatus_numberOfApproversNeeded_BlockID") {
         var numberOfApproversNeeded = block.text.text.match(/[0-9]*/g)[0];
         if (numberOfApproversNeeded > 0) {
+          console.log("subtracting...")
           var newNumberOfApproversNeeded = parseInt(numberOfApproversNeeded) - 1;
           var newStatus_numberOfApproversNeeded_Block = `{
             "type": "section",
@@ -1085,6 +1086,7 @@ ${paymentDueByDate}
           }`
           newUpdatedBlocks.push(JSON.parse(newStatus_numberOfApproversNeeded_Block));
         } else {
+          console.log('not subtracting...')
           //just push the blocks to the newUpdatedBlocks Array if the number of approvers needed is 0. 
           newUpdatedBlocks.push(block);
         }
