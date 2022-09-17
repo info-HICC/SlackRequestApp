@@ -234,7 +234,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
             },
             {
                 "type": "section",
-                "block_id": "expenseRequestStatus_ListOfApprovers_BlockID",
+                "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
                 "text": {
                     "type": "mrkdwn",
                     "text": "*List of Users Already Approved:*\\nJust a placeholder for now."
@@ -311,6 +311,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                     "requestID": requestID,
                     "previousApproverID": "",
                     "listOfApprovers": [],
+                    "listOfApproversTimestamps": [],
                     "cost": productCost,
                     "numberOfApprovals": 0
                 }
@@ -328,6 +329,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                     "requestID": requestID,
                     "previousApproverID": "",
                     "listOfApprovers": [],
+                    "listOfApproversTimestamps": [],
                     "cost": productCost,
                     "numberOfApprovals": 0
                 }

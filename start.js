@@ -877,8 +877,10 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     var metadata = messageMetadata.messages[0].metadata; //this is already in JSON (aka an object)
     metadata.event_payload.numberOfApprovals = newMetadataApprovalCount;
     var listOfApprovers = messageMetadata.messages[0].metadata.event_payload.listOfApprovers;
+    var listOfApproversTimestamps = messageMetadata.messages[0].metadata.event_payload.listOfApproversTimestamps;
     if (listOfApprovers.includes(approverUserID.toUpperCase()) == false) {
       listOfApprovers.push(approverUserID.toUpperCase());
+      listOfApproversTimestamps.push(new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''));
     };
     var originalMessageText = messageMetadata.messages[0].text;
 
@@ -890,7 +892,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     //this handles creating the updated message, and updating that message.
     //returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
       //this is to later find the JSON version of the message to POST to Zapier. 
-    var functionResponse = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, userAlreadyApproved, "approved");
+    var functionResponse = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, userAlreadyApproved, listOfApprovers, listOfApproversTimestamps, "approved");
     
     if (metadataRequestCost >= 10000) { //this checks if the request is over or equal to $10,000 
       //this part can be fixed later to use the modulus (%) operator.
@@ -1070,7 +1072,7 @@ ${paymentDueByDate}
   };
 
   //this basically handles updating the message with a log of the last user to approve/deny the request
-  async function expenseRequest_UpdateRequestMSG(app, blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, userAlreadyApproved, decision) {
+  async function expenseRequest_UpdateRequestMSG(app, blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, userAlreadyApproved, listOfApprovers, listOfApproversTimestamps, decision) {
     var blocks = JSON.parse(blocksArray);
     var newUpdatedBlocks = [];
     //this returns the current time in UTC in 24 hour clock format.
@@ -1136,6 +1138,20 @@ ${paymentDueByDate}
           //just push the blocks to the newUpdatedBlocks Array if the number of approvers needed is 0. 
           newUpdatedBlocks.push(block);
         }
+      } else if (block.block_id == "expenseRequestStatus_ListOfApproversTimestamps_BlockID") {
+        var newListOfApproversWithTimestampsFormatted = "";
+        for (i in listOfApproversTimestamps) {
+          newListOfApproversWithTimestampsFormatted += `<@{listOfApprovers[i]}> at ${listOfApproversTimestamps[i]} UTC\\n`;
+        }
+        var newListOfApproversTimestampsBlock = `{
+          "type": "section",
+          "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
+          "text": {
+              "type": "mrkdwn",
+              "text": "*List of Users Already Approved:*\\n${newListOfApproversWithTimestampsFormatted}"
+          }
+        }`
+        newUpdatedBlocks.push(JSON.parse(newListOfApproversTimestampsBlock));
       } else {
         newUpdatedBlocks.push(block);
       };
