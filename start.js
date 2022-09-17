@@ -844,51 +844,67 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     var metadataApprovalCount = messageMetadata.messages[0].metadata.event_payload.numberOfApprovals;
     var newMetadataApprovalCount = (metadataApprovalCount + 1)%2;
     var metadataRequestCost = parseFloat(messageMetadata.messages[0].metadata.event_payload.cost).toFixed(2);//basically turn it from a string to an integer.
+    var metadataPreviousApproverID = messageMetadata.messages[0].metadata.event_payload.previousApproverID.toUpperCase();
     var metadata = messageMetadata.messages[0].metadata; //this is already in JSON (aka an object)
     metadata.event_payload.numberOfApprovals = newMetadataApprovalCount;
     var originalMessageText = messageMetadata.messages[0].text;
     if (metadataRequestCost >= 10000) { //this checks if the request is over or equal to $10,000 
       //this part can be fixed later to use the modulus (%) operator.
-      if (metadataApprovalCount == 0) {
-        //if count==0, then update it to be 1
-        //this checks the count before it adds 1 to it. 
-        await client.chat.update({
-          channel: channelWithMessageWithBlocks,
-          text: originalMessageText,
-          ts: messageBlocksTS,
-          metadata: metadata
+      if (metadataPreviousApproverID.contains(approverUserID.toUpperCase())) {
+        //if the user has already approved this request, then don't do anything, but send them a message saying that they've already approved this request, and include the requestID.
+        var requestID = messageMetadata.messages[0].metadata.event_payload.requestID;
+        var message = `You've already approved this request. You cannot approve the request twice. The request ID is ${requestID}.`;
+        await client.chat.postMessage({
+          channel: approverUserID,
+          text: message
         });
-        console.log("Request has been approved by one approver. Waiting for another approver to approve requestID: " + messageMetadata.messages[0].metadata.event_payload.requestID);
-      } else if (metadataApprovalCount == 1) {
-        //if count==1, then update it to be reset to 0. 
-        //this checks the count before it adds 1 to it. 
-        await client.chat.update({
-          channel: channelWithMessageWithBlocks,
-          text: originalMessageText,
-          ts: messageBlocksTS,
-          metadata: metadata
-        });
-        console.log("Request has been approved by two approvers. RequestID: " + messageMetadata.messages[0].metadata.event_payload.requestID);
-  
-        // //this part only runs if the request has been approved twice.
-        // //if it's been approved twice, it'll be reset so that it'll be as if it was never approved
-        //   //this means that the request then needs to be approved by two more individuals. 
-        // var functionResponse_parsed = JSON.parse(functionResponse);
-        // var JSON_Message_ts = functionResponse_parsed.JSON_Message_ts;
-        // var JSON_Message_Content_APIResult = await app.client.conversations.history({
-        //   channel: process.env.requests_googleforms_json,
-        //   latest: JSON_Message_ts,
-        //   inclusive: true
-        // });
-        // var JSON_Message_Content = JSON_Message_Content_APIResult.messages[0].text;
-        // //change of plans, data does not need to be pushed to QBO.
-        // //but this will remain here in case it's needed in the future.
-        // // await axios
-        // //   .post(process.env.zapierProcessExpenseRequestPart2, {
-        // //     appTokenHeader: process.env.zapierWebhookRequestAppToken,
-        // //     requestContent_JSON: JSON_Message_Content,
-        // //     expense_decision: "approved"
-        // //   })
+      } else {
+        //if the user has not already approved this request, then add their ID to the metadata and increase the metadata count. 
+        if (metadataApprovalCount == 0) {
+          //if count==0, then update it to be 1
+          //this checks the count before it adds 1 to it. 
+          metadata.event_payload.previousApproverID = approverUserID.toUpperCase();
+            //^if it's the first approver, then add their ID to the metadata.
+          await client.chat.update({
+            channel: channelWithMessageWithBlocks,
+            text: originalMessageText,
+            ts: messageBlocksTS,
+            metadata: metadata
+          });
+          console.log("Request has been approved by one approver. Waiting for another approver to approve requestID: " + messageMetadata.messages[0].metadata.event_payload.requestID);
+        } else if (metadataApprovalCount == 1) {
+          //if count==1, then update it to be reset to 0. 
+          //this checks the count before it adds 1 to it. 
+          metadata.event_payload.previousApproverID = "";
+            //^if it's the second approver, then reset the metadata to be empty.
+          await client.chat.update({
+            channel: channelWithMessageWithBlocks,
+            text: originalMessageText,
+            ts: messageBlocksTS,
+            metadata: metadata
+          });
+          console.log("Request has been approved by two approvers. RequestID: " + messageMetadata.messages[0].metadata.event_payload.requestID);
+    
+          // //this part only runs if the request has been approved twice.
+          // //if it's been approved twice, it'll be reset so that it'll be as if it was never approved
+          //   //this means that the request then needs to be approved by two more individuals. 
+          // var functionResponse_parsed = JSON.parse(functionResponse);
+          // var JSON_Message_ts = functionResponse_parsed.JSON_Message_ts;
+          // var JSON_Message_Content_APIResult = await app.client.conversations.history({
+          //   channel: process.env.requests_googleforms_json,
+          //   latest: JSON_Message_ts,
+          //   inclusive: true
+          // });
+          // var JSON_Message_Content = JSON_Message_Content_APIResult.messages[0].text;
+          // //change of plans, data does not need to be pushed to QBO.
+          // //but this will remain here in case it's needed in the future.
+          // // await axios
+          // //   .post(process.env.zapierProcessExpenseRequestPart2, {
+          // //     appTokenHeader: process.env.zapierWebhookRequestAppToken,
+          // //     requestContent_JSON: JSON_Message_Content,
+          // //     expense_decision: "approved"
+          // //   })
+        }
       }
     } else {
       //this is the part to just send the request to the accountants channel, no more QBO/Zapier.

@@ -289,6 +289,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "event_type": "requestApprovedAction", 
                 "event_payload": {
                     "requestID": requestID,
+                    "previousApproverID": "",
                     "cost": productCost,
                     "numberOfApprovals": 0
                 }
@@ -304,6 +305,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "event_type": "requestApprovedAction", 
                 "event_payload": {
                     "requestID": requestID,
+                    "previousApproverID": "",
                     "cost": productCost,
                     "numberOfApprovals": 0
                 }
