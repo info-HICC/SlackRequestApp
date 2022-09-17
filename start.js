@@ -1153,13 +1153,14 @@ ${paymentDueByDate}
           newListOfApproversWithTimestampsFormatted.push(newListOfApproversWithTimestamps);
         };
         var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted);
+        var newListOfApproversWithTimestampsFormattedAsString2 = JSON.stringify(JSON.stringify(newListOfApproversWithTimestampsFormatted));
         console.log(newListOfApproversWithTimestampsFormattedAsString)
         var newListOfApproversTimestampsBlock = `{
           "type": "section",
           "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
           "text": {
               "type": "mrkdwn",
-              "text": "*List of Users Already Approved:*\\n${newListOfApproversWithTimestampsFormattedAsString}"
+              "text": "*List of Users Already Approved:*\\n${newListOfApproversWithTimestampsFormattedAsString2}"
           }
         }`
         newUpdatedBlocks.push(JSON.parse(newListOfApproversTimestampsBlock));
