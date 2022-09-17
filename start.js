@@ -224,7 +224,7 @@ app.event('app_home_opened', async ({ event, client }) => {
             "type": "section",
             "text": {
               "type": "mrkdwn",
-              "text": "Hello there! :wave: Application Status:" + ApplicationStatus
+              "text": "Hello there! :wave: Application Status: " + ApplicationStatus
             }
           }
         ]
