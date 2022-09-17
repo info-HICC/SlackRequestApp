@@ -141,6 +141,10 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
         "RoutingNumber": cash_RoutingNumber,
         "SWIFTCode": cash_SWIFTCode
     };
+    var numberOfApproversNeeded = "1";
+    if (productCost >= 10000) {
+        numberOfApproversNeeded = "2";
+    }
 
     var template = `{
         "blocks": [
@@ -219,6 +223,14 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                         "text": ">*Any images that may have been attached:*\\n>${imageLinksThatWereSubmitted}"
                     }
                 ]
+            },
+            {
+                "type": "section",
+                "block_id": "expenseRequestStatus_numberOfApproversNeeded_BlockID",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*Number of Additional Approvers Needed:*\\${numberOfApproversNeeded}"
+                }
             },
             {
                 "type": "section",

@@ -858,6 +858,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
           channel: approverUserID,
           text: message
         });
+        console.log(`User ${approverUserID} has already approved this request. They tried to approve it twice. The request ID is ${requestID}.`);
       } else {
         //if the user has not already approved this request, then add their ID to the metadata and increase the metadata count. 
         if (metadataApprovalCount == 0) {
@@ -1071,6 +1072,22 @@ ${paymentDueByDate}
       } else if (block.block_id == "approvers_JSONts_BlockID") {
         //matches any string that's in the format of 123.123 but not 123 or 123.
         var JSON_Message_ts = block.text.text.match(/[0-9]*\.[0-9]*/g)[0];
+      } else if (block.block_id == "expenseRequestStatus_numberOfApproversNeeded_BlockID") {
+        var numberOfApproversNeeded = block.text.text.match(/[0-9]*/g)[0];
+        if (numberOfApproversNeeded > 0) {
+          var newNumberOfApproversNeeded = parseInt(numberOfApproversNeeded) - 1;
+          var newStatus_numberOfApproversNeeded_Block = `{
+            "type": "section",
+            "block_id": "expenseRequestStatus_numberOfApproversNeeded_BlockID",
+            "text": {
+                "type": "mrkdwn",
+                "text": "*Number of Approvers Needed:*\\n${newNumberOfApproversNeeded}"
+          }`
+          newUpdatedBlocks.push(JSON.parse(newStatus_numberOfApproversNeeded_Block));
+        } else {
+          //just push the blocks to the newUpdatedBlocks Array if the number of approvers needed is 0. 
+          newUpdatedBlocks.push(block);
+        }
       } else {
         newUpdatedBlocks.push(block);
       };
