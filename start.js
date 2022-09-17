@@ -1141,8 +1141,9 @@ ${paymentDueByDate}
       } else if (block.block_id == "expenseRequestStatus_ListOfApproversTimestamps_BlockID") {
         var newListOfApproversWithTimestampsFormatted = "";
         for (i in listOfApproversTimestamps) {
-          newListOfApproversWithTimestampsFormatted += `<@{listOfApprovers[i]}> at ${listOfApproversTimestamps[i]} UTC\\n`;
+          newListOfApproversWithTimestampsFormatted += `<@${listOfApprovers[i]}> at ${listOfApproversTimestamps[i]} UTC\\n`;
         }
+        console.log(newListOfApproversWithTimestampsFormatted)
         var newListOfApproversTimestampsBlock = `{
           "type": "section",
           "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
