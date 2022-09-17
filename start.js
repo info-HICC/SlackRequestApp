@@ -1152,7 +1152,7 @@ ${paymentDueByDate}
           var newListOfApproversWithTimestamps = `'<@${approver}> - ${approverTimestamp}\\n'`;
           newListOfApproversWithTimestampsFormatted.push(newListOfApproversWithTimestamps);
         };
-        var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted);
+        var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '');
         var newListOfApproversWithTimestampsFormattedAsString2 = JSON.stringify(JSON.stringify(newListOfApproversWithTimestampsFormatted));
         console.log(newListOfApproversWithTimestampsFormattedAsString)
         var newListOfApproversTimestampsBlock = `{
@@ -1160,7 +1160,7 @@ ${paymentDueByDate}
           "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
           "text": {
               "type": "mrkdwn",
-              "text": "*List of Users Already Approved:*\\n${newListOfApproversWithTimestampsFormattedAsString2}"
+              "text": *List of Users Already Approved:*\\n${newListOfApproversWithTimestampsFormattedAsString}"
           }
         }`
         newUpdatedBlocks.push(JSON.parse(newListOfApproversTimestampsBlock));
