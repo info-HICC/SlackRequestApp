@@ -876,6 +876,10 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     var metadataPreviousApproverID = messageMetadata.messages[0].metadata.event_payload.previousApproverID.toUpperCase();
     var metadata = messageMetadata.messages[0].metadata; //this is already in JSON (aka an object)
     metadata.event_payload.numberOfApprovals = newMetadataApprovalCount;
+    var listOfApprovers = messageMetadata.messages[0].metadata.event_payload.listOfApprovers;
+    if (listOfApprovers.includes(approverUserID.toUpperCase()) == false) {
+      listOfApprovers.push(approverUserID.toUpperCase());
+    };
     var originalMessageText = messageMetadata.messages[0].text;
 
     var userAlreadyApproved = false;

@@ -234,6 +234,14 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
             },
             {
                 "type": "section",
+                "block_id": "expenseRequestStatus_numberOfApproversNeeded_BlockID",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*List of Users Already Approved:*\\n${numberOfApproversNeeded}"
+                }
+            },
+            {
+                "type": "section",
                 "block_id": "expenseRequestStatus_BlockID",
                 "text": {
                     "type": "mrkdwn",
@@ -302,6 +310,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "event_payload": {
                     "requestID": requestID,
                     "previousApproverID": "",
+                    "listOfApprovers": [],
                     "cost": productCost,
                     "numberOfApprovals": 0
                 }
@@ -318,6 +327,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "event_payload": {
                     "requestID": requestID,
                     "previousApproverID": "",
+                    "listOfApprovers": [],
                     "cost": productCost,
                     "numberOfApprovals": 0
                 }
