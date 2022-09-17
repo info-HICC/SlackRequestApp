@@ -298,7 +298,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
     } else if (testStatusFile.test == "true") {
         //for testing
         var postMessageResult = slackApp.client.chat.postMessage({
-            channel: process.env.infoUserID,
+            channel: process.env.devchannel,
             text: "This is a placeholder for the blocks that define the message. This is a request",
             blocks: templateParsed,
             metadata: {
