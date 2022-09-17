@@ -972,6 +972,29 @@ var requestApp_CreateRequestModalView_paymentMethod_cash_View = {
 	]
 };
 
+var requestApp_showApplicationInTestMode = {
+	"type": "modal",
+	"title": {
+		"type": "plain_text",
+		"text": "Slack-RequestApp",
+		"emoji": true
+	},
+	"close": {
+		"type": "plain_text",
+		"text": "Close Notice",
+		"emoji": true
+	},
+	"blocks": [
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": "Hey! This application is currently in test mode. Only the maintainer can access this application to use this function during this time. Check back later."
+			}
+		}
+	]
+};
+
 
 
 var requestApp_CreateRequestModalView_test = {
@@ -1822,5 +1845,6 @@ module.exports = {
     createRequestView: requestApp_CreateRequestModalView,
 	createRequestView_test: requestApp_CreateRequestModalView_test,
 	requestApp_CreateRequestModalView_test_cash,
-	createRequestView_Cash: requestApp_CreateRequestModalView_paymentMethod_cash_View
+	createRequestView_Cash: requestApp_CreateRequestModalView_paymentMethod_cash_View,
+	testModeModal: requestApp_showApplicationInTestMode
 };

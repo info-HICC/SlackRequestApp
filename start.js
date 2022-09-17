@@ -597,12 +597,32 @@ app.view("create-google-cal-task-callback", async ({ ack, body, view, client }) 
 app.action("createExpenseRequest", async ({ ack, client, body }) => {
   try {
     await ack();
+    //check if application is in test mode
+    if (testStatusFile.test == "false") {
+      //this is shown to everyone when not in test mode
+      var APICallResults = await client.views.open({
+        trigger_id: body.trigger_id,
+        view: modalViews.createRequestView
+      });
+      console.log(APICallResults);
+    } else {
+      if (body.user.id == process.env.infoUserID) {
+        //if user is info account, then show the form
+        var APICallResults = await client.views.open({
+          trigger_id: body.trigger_id,
+          view: modalViews.createRequestView
+        });
+        console.log(APICallResults);
+      } else {
+        //if user is not info account, then show the notification message
+        var APICallResults = await client.views.open({
+          trigger_id: body.trigger_id,
+          view: modalViews.testModeModal
+        });
+        console.log(APICallResults);
+      }
+    }
   
-    var APICallResults = await client.views.open({
-      trigger_id: body.trigger_id,
-      view: modalViews.createRequestView
-    });
-    console.log(APICallResults);
   } catch (error) {
     console.log(error);
   };
@@ -663,14 +683,25 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     var transactionType = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID.selected_option.value;
     var transactionType_text = formSubmittionValues.TransactionType_BlockID.TransactionType_ActionID.selected_option.text.text;
     var imageLink = formSubmittionValues.imageLink_BlockID.imageLink_ActionID.value;
+    var paymentMethodIsCash = "";
+    if (paymentMethod == "Cash") {
+      paymentMethodIsCash = true;
+    } else {
+      paymentMethodIsCash = false;
+    };
+    var cash_accountName = null;
+    var cash_bankName = null;
+    var cash_AccountNumber = null;
+    var cash_RoutingNumber = null;
+    var cash_SWIFTCode = null;
 
     if (paymentMethod == "Cash") { //this checks the value of the radio button that's selected, not the text
       //these variable only apply to the "Cash" option, basically to obtain account+routing number and other details for the payment
-      var cash_accountName = formSubmittionValues.AccountName_Cash_BlockID.AccountName_Cash_ActionID.value;
-      var cash_bankName = formSubmittionValues.BankName_Cash_BlockID.BankName_Cash_ActionID.value;
-      var cash_AccountNumber = formSubmittionValues.AccountNumber_Cash_BlockID.AccountNumber_Cash_ActionID.value;
-      var cash_RoutingNumber = formSubmittionValues.RoutingNumber_Cash_BlockID.RoutingNumber_Cash_ActionID.value;
-      var cash_SWIFTCode = formSubmittionValues.SWIFTCode_Cash_BlockID.SWIFTCode_Cash_ActionID.value;
+      cash_accountName = formSubmittionValues.AccountName_Cash_BlockID.AccountName_Cash_ActionID.value;
+      cash_bankName = formSubmittionValues.BankName_Cash_BlockID.BankName_Cash_ActionID.value;
+      cash_AccountNumber = formSubmittionValues.AccountNumber_Cash_BlockID.AccountNumber_Cash_ActionID.value;
+      cash_RoutingNumber = formSubmittionValues.RoutingNumber_Cash_BlockID.RoutingNumber_Cash_ActionID.value;
+      cash_SWIFTCode = formSubmittionValues.SWIFTCode_Cash_BlockID.SWIFTCode_Cash_ActionID.value;
     };
     
     //checking input values and modifying them for usage.
@@ -741,7 +772,6 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     //updating DescriptionEscaped variable with the new description while escaping characters like quotation marks and newlines.
     DescriptionEscaped = Description.replace(/"/g, '\\"').replace(/\n/g, '\\n');
 
-
     // const sectionSeperatorSymbol = "§"
     //DM requester about their submission
       //this function returns the results of the API call if that is something that's needed.
@@ -769,7 +799,15 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
           paymentToVendorOrCustomer_name: VendorOrCustomerName,
           makePaymentByDate: paymentDueByDate,
           imageLinksThatWereSubmitted: imageLink,
-          cashPayment_AdditionalInfo: cashPayment_AdditionalInfo_JSON
+          cashPayment_AdditionalInfo: cashPayment_AdditionalInfo_JSON,
+          paymentMethodIsCash: paymentMethodIsCash,
+          //the stuff below this will either be filled or empty, depending on the payment method.
+          //there should be a check to see if "paymentMethodIsCash" is true, and if so, then use the stuff below this. 
+          cash_accountName: cash_accountName,
+          cash_bankName: cash_bankName,
+          cash_AccountNumber: cash_AccountNumber,
+          cash_RoutingNumber: cash_RoutingNumber,
+          cash_SWIFTCode: cash_SWIFTCode
         });
 
     //this function call returns the results of the API call to Slack to send a message to the approvers' channel. 
@@ -780,7 +818,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
   };
 });
 
-//handles when a request is approved using the approve button
+//handles when a request is approved using the approve button inside the approvers channel. 
 app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client }) => {
   try {
     ack();
@@ -794,25 +832,78 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     //returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
       //this is to later find the JSON version of the message to POST to Zapier. 
     var functionResponse = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "approved");
-    var functionResponse_parsed = JSON.parse(functionResponse);
-    var JSON_Message_ts = functionResponse_parsed.JSON_Message_ts;
-    var JSON_Message_Content_APIResult = await app.client.conversations.history({
-      channel: process.env.requests_googleforms_json,
-      latest: JSON_Message_ts,
-      inclusive: true
+    
+    //call Slack's API to get message metadata
+    var messageMetadata = await client.conversations.history({
+      channel: channelWithMessageWithBlocks,
+      latest: messageBlocksTS,
+      limit: 1,
+      inclusive: true,
+      include_all_metadata: true
     });
-    var JSON_Message_Content = JSON_Message_Content_APIResult.messages[0].text;
-    await axios
-      .post(process.env.zapierProcessExpenseRequestPart2, {
-        appTokenHeader: process.env.zapierWebhookRequestAppToken,
-        requestContent_JSON: JSON_Message_Content,
-        expense_decision: "approved"
-      })
+    var metadataApprovalCount = messageMetadata.messages[0].metadata.event_payload.numberOfApprovals;
+    var newMetadataApprovalCount = (metadataApprovalCount + 1)%2;
+    var metadataRequestCost = messageMetadata.messages[0].metadata.event_payload.cost;
+    var metadata = JSON.parse(messageMetadata.messages[0].metadata);
+    metadata.event_payload.numberOfApprovals = newMetadataApprovalCount;
+    if (metadataRequestCost > 10000) { //this checks if the request is over $10,000
+      //this part can be fixed later to use the modulus (%) operator.
+      if (metadataApprovalCount == 0) {
+        //if count==0, then update it to be 1
+        //this checks the count before it adds 1 to it. 
+        await client.chat.update({
+          channel: channelWithMessageWithBlocks,
+          ts: messageBlocksTS,
+          metadata: metadata
+        });
+        console.log("Request has been approved by one approver. Waiting for another approver to approve.");
+      } else if (metadataApprovalCount == 1) {
+        //if count==1, then update it to be reset to 0. 
+        //this checks the count before it adds 1 to it. 
+        await client.chat.update({
+          channel: channelWithMessageWithBlocks,
+          ts: messageBlocksTS,
+          metadata: {
+            "event_type": "requestApprovedAction", 
+            "event_payload": {
+                "numberOfApprovals": 0
+            }
+          }
+        });
+        console.log("Request has been approved by two approvers.");
+  
+        // //this part only runs if the request has been approved twice.
+        // //if it's been approved twice, it'll be reset so that it'll be as if it was never approved
+        //   //this means that the request then needs to be approved by two more individuals. 
+        // var functionResponse_parsed = JSON.parse(functionResponse);
+        // var JSON_Message_ts = functionResponse_parsed.JSON_Message_ts;
+        // var JSON_Message_Content_APIResult = await app.client.conversations.history({
+        //   channel: process.env.requests_googleforms_json,
+        //   latest: JSON_Message_ts,
+        //   inclusive: true
+        // });
+        // var JSON_Message_Content = JSON_Message_Content_APIResult.messages[0].text;
+        // //change of plans, data does not need to be pushed to QBO.
+        // //but this will remain here in case it's needed in the future.
+        // // await axios
+        // //   .post(process.env.zapierProcessExpenseRequestPart2, {
+        // //     appTokenHeader: process.env.zapierWebhookRequestAppToken,
+        // //     requestContent_JSON: JSON_Message_Content,
+        // //     expense_decision: "approved"
+        // //   })
+      }
+    } else {
+      //this is the part to just send the request to the accountants channel, no more QBO/Zapier.
+      console.log("request is under $10,000, so it doesn't need to be approved by two people.");
+    }
+
+
+    
   } catch (error) {
     console.log(error);
   };
 });
-//handles when a request is approved using the approve button
+//handles when a request is denied using the deny button
 app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client }) => {
   try {
     ack();
@@ -919,6 +1010,7 @@ ${paymentDueByDate}
     return requestID;
   };
 
+  //this basically handles updating the message with a log of the last user to approve/deny the request
   async function expenseRequest_UpdateRequestMSG(app, blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, decision) {
     var blocks = JSON.parse(blocksArray);
     var newUpdatedBlocks = [];

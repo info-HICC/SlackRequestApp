@@ -125,6 +125,22 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
     var paymentToVendorOrCustomer_name = inputData_parsed.paymentToVendorOrCustomer_name;
     var makePaymentByDate = inputData_parsed.makePaymentByDate;
     var imageLinksThatWereSubmitted = inputData_parsed.imageLinksThatWereSubmitted;
+    var paymentMethodIsCash = inputData_parsed.paymentMethodIsCash;
+    //these 5 options are only available if the paymentMethodIsCash is true.
+    //if it's false, then it will be set to "null". 
+    var cash_accountName = inputData_parsed.cash_accountName;
+    var cash_bankName = inputData_parsed.cash_bankName;
+    var cash_AccountNumber = inputData_parsed.cash_AccountNumber;
+    var cash_RoutingNumber = inputData_parsed.cash_RoutingNumber;
+    var cash_SWIFTCode = inputData_parsed.cash_SWIFTCode;
+    //creating JSON from above 5 variables
+    var cash_JSON = {
+        "accountName": cash_accountName,
+        "bankName": cash_bankName,
+        "AccountNumber": cash_AccountNumber,
+        "RoutingNumber": cash_RoutingNumber,
+        "SWIFTCode": cash_SWIFTCode
+    };
 
     var template = `{
         "blocks": [
@@ -268,14 +284,30 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
         var postMessageResult = slackApp.client.chat.postMessage({
             channel: process.env.requests_googleforms_approvers, 
             text: "This is a placeholder for the blocks that define the message. This is a request",
-            blocks: templateParsed
+            blocks: templateParsed,
+            metadata: {
+                "event_type": "requestApprovedAction", 
+                "event_payload": {
+                    "requestID": requestID,
+                    "cost": productCost,
+                    "numberOfApprovals": 0
+                }
+            }
         });
     } else if (testStatusFile.test == "true") {
         //for testing
         var postMessageResult = slackApp.client.chat.postMessage({
             channel: process.env.infoUserID,
             text: "This is a placeholder for the blocks that define the message. This is a request",
-            blocks: templateParsed
+            blocks: templateParsed,
+            metadata: {
+                "event_type": "requestApprovedAction", 
+                "event_payload": {
+                    "requestID": requestID,
+                    "cost": productCost,
+                    "numberOfApprovals": 0
+                }
+            }
         });
     };
 
