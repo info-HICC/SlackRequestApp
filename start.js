@@ -843,10 +843,10 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     });
     var metadataApprovalCount = messageMetadata.messages[0].metadata.event_payload.numberOfApprovals;
     var newMetadataApprovalCount = (metadataApprovalCount + 1)%2;
-    var metadataRequestCost = messageMetadata.messages[0].metadata.event_payload.cost;
+    var metadataRequestCost = parseFloat(messageMetadata.messages[0].metadata.event_payload.cost).toFixed(2);//basically turn it from a string to an integer.
     var metadata = JSON.parse(messageMetadata.messages[0].metadata);
     metadata.event_payload.numberOfApprovals = newMetadataApprovalCount;
-    if (metadataRequestCost > 10000) { //this checks if the request is over $10,000
+    if (metadataRequestCost >= 10000) { //this checks if the request is over or equal to $10,000 
       //this part can be fixed later to use the modulus (%) operator.
       if (metadataApprovalCount == 0) {
         //if count==0, then update it to be 1
