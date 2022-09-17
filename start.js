@@ -1164,6 +1164,7 @@ ${paymentDueByDate}
           }
         }`
         newUpdatedBlocks.push(JSON.parse(newListOfApproversTimestampsBlock));
+        continue;
       } else {
         newUpdatedBlocks.push(block);
       };
