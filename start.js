@@ -866,12 +866,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
           channel: channelWithMessageWithBlocks,
           text: originalMessageText,
           ts: messageBlocksTS,
-          metadata: {
-            "event_type": "requestApprovedAction", 
-            "event_payload": {
-                "numberOfApprovals": 0
-            }
-          }
+          metadata: metadata
         });
         console.log("Request has been approved by two approvers.");
   
