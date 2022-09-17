@@ -780,7 +780,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     //creating JSON version of msg
       //this function returns the results of the API call if that is something that's needed.
     var JSONMSGSentResult = await sendJSONVersionOfMSG(requesterUserID, requestID, DescriptionEscaped, Cost, VendorOrCustomer, VendorOrCustomerName, productName, paymentMethod, transactionType, imageLink, paymentDueByDate);
-    var JSONMSG_ts = JSONMSGSentResult.ts;
+    var JSONMSG_ts = await JSONMSGSentResult.ts;
 
     //Sending request to Approvers' channel
       //this function returns the results of the API call if that is something that's needed.
@@ -858,7 +858,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
           ts: messageBlocksTS,
           metadata: metadata
         });
-        console.log("Request has been approved by one approver. Waiting for another approver to approve.");
+        console.log("Request has been approved by one approver. Waiting for another approver to approve requestID: " + messageMetadata.messages[0].metadata.event_payload.requestID);
       } else if (metadataApprovalCount == 1) {
         //if count==1, then update it to be reset to 0. 
         //this checks the count before it adds 1 to it. 
@@ -868,7 +868,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
           ts: messageBlocksTS,
           metadata: metadata
         });
-        console.log("Request has been approved by two approvers.");
+        console.log("Request has been approved by two approvers. RequestID: " + messageMetadata.messages[0].metadata.event_payload.requestID);
   
         // //this part only runs if the request has been approved twice.
         // //if it's been approved twice, it'll be reset so that it'll be as if it was never approved
