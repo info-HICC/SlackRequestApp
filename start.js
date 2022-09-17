@@ -1139,23 +1139,27 @@ ${paymentDueByDate}
           newUpdatedBlocks.push(block);
         }
       } else if (block.block_id == "expenseRequestStatus_ListOfApproversTimestamps_BlockID") {
-        var newListOfApproversWithTimestampsFormatted = "";
+        var newListOfApproversWithTimestampsFormatted = [];
         console.log(listOfApprovers);
         console.log(listOfApprovers[0]);
         console.log(listOfApproversTimestamps);
         console.log(listOfApproversTimestamps[0]);
         console.log(listOfApprovers.length);
         console.log(listOfApproversTimestamps.length);
-        // for (i=1; i<listOfApprovers.length; i++) {
-        //   newListOfApproversWithTimestampsFormatted += `<@${listOfApprovers[i]}> at ${listOfApproversTimestamps[i]} UTC\\n`;
-        // }
-        console.log(newListOfApproversWithTimestampsFormatted)
+        for (i=0; i<listOfApprovers.length; i++) {
+          var approver = listOfApprovers[i];
+          var approverTimestamp = listOfApproversTimestamps[i];
+          var newListOfApproversWithTimestamps = `<@${approver}> - ${approverTimestamp}\\n`;
+          newListOfApproversWithTimestampsFormatted.push(newListOfApproversWithTimestamps);
+        };
+        var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted);
+        console.log(newListOfApproversWithTimestampsFormattedAsString)
         var newListOfApproversTimestampsBlock = `{
           "type": "section",
           "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
           "text": {
               "type": "mrkdwn",
-              "text": "*List of Users Already Approved:*\\n${newListOfApproversWithTimestampsFormatted}"
+              "text": "*List of Users Already Approved:*\\n${newListOfApproversWithTimestampsFormattedAsString}"
           }
         }`
         newUpdatedBlocks.push(JSON.parse(newListOfApproversTimestampsBlock));
