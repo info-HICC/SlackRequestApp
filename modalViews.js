@@ -1,4 +1,4 @@
-var requestAppModalView = { //view created using Slack's interactive Block Kit Builder
+var requestAppModalView = { //view created using Slack's interactive Block Kit Builder. Just for Google Calendar thing.
     "type": "modal",
     "callback_id": "create-google-cal-task-callback",
     "title": {

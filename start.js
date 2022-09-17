@@ -203,39 +203,39 @@ app.event("reaction_added", async ({ event, client }) => {
   })
 }});
 
-//listen for when user opens the home tab
-//show test status of application
-app.event('app_home_opened', async ({ event, client }) => {
-  try {
-    console.log("app_home_opened event triggered.");
-    var ApplicationStatus = "";
-    if (testStatusFile.test == "true") {
-      ApplicationStatus = "Test Mode";
-    } else {
-      ApplicationStatus = "Production Mode";
-    }
-    // Call views.publish with the built-in client
-    const result = await client.views.publish({
-      // Use the user ID associated with the event
-      user_id: event.user,
-      view: {
-        "type": "home",
-        "blocks": [
-          {
-            "type": "section",
-            "text": {
-              "type": "mrkdwn",
-              "text": "Hello there! :wave: Application Status: " + ApplicationStatus
-            }
-          }
-        ]
-      }
-    });
-  }
-  catch (error) {
-    console.error(error);
-  }
-});
+// //listen for when user opens the home tab
+// //show test status of application
+// app.event('app_home_opened', async ({ event, client }) => {
+//   try {
+//     console.log("app_home_opened event triggered.");
+//     var ApplicationStatus = "";
+//     if (testStatusFile.test == "true") {
+//       ApplicationStatus = "Test Mode";
+//     } else {
+//       ApplicationStatus = "Production Mode";
+//     }
+//     // Call views.publish with the built-in client
+//     const result = await client.views.publish({
+//       // Use the user ID associated with the event
+//       user_id: event.user,
+//       view: {
+//         "type": "home",
+//         "blocks": [
+//           {
+//             "type": "section",
+//             "text": {
+//               "type": "mrkdwn",
+//               "text": "Hello there! :wave: Application Status: " + ApplicationStatus
+//             }
+//           }
+//         ]
+//       }
+//     });
+//   }
+//   catch (error) {
+//     console.error(error);
+//   }
+// });
 
 //handles "/userid" command
 //will basically DM the user with their user ID
@@ -862,12 +862,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     var messageBlocksTS = body.message.ts;
     var channelWithMessageWithBlocks = body.channel.id;
 
-    //this handles creating the updated message, and updating that message.
-    //returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
-      //this is to later find the JSON version of the message to POST to Zapier. 
-    var functionResponse = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "approved");
-    
-    //call Slack's API to get message metadata
+    //call Slack's API to get message metadata of the message inside approvers channel.
     var messageMetadata = await client.conversations.history({
       channel: channelWithMessageWithBlocks,
       latest: messageBlocksTS,
@@ -882,9 +877,20 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     var metadata = messageMetadata.messages[0].metadata; //this is already in JSON (aka an object)
     metadata.event_payload.numberOfApprovals = newMetadataApprovalCount;
     var originalMessageText = messageMetadata.messages[0].text;
+
+    var userAlreadyApproved = false;
+    if (metadataPreviousApproverID.includes(approverUserID.toUpperCase())) {
+      userAlreadyApproved = true;
+    }
+
+    //this handles creating the updated message, and updating that message.
+    //returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
+      //this is to later find the JSON version of the message to POST to Zapier. 
+    var functionResponse = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, userAlreadyApproved, "approved");
+    
     if (metadataRequestCost >= 10000) { //this checks if the request is over or equal to $10,000 
       //this part can be fixed later to use the modulus (%) operator.
-      if (metadataPreviousApproverID.includes(approverUserID.toUpperCase())) {
+      if (userAlreadyApproved == true) {
         //if the user has already approved this request, then don't do anything, but send them a message saying that they've already approved this request, and include the requestID.
         var requestID = messageMetadata.messages[0].metadata.event_payload.requestID;
         var message = `You've already approved this request. You cannot approve the request twice. The request ID is ${requestID}.`;
@@ -1060,7 +1066,7 @@ ${paymentDueByDate}
   };
 
   //this basically handles updating the message with a log of the last user to approve/deny the request
-  async function expenseRequest_UpdateRequestMSG(app, blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, decision) {
+  async function expenseRequest_UpdateRequestMSG(app, blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, userAlreadyApproved, decision) {
     var blocks = JSON.parse(blocksArray);
     var newUpdatedBlocks = [];
     //this returns the current time in UTC in 24 hour clock format.
@@ -1109,7 +1115,7 @@ ${paymentDueByDate}
       } else if (block.block_id == "expenseRequestStatus_numberOfApproversNeeded_BlockID") {
         var numberOfApproversNeeded = block.text.text.match(/\d+/g)[0];
         console.log(numberOfApproversNeeded);
-        if (numberOfApproversNeeded > 0) {
+        if (numberOfApproversNeeded > 0 && userAlreadyApproved == false) {
           console.log("subtracting...")
           var newNumberOfApproversNeeded = parseInt(numberOfApproversNeeded) - 1;
           var newStatus_numberOfApproversNeeded_Block = `{
