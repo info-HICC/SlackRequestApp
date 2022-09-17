@@ -1074,6 +1074,7 @@ ${paymentDueByDate}
         var JSON_Message_ts = block.text.text.match(/[0-9]*\.[0-9]*/g)[0];
       } else if (block.block_id == "expenseRequestStatus_numberOfApproversNeeded_BlockID") {
         var numberOfApproversNeeded = block.text.text.match(/\d+/g)[0];
+        console.log(numberOfApproversNeeded);
         if (numberOfApproversNeeded > 0) {
           console.log("subtracting...")
           var newNumberOfApproversNeeded = parseInt(numberOfApproversNeeded) - 1;
