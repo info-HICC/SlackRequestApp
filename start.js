@@ -1149,7 +1149,11 @@ ${paymentDueByDate}
         for (i=0; i<listOfApprovers.length; i++) {
           var approver = listOfApprovers[i];
           var approverTimestamp = listOfApproversTimestamps[i];
-          var newListOfApproversWithTimestamps = `{ "type": "mrkdwn", "text": "<@${approver}> at ${approverTimestamp} UTC" },`;
+          if (listOfApprovers-1 == i) {
+            var newListOfApproversWithTimestamps = `{ "type": "mrkdwn", "text": "<@${approver}> at ${approverTimestamp} UTC" }`;
+          } else {
+            var newListOfApproversWithTimestamps = `{ "type": "mrkdwn", "text": "<@${approver}> at ${approverTimestamp} UTC" },`;
+          }
           newListOfApproversWithTimestampsFormatted.push(newListOfApproversWithTimestamps);
           console.log(i);
         };
