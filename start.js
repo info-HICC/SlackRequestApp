@@ -1140,12 +1140,12 @@ ${paymentDueByDate}
         }
       } else if (block.block_id == "expenseRequestStatus_ListOfApproversTimestamps_BlockID") {
         var newListOfApproversWithTimestampsFormatted = [];
-        console.log(listOfApprovers);
-        console.log(listOfApprovers[0]);
-        console.log(listOfApproversTimestamps);
-        console.log(listOfApproversTimestamps[0]);
-        console.log(listOfApprovers.length);
-        console.log(listOfApproversTimestamps.length);
+        // console.log(listOfApprovers);
+        // console.log(listOfApprovers[0]);
+        // console.log(listOfApproversTimestamps);
+        // console.log(listOfApproversTimestamps[0]);
+        // console.log(listOfApprovers.length);
+        // console.log(listOfApproversTimestamps.length);
         for (let i=0; i<=listOfApprovers.length - 1; i++) {
           var approver = listOfApprovers[i];
           var approverTimestamp = listOfApproversTimestamps[i];
@@ -1155,8 +1155,8 @@ ${paymentDueByDate}
             var newListOfApproversWithTimestamps = `{ "type": "mrkdwn", "text": "\><@${approver}> at ${approverTimestamp} UTC" },`;
           }
           newListOfApproversWithTimestampsFormatted.push(newListOfApproversWithTimestamps);
-          console.log(i);
-          console.log(`listOfApprovers Length: ${listOfApprovers.length}`);
+          // console.log(i);
+          // console.log(`listOfApprovers Length: ${listOfApprovers.length}`);
         };
         var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '');
         console.log(newListOfApproversWithTimestampsFormattedAsString)
