@@ -1161,6 +1161,7 @@ ${paymentDueByDate}
           "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
           "fields": ${newListOfApproversWithTimestampsFormatted}
         }`
+        console.log(newListOfApproversTimestampsBlock);
         newUpdatedBlocks.push(JSON.parse(newListOfApproversTimestampsBlock));
       } else {
         newUpdatedBlocks.push(block);
