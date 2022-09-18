@@ -1160,13 +1160,14 @@ ${paymentDueByDate}
         };
         var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '');
         console.log(newListOfApproversWithTimestampsFormattedAsString)
-        var newListOfApproversTimestampsBlock = block;
-        newListOfApproversTimestampsBlock.fields = `[${newListOfApproversWithTimestampsFormattedAsString}]`;
-        // `{
-        //   "type": "section",
-        //   "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
-        //   "fields": [${newListOfApproversWithTimestampsFormatted}]
-        // }`
+        var originalText = block.text;
+        originalText = delete originalText.text.verbatim;
+        var newListOfApproversTimestampsBlock = `{
+          "type": "section",
+          "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
+          "text": ${originalText},
+          "fields": [${newListOfApproversWithTimestampsFormatted}]
+        }`
         console.log(newListOfApproversTimestampsBlock);
         newUpdatedBlocks.push(JSON.parse(newListOfApproversTimestampsBlock));
       } else {
