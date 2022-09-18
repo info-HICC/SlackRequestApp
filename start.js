@@ -1149,8 +1149,9 @@ ${paymentDueByDate}
         for (i=0; i<listOfApprovers.length; i++) {
           var approver = listOfApprovers[i];
           var approverTimestamp = listOfApproversTimestamps[i];
-          var newListOfApproversWithTimestamps = `'<@${approver}> - ${approverTimestamp}\\n'`;
+          var newListOfApproversWithTimestamps = `{ "type": "mrkdwn", "text": "<@${approver}> at ${approverTimestamp} UTC" },`;
           newListOfApproversWithTimestampsFormatted.push(newListOfApproversWithTimestamps);
+          console.log(i);
         };
         var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '');
         var newListOfApproversWithTimestampsFormattedAsString2 = JSON.stringify(JSON.stringify(newListOfApproversWithTimestampsFormatted));
@@ -1158,13 +1159,9 @@ ${paymentDueByDate}
         var newListOfApproversTimestampsBlock = `{
           "type": "section",
           "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
-          "text": {
-              "type": "mrkdwn",
-              "text": "*List of Users Already Approved:*\\n${newListOfApproversWithTimestampsFormattedAsString}"
-          }
+          "fields": ${newListOfApproversWithTimestampsFormatted}
         }`
         newUpdatedBlocks.push(JSON.parse(newListOfApproversTimestampsBlock));
-        continue;
       } else {
         newUpdatedBlocks.push(block);
       };
