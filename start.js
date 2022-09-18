@@ -1161,7 +1161,7 @@ ${paymentDueByDate}
         var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '');
         console.log(newListOfApproversWithTimestampsFormattedAsString)
         var originalText = block.text;
-        originalText = delete originalText.text.verbatim;
+        delete originalText.text.verbatim;
         var newListOfApproversTimestampsBlock = `{
           "type": "section",
           "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
