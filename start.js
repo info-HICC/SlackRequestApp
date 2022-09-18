@@ -1155,6 +1155,12 @@ ${paymentDueByDate}
             var newListOfApproversWithTimestamps = `{ "type": "mrkdwn", "text": "<@${approver}> at ${approverTimestamp} UTC" },`;
           }
           newListOfApproversWithTimestampsFormatted.push(newListOfApproversWithTimestamps);
+          if ((listOfApprovers-1 == i) == true) {
+            console.log("true")
+          } else {
+            console.log("false");
+            console.log(listOfApprovers-1);
+          }
           console.log(i);
         };
         var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '');
