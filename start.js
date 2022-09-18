@@ -1150,9 +1150,9 @@ ${paymentDueByDate}
           var approver = listOfApprovers[i];
           var approverTimestamp = listOfApproversTimestamps[i];
           if (listOfApprovers.length-1 == i) {
-            var newListOfApproversWithTimestamps = `{ "type": "mrkdwn", "text": "<@${approver}> at ${approverTimestamp} UTC" }`;
+            var newListOfApproversWithTimestamps = `{ "type": "mrkdwn", "text": "\><@${approver}> at ${approverTimestamp} UTC" }`;
           } else {
-            var newListOfApproversWithTimestamps = `{ "type": "mrkdwn", "text": "<@${approver}> at ${approverTimestamp} UTC" },`;
+            var newListOfApproversWithTimestamps = `{ "type": "mrkdwn", "text": "\><@${approver}> at ${approverTimestamp} UTC" },`;
           }
           newListOfApproversWithTimestampsFormatted.push(newListOfApproversWithTimestamps);
           console.log(i);
@@ -1160,11 +1160,13 @@ ${paymentDueByDate}
         };
         var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '');
         console.log(newListOfApproversWithTimestampsFormattedAsString)
-        var newListOfApproversTimestampsBlock = `{
-          "type": "section",
-          "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
-          "fields": [${newListOfApproversWithTimestampsFormatted}]
-        }`
+        var newListOfApproversTimestampsBlock = block;
+        newListOfApproversTimestampsBlock.fields = `[${newListOfApproversWithTimestampsFormattedAsString}]`;
+        // `{
+        //   "type": "section",
+        //   "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
+        //   "fields": [${newListOfApproversWithTimestampsFormatted}]
+        // }`
         console.log(newListOfApproversTimestampsBlock);
         newUpdatedBlocks.push(JSON.parse(newListOfApproversTimestampsBlock));
       } else {
