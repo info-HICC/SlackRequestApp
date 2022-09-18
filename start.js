@@ -1146,7 +1146,7 @@ ${paymentDueByDate}
         console.log(listOfApproversTimestamps[0]);
         console.log(listOfApprovers.length);
         console.log(listOfApproversTimestamps.length);
-        for (let i=0; i<=listOfApprovers.length; i++) {
+        for (let i=0; i<=listOfApprovers.length - 1; i++) {
           var approver = listOfApprovers[i];
           var approverTimestamp = listOfApproversTimestamps[i];
           if (listOfApprovers.length-1 == i) {
@@ -1159,7 +1159,6 @@ ${paymentDueByDate}
           console.log(`listOfApprovers Length: ${listOfApprovers.length}`);
         };
         var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '');
-        var newListOfApproversWithTimestampsFormattedAsString2 = JSON.stringify(JSON.stringify(newListOfApproversWithTimestampsFormatted));
         console.log(newListOfApproversWithTimestampsFormattedAsString)
         var newListOfApproversTimestampsBlock = `{
           "type": "section",
