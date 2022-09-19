@@ -864,7 +864,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
 
     //DM requester about their submission
       //this function returns the results of the API call if that is something that's needed.
-    await helperFunctionsFile.DMRequesterAboutRequestSubmission(app, requesterUserID, requestID, Description, productName, Cost, transactionType_text, paymentMethod_text, VendorOrCustomer, VendorOrCustomerName, imageLink, paymentDueByDate, RequesterSummaryMessageMetadata, ApproversMessageMetadata);
+    await helperFunctionsFile.DMRequesterAboutRequestSubmission(app, requesterUserID, requestID, DescriptionEscaped, productName, Cost, transactionType_text, paymentMethod_text, VendorOrCustomer, VendorOrCustomerName, imageLink, paymentDueByDate, RequesterSummaryMessageMetadata, ApproversMessageMetadata);
     //when using reply feature, look for body.messages.metadata to get the metadata of the message with the button that was clicked.
   } catch (error) {
     console.log(error);

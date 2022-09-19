@@ -70,9 +70,9 @@ module.exports.DMRequesterAboutRequestSubmission = async function (app, requeste
             }
         ]
     }`
-    console.log(messageBlock);
     //stringify the messageBlock
     messageBlock = JSON.stringify(JSON.parse(messageBlock).blocks);
+    console.log(messageBlock);
 //     var message = `
 // \`\`\`Here is the expense request you submitted:\`\`\`
 // \`\`\`RequestID:${requestID}\`\`\`
