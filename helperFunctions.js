@@ -28,7 +28,7 @@ module.exports.DMRequesterAboutRequestSubmission = async function (app, requeste
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "Request Description: \n${description}"
+                    "text": "Request Description: \\n${description}"
                 }
             },
             {
