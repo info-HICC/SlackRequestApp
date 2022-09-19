@@ -1,3 +1,5 @@
+const testStatusFile = require("./testStatus.js");
+
 //helper functions that are used by the functions above to prevent cluttering, also just reusability.
 module.exports.DMRequesterAboutRequestSubmission = async function (app, requesterUserID, requestID, description, productName, productCost, transactionType_asText, paymentMethod, paymentToVendorOrCustomer, paymentToVendorOrCustomer_name, imageLink, paymentDueByDate, requestDetailMetadata, ApproversMessageMetadata) {
     //removing the newline character from the description
