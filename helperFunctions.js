@@ -96,8 +96,11 @@ module.exports.DMRequesterAboutRequestSubmission = async function (app, requeste
         text: "Summary of your expense request",
         blocks: messageBlock,
         metadata: {
-          "requestDetails": requestDetailMetadata,
-          "ApproversMessageMetadata": ApproversMessageMetadata
+          "event_type": "requestApprovedAction", 
+          "event_payload": {
+            "requestDetails": requestDetailMetadata,
+            "ApproversMessageMetadata": ApproversMessageMetadata
+          }
         }
     });
   } else if (testStatusFile.test == "true") {
@@ -107,8 +110,11 @@ module.exports.DMRequesterAboutRequestSubmission = async function (app, requeste
         text: "Summary of your expense request",
         blocks: messageBlock,
         metadata: {
-          "requestDetails": requestDetailMetadata,
-          "ApproversMessageMetadata": ApproversMessageMetadata
+          "event_type": "requestApprovedAction", 
+          "event_payload": {
+            "requestDetails": requestDetailMetadata,
+            "ApproversMessageMetadata": ApproversMessageMetadata
+          }
         }
       });
 
