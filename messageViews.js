@@ -110,6 +110,7 @@ module.exports.updateMessageContent = function (task_id, task_title, task_descri
     return template;
 };
 
+//this is the message sent to the approvers channel
 module.exports.createRequestMessageForApprovers = async function (inputData, slackApp) {
     //the slackApp parameter is used to pass through Slack's Web APIs so that I can post the message into the channel without sending the msg back.
     var inputData_parsed = JSON.parse(inputData);
