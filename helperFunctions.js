@@ -125,122 +125,122 @@ module.exports.generateRequestID = async function () {
 };
 
   //this basically handles updating the message with a log of the last user to approve/deny the request
-  async function expenseRequest_UpdateRequestMSG(app, blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, userAlreadyApproved, listOfApprovers, listOfApproversTimestamps, decision) {
-    var blocks = JSON.parse(blocksArray);
-    var newUpdatedBlocks = [];
-    //this returns the current time in UTC in 24 hour clock format.
-      //returns something like this "2022-08-10T13:42:07.847Z"
-    var time = new Date().toISOString();
-    time = time.replace(/T/, ' ').replace(/\..+/, '');
-    //this replace changes the above example into something like this: "2022-08-10 13:42:07"
+module.exports.expenseRequest_UpdateRequestMSG = async function (app, blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, userAlreadyApproved, listOfApprovers, listOfApproversTimestamps, decision) {
+  var blocks = JSON.parse(blocksArray);
+  var newUpdatedBlocks = [];
+  //this returns the current time in UTC in 24 hour clock format.
+    //returns something like this "2022-08-10T13:42:07.847Z"
+  var time = new Date().toISOString();
+  time = time.replace(/T/, ' ').replace(/\..+/, '');
+  //this replace changes the above example into something like this: "2022-08-10 13:42:07"
 
-    for (i=0; i<blocks.length; i++) {
-      var block = blocks[i];
-      //potentially the image that is returned has invalid parameters?
-      //so, re-writing the image block
-      if (block.block_id == "image_BlockID") {
-        var newImageBlock = {
-          "type": "image",
-          "block_id": "image_BlockID",
-          "image_url": "https://slack-requestapp.herokuapp.com/static/whiteLine_600_50.png",
-          "alt_text": "A plain white image that's used to split messages."
-        };
-        newUpdatedBlocks.push(newImageBlock);
-      } else if (block.block_id == "expenseRequestStatus_BlockID") {
-        if (decision == "approved") {
-          var newStatusBlock = `{
-            "type": "section",
-            "block_id": "expenseRequestStatus_BlockID",
-            "text": {
-                "type": "mrkdwn",
-                "text": "*Current Request Status:*\\nApproved by <@${approverUserID}> at ${time} UTC"
-            }
-          }`;
-          newUpdatedBlocks.push(JSON.parse(newStatusBlock));
-        } else if (decision == "denied") {
-          var newStatusBlock = `{
-            "type": "section",
-            "block_id": "expenseRequestStatus_BlockID",
-            "text": {
-                "type": "mrkdwn",
-                "text": "*Current Request Status:*\\nDenied by <@${approverUserID}> at ${time} UTC"
-            }
-          }`;
-          newUpdatedBlocks.push(JSON.parse(newStatusBlock));
-        }
-      } else if (block.block_id == "approvers_JSONts_BlockID") {
-        //matches any string that's in the format of 123.123 but not 123 or 123.
-        var JSON_Message_ts = block.text.text.match(/[0-9]*\.[0-9]*/g)[0];
-      } else if (block.block_id == "expenseRequestStatus_numberOfApproversNeeded_BlockID") {
-        var numberOfApproversNeeded = block.text.text.match(/\d+/g)[0];
-        console.log(numberOfApproversNeeded);
-        if (numberOfApproversNeeded > 0 && userAlreadyApproved == false) {
-          console.log("subtracting...")
-          var newNumberOfApproversNeeded = parseInt(numberOfApproversNeeded) - 1;
-          var newStatus_numberOfApproversNeeded_Block = `{
-            "type": "section",
-            "block_id": "expenseRequestStatus_numberOfApproversNeeded_BlockID",
-            "text": {
-                "type": "mrkdwn",
-                "text": "*Number of Approvers Needed:*\\n${newNumberOfApproversNeeded}"
-            }
-          }`
-          newUpdatedBlocks.push(JSON.parse(newStatus_numberOfApproversNeeded_Block));
-        } else {
-          console.log('not subtracting...')
-          //just push the blocks to the newUpdatedBlocks Array if the number of approvers needed is 0. 
-          newUpdatedBlocks.push(block);
-        }
-      } else if (block.block_id == "expenseRequestStatus_ListOfApproversTimestamps_BlockID") {
-        var newListOfApproversWithTimestampsFormatted = [];
-        // console.log(listOfApprovers);
-        // console.log(listOfApprovers[0]);
-        // console.log(listOfApproversTimestamps);
-        // console.log(listOfApproversTimestamps[0]);
-        // console.log(listOfApprovers.length);
-        // console.log(listOfApproversTimestamps.length);
-        for (let i=0; i<=listOfApprovers.length - 1; i++) {
-          var approver = listOfApprovers[i];
-          var approverTimestamp = listOfApproversTimestamps[i];
-          var newListOfApproversWithTimestamps = `{ "type": "mrkdwn", "text": "\><@${approver}> at ${approverTimestamp} UTC" }`;
-          newListOfApproversWithTimestampsFormatted.push(newListOfApproversWithTimestamps);
-          // console.log(i);
-          // console.log(`listOfApprovers Length: ${listOfApprovers.length}`);
-        };
-        var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '');
-        console.log(newListOfApproversWithTimestampsFormattedAsString)
-        var originalText = block.text;
-        delete originalText.text.verbatim;
-        originalText = JSON.stringify(originalText);
-        var newListOfApproversTimestampsBlock = `{
-          "type": "section",
-          "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
-          "text": ${originalText},
-          "fields": [${newListOfApproversWithTimestampsFormatted}]
-        }`
-        console.log(newListOfApproversTimestampsBlock);
-        newUpdatedBlocks.push(JSON.parse(newListOfApproversTimestampsBlock));
-      } else {
-        newUpdatedBlocks.push(block);
+  for (i=0; i<blocks.length; i++) {
+    var block = blocks[i];
+    //potentially the image that is returned has invalid parameters?
+    //so, re-writing the image block
+    if (block.block_id == "image_BlockID") {
+      var newImageBlock = {
+        "type": "image",
+        "block_id": "image_BlockID",
+        "image_url": "https://slack-requestapp.herokuapp.com/static/whiteLine_600_50.png",
+        "alt_text": "A plain white image that's used to split messages."
       };
+      newUpdatedBlocks.push(newImageBlock);
+    } else if (block.block_id == "expenseRequestStatus_BlockID") {
+      if (decision == "approved") {
+        var newStatusBlock = `{
+          "type": "section",
+          "block_id": "expenseRequestStatus_BlockID",
+          "text": {
+              "type": "mrkdwn",
+              "text": "*Current Request Status:*\\nApproved by <@${approverUserID}> at ${time} UTC"
+          }
+        }`;
+        newUpdatedBlocks.push(JSON.parse(newStatusBlock));
+      } else if (decision == "denied") {
+        var newStatusBlock = `{
+          "type": "section",
+          "block_id": "expenseRequestStatus_BlockID",
+          "text": {
+              "type": "mrkdwn",
+              "text": "*Current Request Status:*\\nDenied by <@${approverUserID}> at ${time} UTC"
+          }
+        }`;
+        newUpdatedBlocks.push(JSON.parse(newStatusBlock));
+      }
+    } else if (block.block_id == "approvers_JSONts_BlockID") {
+      //matches any string that's in the format of 123.123 but not 123 or 123.
+      var JSON_Message_ts = block.text.text.match(/[0-9]*\.[0-9]*/g)[0];
+    } else if (block.block_id == "expenseRequestStatus_numberOfApproversNeeded_BlockID") {
+      var numberOfApproversNeeded = block.text.text.match(/\d+/g)[0];
+      console.log(numberOfApproversNeeded);
+      if (numberOfApproversNeeded > 0 && userAlreadyApproved == false) {
+        console.log("subtracting...")
+        var newNumberOfApproversNeeded = parseInt(numberOfApproversNeeded) - 1;
+        var newStatus_numberOfApproversNeeded_Block = `{
+          "type": "section",
+          "block_id": "expenseRequestStatus_numberOfApproversNeeded_BlockID",
+          "text": {
+              "type": "mrkdwn",
+              "text": "*Number of Approvers Needed:*\\n${newNumberOfApproversNeeded}"
+          }
+        }`
+        newUpdatedBlocks.push(JSON.parse(newStatus_numberOfApproversNeeded_Block));
+      } else {
+        console.log('not subtracting...')
+        //just push the blocks to the newUpdatedBlocks Array if the number of approvers needed is 0. 
+        newUpdatedBlocks.push(block);
+      }
+    } else if (block.block_id == "expenseRequestStatus_ListOfApproversTimestamps_BlockID") {
+      var newListOfApproversWithTimestampsFormatted = [];
+      // console.log(listOfApprovers);
+      // console.log(listOfApprovers[0]);
+      // console.log(listOfApproversTimestamps);
+      // console.log(listOfApproversTimestamps[0]);
+      // console.log(listOfApprovers.length);
+      // console.log(listOfApproversTimestamps.length);
+      for (let i=0; i<=listOfApprovers.length - 1; i++) {
+        var approver = listOfApprovers[i];
+        var approverTimestamp = listOfApproversTimestamps[i];
+        var newListOfApproversWithTimestamps = `{ "type": "mrkdwn", "text": "\><@${approver}> at ${approverTimestamp} UTC" }`;
+        newListOfApproversWithTimestampsFormatted.push(newListOfApproversWithTimestamps);
+        // console.log(i);
+        // console.log(`listOfApprovers Length: ${listOfApprovers.length}`);
+      };
+      var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '');
+      console.log(newListOfApproversWithTimestampsFormattedAsString)
+      var originalText = block.text;
+      delete originalText.text.verbatim;
+      originalText = JSON.stringify(originalText);
+      var newListOfApproversTimestampsBlock = `{
+        "type": "section",
+        "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
+        "text": ${originalText},
+        "fields": [${newListOfApproversWithTimestampsFormatted}]
+      }`
+      console.log(newListOfApproversTimestampsBlock);
+      newUpdatedBlocks.push(JSON.parse(newListOfApproversTimestampsBlock));
+    } else {
+      newUpdatedBlocks.push(block);
     };
-    newUpdatedBlocks = JSON.stringify(newUpdatedBlocks);
-    // match &amp;lt; and &amp;gt; to < and >
-    newUpdatedBlocks = newUpdatedBlocks.replace(/&amp;lt;/g, '<');
-    newUpdatedBlocks = newUpdatedBlocks.replace(/&amp;gt;/g, '>');
-    var msgUpdateResult = await app.client.chat.update({
-      channel: blockMessageChannelID,
-      ts: messageBlocksTS,
-      token: process.env.SLACK_BOT_TOKEN,
-      text: "This message has been updated to log the last decision.",
-      blocks: newUpdatedBlocks
-    });
-    var responseToReturn = {
-      SlackAPIResponse: msgUpdateResult,
-      JSON_Message_ts: JSON_Message_ts
-    }
-    return JSON.stringify(responseToReturn);
+  };
+  newUpdatedBlocks = JSON.stringify(newUpdatedBlocks);
+  // match &amp;lt; and &amp;gt; to < and >
+  newUpdatedBlocks = newUpdatedBlocks.replace(/&amp;lt;/g, '<');
+  newUpdatedBlocks = newUpdatedBlocks.replace(/&amp;gt;/g, '>');
+  var msgUpdateResult = await app.client.chat.update({
+    channel: blockMessageChannelID,
+    ts: messageBlocksTS,
+    token: process.env.SLACK_BOT_TOKEN,
+    text: "This message has been updated to log the last decision.",
+    blocks: newUpdatedBlocks
+  });
+  var responseToReturn = {
+    SlackAPIResponse: msgUpdateResult,
+    JSON_Message_ts: JSON_Message_ts
   }
+  return JSON.stringify(responseToReturn);
+}
 
 //Some of these functions were previously useful.
 //they're not used anymore, but I'm keeping them here for reference.

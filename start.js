@@ -997,7 +997,7 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
     //this handles creating the updated message, and updating that message.
     //returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
       //this is to later find the JSON version of the message to POST to Zapier. 
-    var functionResponse = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
+    var functionResponse = await helperFunctionsFile.expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
     var functionResponse_parsed = JSON.parse(functionResponse);
     var JSON_Message_ts = functionResponse_parsed.JSON_Message_ts;
     var JSON_Message_Content_APIResult = await app.client.conversations.history({
