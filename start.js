@@ -820,7 +820,6 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
         var JSONWithData = JSON.stringify({
           requesterID: requesterUserID,
           requestID: requestID,
-          JSON_ts: JSONMSG_ts,
           task_description: DescriptionEscaped,
           productName: productName,
           productCost: Cost,

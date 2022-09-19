@@ -116,7 +116,6 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
     var inputData_parsed = JSON.parse(inputData);
     var requesterID = inputData_parsed.requesterID;
     var requestID = inputData_parsed.requestID;
-    var JSON_ts = inputData_parsed.JSON_ts;
     var task_description = inputData_parsed.task_description;
     var productName = inputData_parsed.productName;
     var productCost = inputData_parsed.productCost;
@@ -169,14 +168,6 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "text": {
                     "type": "mrkdwn",
                     "text": "*Request ID:* ${requestID}"
-                }
-            },
-            {
-                "type": "section",
-                "block_id": "approvers_JSONts_BlockID",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "*Timestamp of JSON version of message:* ${JSON_ts}"
                 }
             },
             {
