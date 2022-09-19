@@ -631,6 +631,7 @@ app.view("create-google-cal-task-callback", async ({ ack, body, view, client }) 
 app.action("createExpenseRequest", async ({ ack, client, body }) => {
   try {
     await ack();
+    console.log(body);
     //check if application is in test mode
     if (testStatusFile.test == "false") {
       //this is shown to everyone when not in test mode
