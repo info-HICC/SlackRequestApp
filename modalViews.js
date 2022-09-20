@@ -996,6 +996,7 @@ var requestApp_showApplicationInTestMode = {
 };
 
 async function requestApp_RequestAddReplyView(ApproversMessageMetadata) {
+	ApproversMessageMetadata = JSON.stringify(ApproversMessageMetadata);
 	var requestApp_addReplyView = {
 		"type": "modal",
 		"callback_id": "RequestAddReplyButton-callback",
