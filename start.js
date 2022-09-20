@@ -1063,13 +1063,13 @@ app.view("RequestAddReplyButton-callback", async ({ ack, body, view, client }) =
       text: submittedText,
       thread_ts: approversMessageTimestamp
     });
-    console.log("APICallResults\n" + JSON.parse(APICallResults));
+    console.log("APICallResults\n" + JSON.stringify(APICallResults));
     var APICallResultsToRequester = await client.chat.postMessage({
       channel: addReplyButtonChannel,
       text: submittedText,
       thread_ts: addReplyButtonTS
     });
-    console.log("APICallResultsToRequester\n" + JSON.parse(APICallResultsToRequester));
+    console.log("APICallResultsToRequester\n" + JSON.stringify(APICallResultsToRequester));
   } catch (error) {
     console.log(error);
   };
