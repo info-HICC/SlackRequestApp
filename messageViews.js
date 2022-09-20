@@ -145,6 +145,11 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
     if (productCost >= 10000) {
         numberOfApproversNeeded = "2";
     }
+    //this just adds the imageSection if there are images being submitted
+    var imageSection = "";
+    if (imageLinksThatWereSubmitted.length > 0) {
+        imageSection = `{"type": "section","block_id": "approvers_imageSection_BlockID","text": {"type": "mrkdwn","text": ">*Any images that may have been attached:*\\\\n>${imageLinksThatWereSubmitted}"}},`
+    };
 
     var template = `{
         "blocks": [
@@ -175,7 +180,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "block_id": "approvers_requestDescription_BlockID",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*Description (also part of Memo on Quickbooks Online):*\\n${task_description}"
+                    "text": "*Description:*\\n${task_description}"
                 }
             },
             {
@@ -209,13 +214,9 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                     {
                         "type": "mrkdwn",
                         "text": ">*Payment should be made by:*\\n>${makePaymentByDate}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": ">*Any images that may have been attached:*\\n>${imageLinksThatWereSubmitted}"
                     }
                 ]
-            },
+            },${imageSection}
             {
                 "type": "section",
                 "block_id": "expenseRequestStatus_numberOfApproversNeeded_BlockID",
