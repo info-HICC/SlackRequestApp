@@ -1029,7 +1029,7 @@ app.action("RequestAddReplyButton_ActionID", async ({ ack, body, client }) => {
     });
     console.log(APICallResults);
   } catch (error) {
-    console.log(error);
+    console.log(error.data.response_metadata.messages);
   };
 });
 //handles submission of RequestAddReplyButton_ActionID modal
