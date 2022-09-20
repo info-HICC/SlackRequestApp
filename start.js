@@ -1021,9 +1021,11 @@ app.action("RequestAddReplyButton_ActionID", async ({ ack, body, client }) => {
   try {
     ack();
     console.log("\nRequestAddReplyButton_ActionID.body\n" + JSON.stringify(body));
+    var approversMetadata = body.message.metadata.event_payload.ApproversMessageMetadata;
+    var view = modalViews.RequestAddReplyView(approversMetadata);
     var APICallResults = await client.views.open({
       trigger_id: body.trigger_id,
-      view: modalViews.RequestAddReplyView
+      view: view
     });
     console.log(APICallResults);
   } catch (error) {

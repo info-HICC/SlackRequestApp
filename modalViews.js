@@ -995,40 +995,44 @@ var requestApp_showApplicationInTestMode = {
 	]
 };
 
-var requestApp_addReplyView = {
-	"type": "modal",
-    "callback_id": "RequestAddReplyButton-callback",
-	"title": {
-		"type": "plain_text",
-		"text": "Slack-RequestApp",
-		"emoji": true
-	},
-	"submit": {
-		"type": "plain_text",
-		"text": "Submit",
-		"emoji": true
-	},
-	"close": {
-		"type": "plain_text",
-		"text": "Cancel",
-		"emoji": true
-	},
-	"blocks": [
-		{
-			"type": "input",
-			"block_id": "RequestAddReplyButton_Text_BlockID",
-			"element": {
-				"type": "plain_text_input",
-				"multiline": true,
-				"action_id": "RequestAddReplyButton_Text_ActionID"
-			},
-			"label": {
-				"type": "plain_text",
-				"text": "Write what additional information you want to provide.\nThis information will be added as a reply.",
-				"emoji": true
+module.exports.RequestAddReplyView = async function (ApproversMessageMetadata) {
+	var requestApp_addReplyView = {
+		"type": "modal",
+		"callback_id": "RequestAddReplyButton-callback",
+		"private_metadata": ApproversMessageMetadata,
+		"title": {
+			"type": "plain_text",
+			"text": "Slack-RequestApp",
+			"emoji": true
+		},
+		"submit": {
+			"type": "plain_text",
+			"text": "Submit",
+			"emoji": true
+		},
+		"close": {
+			"type": "plain_text",
+			"text": "Cancel",
+			"emoji": true
+		},
+		"blocks": [
+			{
+				"type": "input",
+				"block_id": "RequestAddReplyButton_Text_BlockID",
+				"element": {
+					"type": "plain_text_input",
+					"multiline": true,
+					"action_id": "RequestAddReplyButton_Text_ActionID"
+				},
+				"label": {
+					"type": "plain_text",
+					"text": "Write what additional information you want to provide.\nThis information will be added as a reply.",
+					"emoji": true
+				}
 			}
-		}
-	]
+		]
+	};
+	return requestApp_addReplyView;
 }
 
 
@@ -1882,6 +1886,5 @@ module.exports = {
 	createRequestView_test: requestApp_CreateRequestModalView_test,
 	requestApp_CreateRequestModalView_test_cash,
 	createRequestView_Cash: requestApp_CreateRequestModalView_paymentMethod_cash_View,
-	testModeModal: requestApp_showApplicationInTestMode,
-	RequestAddReplyView: requestApp_addReplyView,
+	testModeModal: requestApp_showApplicationInTestMode
 };
