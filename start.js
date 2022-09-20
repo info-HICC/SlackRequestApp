@@ -1035,6 +1035,7 @@ app.view("RequestAddReplyButton-callback", async ({ ack, body, view, client }) =
   try {
     ack();
     console.log("\nCallback\n" + JSON.stringify(body))
+    console.log("\nCallback View\n" + JSON.stringify(view))
   } catch (error) {
     console.log(error);
   };
