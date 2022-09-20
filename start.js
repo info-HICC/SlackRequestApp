@@ -1036,8 +1036,21 @@ app.action("RequestAddReplyButton_ActionID", async ({ ack, body, client }) => {
 app.view("RequestAddReplyButton-callback", async ({ ack, body, view, client }) => {
   try {
     ack();
-    console.log("\nCallback\n" + JSON.stringify(body))
-    console.log("\nCallback View\n" + JSON.stringify(view))
+    //get private metadata by doing JSON.parse(body.private_metadata)
+    var privateMetadata = JSON.parse(body.view.private_metadata);
+    //two options available
+    //approversMessageTimestamp and approversChannelID
+    var approversMessageTimestamp = privateMetadata.approversMessageTimestamp;
+    var approversChannelID = privateMetadata.approversChannelID;
+    //get submitted text by doing body.state.values.RequestAddReplyButton_Text_BlockID.RequestAddReplyButton_Text_ActionID.value
+    var submittedText = body.state.values.RequestAddReplyButton_Text_BlockID.RequestAddReplyButton_Text_ActionID.value;
+    //make call to chat.postMessage to reply to the message at the timestamp and channelID specified in the private metadata
+    var APICallResults = await client.chat.postMessage({
+      channel: approversChannelID,
+      text: submittedText,
+      thread_ts: approversMessageTimestamp
+    });
+    console.log(APICallResults);
   } catch (error) {
     console.log(error);
   };
