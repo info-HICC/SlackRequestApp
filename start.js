@@ -875,6 +875,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
 app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client }) => {
   try {
     ack();
+    console.log("Approve Button Clicked\n\n" + JSON.stringify(body));
     var approverUserID = body.user.id;
     
     var messageBlocks = JSON.stringify(body.message.blocks);
