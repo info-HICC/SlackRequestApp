@@ -995,12 +995,12 @@ var requestApp_showApplicationInTestMode = {
 	]
 };
 
-async function requestApp_RequestAddReplyView(ApproversMessageMetadata) {
-	ApproversMessageMetadata = JSON.stringify(ApproversMessageMetadata);
+async function requestApp_RequestAddReplyView(privateMetadata) {
+	privateMetadata = JSON.stringify(privateMetadata);
 	var requestApp_addReplyView = {
 		"type": "modal",
 		"callback_id": "RequestAddReplyButton-callback",
-		"private_metadata": ApproversMessageMetadata,
+		"private_metadata": privateMetadata,
 		"title": {
 			"type": "plain_text",
 			"text": "Slack-RequestApp",

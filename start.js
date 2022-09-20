@@ -1022,7 +1022,15 @@ app.action("RequestAddReplyButton_ActionID", async ({ ack, body, client }) => {
     ack();
     console.log("\nRequestAddReplyButton_ActionID.body\n" + JSON.stringify(body));
     var approversMetadata = body.message.metadata.event_payload.ApproversMessageMetadata;
-    var view = await modalViews.RequestAddReplyView(approversMetadata);
+    var addReplyButtonChannelAndTS = {
+      channel: body.channel.id,
+      ts: body.message.ts
+    };
+    var metadata = {
+      approversMetadata: approversMetadata, //this contains metadata with the necessary information to trace the same request in the approvers channel.
+      addReplyButtonChanneAndTS: addReplyButtonChannelAndTS //this is the channel and ts of the message with the add reply button
+    };
+    var view = await modalViews.RequestAddReplyView(metadata);
     var APICallResults = await client.views.open({
       trigger_id: body.trigger_id,
       view: view
@@ -1039,19 +1047,28 @@ app.view("RequestAddReplyButton-callback", async ({ ack, body, view, client }) =
     // console.log("\nRequestAddReplyButton-callback.body\n" + JSON.stringify(body));
     //get private metadata by doing JSON.parse(body.private_metadata)
     var privateMetadata = JSON.parse(body.view.private_metadata);
-    //two options available
-    //approversMessageTimestamp and approversChannelID
-    var approversMessageTimestamp = privateMetadata.approversMessageTimestamp;
-    var approversChannelID = privateMetadata.approversChannelID;
+    //four options available
+      //approversMessageTimestamp and approversChannelID under approversMetadata
+      //channel and ts under addReplyButtonChanneAndTS
+    var approversMessageTimestamp = privateMetadata.approversMetadata.approversMessageTimestamp;
+    var approversChannelID = privateMetadata.approversMetadata.approversChannelID;
+    var addReplyButtonChannel = privateMetadata.addReplyButtonChanneAndTS.channel;
+    var addReplyButtonTS = privateMetadata.addReplyButtonChanneAndTS.ts;
     //get submitted text by doing body.state.values.RequestAddReplyButton_Text_BlockID.RequestAddReplyButton_Text_ActionID.value
     var submittedText = body.view.state.values.RequestAddReplyButton_Text_BlockID.RequestAddReplyButton_Text_ActionID.value;
-    //make call to chat.postMessage to reply to the message at the timestamp and channelID specified in the private metadata
+    //make call to chat.postMessage to reply to the message at the timestamp and channelID specified for approvers channel
     var APICallResults = await client.chat.postMessage({
       channel: approversChannelID,
       text: submittedText,
       thread_ts: approversMessageTimestamp
     });
-    console.log(APICallResults);
+    console.log("APICallResults\n" + APICallResults);
+    var APICallResultsToRequester = await client.chat.postMessage({
+      channel: addReplyButtonChannel,
+      text: submittedText,
+      thread_ts: addReplyButtonTS
+    });
+    console.log("APICallResultsToRequester\n" + APICallResultsToRequester);
   } catch (error) {
     console.log(error);
   };
