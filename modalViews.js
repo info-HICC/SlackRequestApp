@@ -995,7 +995,7 @@ var requestApp_showApplicationInTestMode = {
 	]
 };
 
-module.exports.RequestAddReplyView = async function (ApproversMessageMetadata) {
+async function requestApp_RequestAddReplyView(ApproversMessageMetadata) {
 	var requestApp_addReplyView = {
 		"type": "modal",
 		"callback_id": "RequestAddReplyButton-callback",
@@ -1886,5 +1886,6 @@ module.exports = {
 	createRequestView_test: requestApp_CreateRequestModalView_test,
 	requestApp_CreateRequestModalView_test_cash,
 	createRequestView_Cash: requestApp_CreateRequestModalView_paymentMethod_cash_View,
-	testModeModal: requestApp_showApplicationInTestMode
+	testModeModal: requestApp_showApplicationInTestMode,
+	RequestAddReplyView: requestApp_RequestAddReplyView
 };
