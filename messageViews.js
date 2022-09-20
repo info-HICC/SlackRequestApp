@@ -148,7 +148,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
     //this just adds the imageSection if there are images being submitted
     var imageSection = "";
     if (imageLinksThatWereSubmitted.length > 0) {
-        imageSection = `{"type": "section","block_id": "approvers_imageSection_BlockID","text": {"type": "mrkdwn","text": ">*Any images that may have been attached:*\\\n>${imageLinksThatWereSubmitted}"}},`
+        imageSection = `{"type": "section","block_id": "approvers_imageSection_BlockID","text": {"type": "mrkdwn","text": ">*Any images that may have been attached:*\\n>${imageLinksThatWereSubmitted}"}},`
     };
 
     var template = `{
