@@ -1036,6 +1036,7 @@ app.action("RequestAddReplyButton_ActionID", async ({ ack, body, client }) => {
 app.view("RequestAddReplyButton-callback", async ({ ack, body, view, client }) => {
   try {
     ack();
+    console.log("\nRequestAddReplyButton-callback.body\n" + JSON.stringify(body));
     //get private metadata by doing JSON.parse(body.private_metadata)
     var privateMetadata = JSON.parse(body.view.private_metadata);
     //two options available
