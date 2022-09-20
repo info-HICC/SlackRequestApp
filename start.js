@@ -1056,19 +1056,20 @@ app.view("RequestAddReplyButton-callback", async ({ ack, body, view, client }) =
     var addReplyButtonTS = privateMetadata.addReplyButtonChanneAndTS.ts;
     //get submitted text by doing body.state.values.RequestAddReplyButton_Text_BlockID.RequestAddReplyButton_Text_ActionID.value
     var submittedText = body.view.state.values.RequestAddReplyButton_Text_BlockID.RequestAddReplyButton_Text_ActionID.value;
+    submittedText = `New Reply from <@${body.user.id}>. They said: \n` + submittedText
     //make call to chat.postMessage to reply to the message at the timestamp and channelID specified for approvers channel
     var APICallResults = await client.chat.postMessage({
       channel: approversChannelID,
       text: submittedText,
       thread_ts: approversMessageTimestamp
     });
-    console.log("APICallResults\n" + APICallResults);
+    console.log("APICallResults\n" + JSON.parse(APICallResults));
     var APICallResultsToRequester = await client.chat.postMessage({
       channel: addReplyButtonChannel,
       text: submittedText,
       thread_ts: addReplyButtonTS
     });
-    console.log("APICallResultsToRequester\n" + APICallResultsToRequester);
+    console.log("APICallResultsToRequester\n" + JSON.parse(APICallResultsToRequester));
   } catch (error) {
     console.log(error);
   };
