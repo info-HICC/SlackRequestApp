@@ -5,70 +5,86 @@ const { v4: uuidv4 } = require('uuid');
 module.exports.DMRequesterAboutRequestSubmission = async function (app, requesterUserID, requestID, description, productName, productCost, transactionType_asText, paymentMethod, paymentToVendorOrCustomer, paymentToVendorOrCustomer_name, imageLink, paymentDueByDate, requestDetailMetadata, ApproversMessageMetadata) {
     //removing the newline character from the description
     var messageBlock = `{
-        "blocks": [
+      "blocks": [
+        {
+          "type": "header",
+          "text": {
+              "type": "plain_text",
+              "text": "Here's the expense request you submitted",
+              "emoji": true
+          }
+        },
+        {
+          "type": "section",
+          "text": {
+              "type": "mrkdwn",
+              "text": "\`\`\`Request ID: ${requestID}\`\`\`"
+          }
+        },
+        {
+          "type": "divider"
+        },
+        {
+          "type": "section",
+          "text": {
+              "type": "mrkdwn",
+              "text": "Request Description: \\n${description}"
+          }
+        },
+        {
+          "type": "section",
+          "fields": [
             {
-                "type": "header",
-                "text": {
-                    "type": "plain_text",
-                    "text": "Here's the expense request you submitted",
-                    "emoji": true
-                }
+                "type": "mrkdwn",
+                "text": ">*Product Name:*\\n>${productName}"
             },
             {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "\`\`\`Request ID: ${requestID}\`\`\`"
-                }
+                "type": "mrkdwn",
+                "text": ">*Product Cost:*\\n>$${productCost}"
             },
             {
-                "type": "divider"
+                "type": "mrkdwn",
+                "text": ">*Expense Type/Category:*\\n>${transactionType_asText}"
             },
             {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "Request Description: \\n${description}"
-                }
+                "type": "mrkdwn",
+                "text": ">*Payment Method:*\\n>${paymentMethod}"
             },
             {
-                "type": "section",
-                "fields": [
-                    {
-                        "type": "mrkdwn",
-                        "text": ">*Product Name:*\\n>${productName}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": ">*Product Cost:*\\n>$${productCost}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": ">*Expense Type/Category:*\\n>${transactionType_asText}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": ">*Payment Method:*\\n>${paymentMethod}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": ">*Vendor or Customer:*\\n>${paymentToVendorOrCustomer}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": ">*Vendor or Customer Name:*\\n>${paymentToVendorOrCustomer_name}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": ">*Payment should be made by:*\\n>${paymentDueByDate}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": ">*Any images that may have been attached:*\\n>${imageLink}"
-                    }
-                ]
+                "type": "mrkdwn",
+                "text": ">*Vendor or Customer:*\\n>${paymentToVendorOrCustomer}"
+            },
+            {
+                "type": "mrkdwn",
+                "text": ">*Vendor or Customer Name:*\\n>${paymentToVendorOrCustomer_name}"
+            },
+            {
+                "type": "mrkdwn",
+                "text": ">*Payment should be made by:*\\n>${paymentDueByDate}"
+            },
+            {
+                "type": "mrkdwn",
+                "text": ">*Any images that may have been attached:*\\n>${imageLink}"
             }
-        ]
+          ]
+        },
+        {
+          "type": "actions",
+          "block_id": "RequestAddReplyButton_BlockID",
+          "elements": [
+            {
+              "type": "button",
+              "text": {
+                "type": "plain_text",
+                "text": "Add Reply to Request Submission",
+                "emoji": true
+              },
+              "value": "RequestAddReplyButton_Value",
+              "action_id": "RequestAddReplyButton_ActionID"
+            }
+          ]
+        }
+      ]
     }`
     //stringify the messageBlock
     messageBlock = JSON.stringify(JSON.parse(messageBlock).blocks);

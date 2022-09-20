@@ -1015,6 +1015,31 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
     console.log(error);
   };
 });
+
+//handles when a the requester adds a reply to the request inside of Approvers channel
+app.action("RequestAddReplyButton_ActionID", async ({ ack, body, client }) => {
+  try {
+    ack();
+    console.log("\nRequestAddReplyButton_ActionID.body\n" + JSON.stringify(body));
+    var APICallResults = await client.views.open({
+      trigger_id: body.trigger_id,
+      view: modalViews.RequestAddReplyView
+    });
+    console.log(APICallResults);
+  } catch (error) {
+    console.log(error);
+  };
+});
+//handles submission of RequestAddReplyButton_ActionID modal
+app.view("RequestAddReplyButton-callback", async ({ ack, body, view, client }) => {
+  try {
+    ack();
+
+  } catch (error) {
+    console.log(error);
+  };
+});
+
 //helper functions previously found here have been moved to ./helperFunctions.js
 
 
