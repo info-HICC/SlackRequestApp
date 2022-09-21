@@ -977,12 +977,20 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
               "verbatim":false
             }
           });
-          //send the message to the accountants channel.
-          await client.chat.postMessage({
-            channel: process.env.accountantsChannelID,
-            text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
-            blocks: blocksForAccountants
-          });
+          //if test mode don't send to accountants channel
+          if (testMode == false) {
+            await client.chat.postMessage({
+              channel: accountantsChannelID,
+              text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
+              blocks: blocksForAccountants
+            });
+          } else if (testMode == true) {
+            await client.chat.postMessage({
+              channel: devchannel,
+              text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
+              blocks: blocksForAccountants
+            });
+          };
 
           // //this part only runs if the request has been approved twice.
           // //if it's been approved twice, it'll be reset so that it'll be as if it was never approved
@@ -1031,12 +1039,19 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
           "verbatim":false
         }
       });
-      //send the message to the accountants channel.
-      await client.chat.postMessage({
-        channel: process.env.accountantsChannelID,
-        text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
-        blocks: blocksForAccountants
-      });
+      if (testMode == false) {
+        await client.chat.postMessage({
+          channel: accountantsChannelID,
+          text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
+          blocks: blocksForAccountants
+        });
+      } else if (testMode == true) {
+        await client.chat.postMessage({
+          channel: devchannel,
+          text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
+          blocks: blocksForAccountants
+        });
+      };
       //this is the part to just send the request to the accountants channel, no more QBO/Zapier.
       console.log("request is under $10,000, so it doesn't need to be approved by two people.");
     }
