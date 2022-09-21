@@ -306,7 +306,8 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                     "listOfApprovers": [],
                     "listOfApproversTimestamps": [],
                     "cost": productCost,
-                    "numberOfApprovals": 0
+                    "numberOfApprovals": 0,
+                    "requesterUserID": requesterID
                 }
             }
         });
@@ -324,7 +325,8 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                     "listOfApprovers": [],
                     "listOfApproversTimestamps": [],
                     "cost": productCost,
-                    "numberOfApprovals": 0
+                    "numberOfApprovals": 0,
+                    "requesterUserID": requesterID
                 }
             }
         });

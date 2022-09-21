@@ -890,6 +890,8 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
       inclusive: true,
       include_all_metadata: true
     });
+    var requesterUserID = messageMetadata.messages[0].metadata.event_payload.requesterUserID;
+    var requestID = messageMetadata.messages[0].metadata.event_payload.requestID;
     var metadataApprovalCount = messageMetadata.messages[0].metadata.event_payload.numberOfApprovals;
     var newMetadataApprovalCount = (metadataApprovalCount + 1)%2;
     var metadataRequestCost = parseFloat(messageMetadata.messages[0].metadata.event_payload.cost).toFixed(2);//basically turn it from a string to an integer.
@@ -918,7 +920,6 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
       //this part can be fixed later to use the modulus (%) operator.
       if (userAlreadyApproved == true) {
         //if the user has already approved this request, then don't do anything, but send them a message saying that they've already approved this request, and include the requestID.
-        var requestID = messageMetadata.messages[0].metadata.event_payload.requestID;
         var message = `You've already approved this request. You cannot approve the request twice. The request ID is ${requestID}.`;
         await client.chat.postMessage({
           channel: approverUserID,
@@ -995,6 +996,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
               blocks: blocksForAccountants
             });
           };
+          await helperFunctionsFile.sendMessageUserIDAndMessage(app, requesterUserID, `Your request with the ID of "${requestID}" has been approved. It has been sent to the accountants channel.`)
 
           // //this part only runs if the request has been approved twice.
           // //if it's been approved twice, it'll be reset so that it'll be as if it was never approved
@@ -1060,6 +1062,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
           blocks: blocksForAccountants
         });
       };
+      await helperFunctionsFile.sendMessageUserIDAndMessage(app, requesterUserID, `Your request with the ID of "${requestID}" has been approved. It has been sent to the accountants channel.`)
       //this is the part to just send the request to the accountants channel, no more QBO/Zapier.
       console.log("request is under $10,000, so it doesn't need to be approved by two people.");
     }
