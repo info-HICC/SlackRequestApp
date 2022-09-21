@@ -965,6 +965,8 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
               blocksForAccountants.push(body.message.blocks[i]);
             } else if (body.message.blocks[i].block_id == "approvers_requestInformation_BlockID") {
               blocksForAccountants.push(body.message.blocks[i]);
+            } else if (body.message.blocks[i].block_id == "approvers_requestID_BlockID") {
+              blocksForAccountants.push(body.message.blocks[i]);
             }
           };
           //this enables the ability to send along the button that allows the accountants to add replies to the message inside of approvers channel. 
