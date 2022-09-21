@@ -951,7 +951,39 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
             metadata: metadata
           });
           console.log("Request has been approved by two approvers. RequestID: " + messageMetadata.messages[0].metadata.event_payload.requestID);
-    
+          
+          var blocksForAccountants = [{
+            "type":"section",
+            "block_id":"blocksForAccountant_2approvers_BlockID",
+            "text":{
+              "type":"mrkdwn",
+              "text":"A request has been approved. It is my understanding that the accountants know what will happen from this point on."
+            }
+            }];
+          for (i=0; i<body.message.blocks.length; i++) {
+            if (body.message.blocks[i].block_id == "approvers_requestDescription_BlockID") {
+              blocksForAccountants.push(body.message.blocks[i]);
+            } else if (body.message.blocks[i].block_id == "approvers_requestInformation_BlockID") {
+              blocksForAccountants.push(body.message.blocks[i]);
+            }
+          };
+          //this enables the ability to send along the button that allows the accountants to add replies to the message inside of approvers channel. 
+          blocksForAccountants.push({
+            "type":"section",
+            "block_id":"followUpSection_BlockID",
+            "text":{
+              "type":"mrkdwn",
+              "text":"If you have any questions or concerns regarding this request, please message the approver: <@" + approverUserID + "> directly and you can reference the Request ID which is unique for each request.",
+              "verbatim":false
+            }
+          });
+          //send the message to the accountants channel.
+          await client.chat.postMessage({
+            channel: process.env.accountantsChannelID,
+            text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
+            blocks: blocksForAccountants
+          });
+
           // //this part only runs if the request has been approved twice.
           // //if it's been approved twice, it'll be reset so that it'll be as if it was never approved
           //   //this means that the request then needs to be approved by two more individuals. 
@@ -974,6 +1006,37 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
         }
       }
     } else {
+      var blocksForAccountants = [{
+        "type":"section",
+        "block_id":"blocksForAccountant_1approver_BlockID",
+        "text":{
+          "type":"mrkdwn",
+          "text":"A request has been approved. It is my understanding that the accountants know what will happen from this point on."
+        }
+        }];
+      for (i=0; i<body.message.blocks.length; i++) {
+        if (body.message.blocks[i].block_id == "approvers_requestDescription_BlockID") {
+          blocksForAccountants.push(body.message.blocks[i]);
+        } else if (body.message.blocks[i].block_id == "approvers_requestInformation_BlockID") {
+          blocksForAccountants.push(body.message.blocks[i]);
+        }
+      };
+      //this enables the ability to send along the button that allows the accountants to add replies to the message inside of approvers channel. 
+      blocksForAccountants.push({
+        "type":"section",
+        "block_id":"followUpSection_BlockID",
+        "text":{
+          "type":"mrkdwn",
+          "text":"If you have any questions or concerns regarding this request, please message the approver: <@" + approverUserID + "> directly and you can reference the Request ID which is unique for each request.",
+          "verbatim":false
+        }
+      });
+      //send the message to the accountants channel.
+      await client.chat.postMessage({
+        channel: process.env.accountantsChannelID,
+        text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
+        blocks: blocksForAccountants
+      });
       //this is the part to just send the request to the accountants channel, no more QBO/Zapier.
       console.log("request is under $10,000, so it doesn't need to be approved by two people.");
     }
@@ -1057,7 +1120,7 @@ app.view("RequestAddReplyButton-callback", async ({ ack, body, view, client }) =
     var addReplyButtonTS = privateMetadata.addReplyButtonChanneAndTS.ts;
     //get submitted text by doing body.state.values.RequestAddReplyButton_Text_BlockID.RequestAddReplyButton_Text_ActionID.value
     var submittedText = body.view.state.values.RequestAddReplyButton_Text_BlockID.RequestAddReplyButton_Text_ActionID.value;
-    submittedText = `New Reply from <@${body.user.id}>. They said: \n\n` + submittedText
+    submittedText = `<@channel>\nNew Reply from <@${body.user.id}>. They said: \n\n` + submittedText
     //make call to chat.postMessage to reply to the message at the timestamp and channelID specified for approvers channel
     var APICallResults = await client.chat.postMessage({
       channel: approversChannelID,
