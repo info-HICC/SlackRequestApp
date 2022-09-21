@@ -1025,11 +1025,13 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
           "type":"mrkdwn",
           "text":"A request has been approved. It is my understanding that the accountants know what will happen from this point on."
         }
-        }];
+      }];
       for (i=0; i<body.message.blocks.length; i++) {
         if (body.message.blocks[i].block_id == "approvers_requestDescription_BlockID") {
           blocksForAccountants.push(body.message.blocks[i]);
         } else if (body.message.blocks[i].block_id == "approvers_requestInformation_BlockID") {
+          blocksForAccountants.push(body.message.blocks[i]);
+        } else if (body.message.blocks[i].block_id == "approvers_requestID_BlockID") {
           blocksForAccountants.push(body.message.blocks[i]);
         }
       };
@@ -1047,14 +1049,14 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
         console.log("is test false");
         await client.chat.postMessage({
           channel: process.env.accountantsChannelID,
-          text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
+          text: "Request has been approved. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
           blocks: blocksForAccountants
         });
       } else if (testStatusFile.test == "true") {
         console.log("is test true")
         await client.chat.postMessage({
           channel: process.env.devchannel,
-          text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
+          text: "Request has been approved. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
           blocks: blocksForAccountants
         });
       };
