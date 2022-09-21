@@ -147,6 +147,8 @@ module.exports.sendErrorMessageOnThrow = async function (app, requesterUserID, e
 };
 
 module.exports.sendMessageUserIDAndMessage = async function (app, userID, message) {
+  console.log(userID);
+  console.log(message);
   var messageResults = await app.client.chat.postMessage({
     channel: userID,
     text: message
