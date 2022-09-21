@@ -978,13 +978,13 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
             }
           });
           //if test mode don't send to accountants channel
-          if (testMode == false) {
+          if (testStatusFile.test == false) {
             await client.chat.postMessage({
               channel: accountantsChannelID,
               text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
               blocks: blocksForAccountants
             });
-          } else if (testMode == true) {
+          } else if (testStatusFile.test == true) {
             await client.chat.postMessage({
               channel: devchannel,
               text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
@@ -1039,13 +1039,13 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
           "verbatim":false
         }
       });
-      if (testMode == false) {
+      if (testStatusFile.test == false) {
         await client.chat.postMessage({
           channel: accountantsChannelID,
           text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
           blocks: blocksForAccountants
         });
-      } else if (testMode == true) {
+      } else if (testStatusFile.test == true) {
         await client.chat.postMessage({
           channel: devchannel,
           text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
