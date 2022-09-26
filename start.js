@@ -1082,21 +1082,21 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
     var requestID = body.message.metadata.event_payload.requestID;
     var approverUserID = body.user.id;
     var message = `Hello, your request with the ID of \`${requestID}\` has been denied. Please contact the approver (<@${approverUserID}>) directly if you have any questions or concerns.`;
-
+    //update message in approvers channel to show that it's been denied.
+    var functionResponse = await helperFunctionsFile.expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
     //send message to requester or devchannel depending on test status
     await helperFunctionsFile.sendMessageUserIDAndMessage(app, requesterUserID, message);
 
     //commenting out just to make sure not to run it.
-    // var approverUserID = body.user.id;
+    var approverUserID = body.user.id;
     
-    // var messageBlocks = JSON.stringify(body.message.blocks);
-    // var messageBlocksTS = body.message.ts;
-    // var channelWithMessageWithBlocks = body.channel.id;
+    var messageBlocks = JSON.stringify(body.message.blocks);
+    var messageBlocksTS = body.message.ts;
+    var channelWithMessageWithBlocks = body.channel.id;
 
-    // //this handles creating the updated message, and updating that message.
-    // //returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
-    //   //this is to later find the JSON version of the message to POST to Zapier. 
-    // var functionResponse = await helperFunctionsFile.expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
+    //this handles creating the updated message, and updating that message.
+    //returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
+      //this is to later find the JSON version of the message to POST to Zapier. 
     
     
     
