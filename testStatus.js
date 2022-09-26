@@ -8,5 +8,5 @@
 //file is already referenced inside of start.js
 
 module.exports = {
-    test: "false"
+    test: "true"
 }

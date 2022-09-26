@@ -1088,31 +1088,12 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
     var messageBlocksTS = body.message.ts;
     var channelWithMessageWithBlocks = body.channel.id;
 
-    //this handles creating the updated message, and updating that message.
-    //returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
-      //this is to later find the JSON version of the message to POST to Zapier. 
-    var functionResponse = await helperFunctionsFile.expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
+    //this update updates the message to show that the request has been denied.
+    var functionResponse = await helperFunctionsFile.expenseRequest_UpdateRequestMSG_denied(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
     
     //send message to requester or devchannel depending on test status
     await helperFunctionsFile.sendMessageUserIDAndMessage(app, requesterUserID, message);
     
-    
-    
-    //this stuff can go.
-    // var functionResponse_parsed = JSON.parse(functionResponse);
-    // var JSON_Message_ts = functionResponse_parsed.JSON_Message_ts;
-    // var JSON_Message_Content_APIResult = await app.client.conversations.history({
-    //   channel: process.env.requests_googleforms_json,
-    //   latest: JSON_Message_ts,
-    //   inclusive: true
-    // });
-    // var JSON_Message_Content = JSON_Message_Content_APIResult.messages[0].text;
-    // await axios
-    //   .post(process.env.zapierProcessExpenseRequestPart2, {
-    //     appTokenHeader: process.env.zapierWebhookRequestAppToken,
-    //     requestContent_JSON: JSON_Message_Content,
-    //     expense_decision: "denied"
-    //   })
   } catch (error) {
     console.log(error);
   };
