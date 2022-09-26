@@ -202,7 +202,19 @@ module.exports.expenseRequest_UpdateRequestMSG_denied = async function (app, blo
     } else {
       newUpdatedBlocks.push(block);
     };
-  }
+  };
+
+  newUpdatedBlocks = JSON.stringify(newUpdatedBlocks);
+  // match &amp;lt; and &amp;gt; to < and >
+  newUpdatedBlocks = newUpdatedBlocks.replace(/&amp;lt;/g, '<');
+  newUpdatedBlocks = newUpdatedBlocks.replace(/&amp;gt;/g, '>');
+  var msgUpdateResult = await app.client.chat.update({
+    channel: blockMessageChannelID,
+    ts: messageBlocksTS,
+    token: process.env.SLACK_BOT_TOKEN,
+    text: "This message has been updated to log the last decision (denied).",
+    blocks: newUpdatedBlocks
+  });
 };
 
   //this basically handles updating the message with a log of the last user to approve/deny the request
