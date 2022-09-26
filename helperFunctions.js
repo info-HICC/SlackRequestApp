@@ -149,12 +149,20 @@ module.exports.sendErrorMessageOnThrow = async function (app, requesterUserID, e
 module.exports.sendMessageUserIDAndMessage = async function (app, userID, message) {
   console.log(userID);
   console.log(message);
-  var messageResults = await app.client.chat.postMessage({
-    channel: userID,
-    text: message
-  });
+  if (testStatusFile.test == "false") {
+    //for production
+    var messageResults = await app.client.chat.postMessage({
+      channel: userID,
+      text: message
+    });
+  } else if (testStatusFile.test == "true") {
+    var messageResults = await app.client.chat.postMessage({
+      channel: process.env.devchannel,
+      text: message
+    });
+  }
   return messageResults;
-}
+};
 
 module.exports.generateRequestID = async function () {
   var requestID = uuidv4(); //this is used to generate a unique ID that's dependent on a UUID v4 and current time

@@ -1078,6 +1078,13 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
   try {
     ack();
     console.log(body);
+    var requesterUserID = body.message.metadata.event_payload.requesterUserID;
+    var requestID = body.message.metadata.event_payload.requestID;
+    var approverUserID = body.user.id;
+    var message = `Hello, your request with the ID of \`${requestID}\` has been denied. Please contact the approver (<@${approverUserID}>) directly if you have any questions or concerns.`;
+
+    //send message to requester or devchannel depending on test status
+    await helperFunctionsFile.sendMessageUserIDAndMessage(app, requesterUserID, message);
 
     //commenting out just to make sure not to run it.
     // var approverUserID = body.user.id;
