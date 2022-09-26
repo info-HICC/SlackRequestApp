@@ -4,6 +4,8 @@ const path = require('path');
 const nodecron = require('node-cron');
 //this references the testStatus.js file 
 const testStatusFile = require('./testStatus.js');
+//this references the helperFunctions.js file 
+const helperFunctionsFile = require('./helperFunctions.js');
 //this require statement contains the modal view.
 const modalViews = require("./modalViews.js");
 //this require statement contains the messages with blocks.
@@ -704,7 +706,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     var requesterUserID = body.user.id;
     var formSubmittionValues = body.view.state.values;
 
-    var requestID = await generateRequestID();
+    var requestID = await helperFunctionsFile.generateRequestID();
     var Description = formSubmittionValues.Description_BlockID.Description_ActionID.value;
     var Cost = formSubmittionValues.Cost_BlockID.Cost_ActionID.value;
     var paymentDueByDate = formSubmittionValues.paymentDueByDate_BlockID.paymentDueByDate_ActionID.selected_date;
@@ -744,7 +746,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
       //prohibiting the use of the character "\"
       //alerting user that the "\" character is not allowed.
       customErrorMsg = "Do not use the character \"\\\" in your task description. Please resubmit your request but without that character, or else, you will get another message like this."
-      await sendErrorMessageOnThrow(requesterUserID, customErrorMsg);
+      await helperFunctionsFile.sendErrorMessageOnThrow(app, requesterUserID, customErrorMsg);
       throw "Error: User tried to use a character that's not allowed inside their description. (The backslash character).";
       //^ that should end the try statement by throwing an error
     };
@@ -760,7 +762,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     if (isNaN(Cost) == true) {
       //run if Cost is not a number
       customErrorMsg = "Please enter a valid number when entering the cost of a request. Please re-fill out the form, making sure that you put a number (like 1, 10, 100, 100.01, 100.91275) for the cost to submit a request, otherwise, you will receive this error message again."
-      await sendErrorMessageOnThrow(requesterUserID, customErrorMsg);
+      await helperFunctionsFile.sendErrorMessageOnThrow(requesterUserID, customErrorMsg);
       throw "Error: User tried to pass a value that isn't a number into the Cost parameter.";
     } else {
       //else make the number into a money value format (like 10.00)
@@ -773,7 +775,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
       //prohibiting the use of the character "\"
       //alerting user that the character is not allowed.
       customErrorMsg = "Do not use the character \"\\\" in the product name of your request. Please resubmit your request but without that character, or else, you will get another message like this."
-      await sendErrorMessageOnThrow(requesterUserID, customErrorMsg);
+      await helperFunctionsFile.sendErrorMessageOnThrow(requesterUserID, customErrorMsg);
       throw "Error: User tried to use a character that's not allowed inside their product name. (The backslash character).";
       //^ that should end the try statement by throwing an error
     };
@@ -807,15 +809,10 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     //updating DescriptionEscaped variable with the new description while escaping characters like quotation marks and newlines.
     DescriptionEscaped = Description.replace(/"/g, '\\"').replace(/\n/g, '\\n');
 
-    // const sectionSeperatorSymbol = "§"
-    //DM requester about their submission
-      //this function returns the results of the API call if that is something that's needed.
-    await DMRequesterAboutRequestSubmission(requesterUserID, requestID, Description, Cost, imageLink, paymentDueByDate);
-
-    //creating JSON version of msg
-      //this function returns the results of the API call if that is something that's needed.
-    var JSONMSGSentResult = await sendJSONVersionOfMSG(requesterUserID, requestID, DescriptionEscaped, Cost, VendorOrCustomer, VendorOrCustomerName, productName, paymentMethod, transactionType, imageLink, paymentDueByDate);
-    var JSONMSG_ts = await JSONMSGSentResult.ts;
+    // //creating JSON version of msg
+    //   //this function returns the results of the API call if that is something that's needed.
+    // var JSONMSGSentResult = await sendJSONVersionOfMSG(requesterUserID, requestID, DescriptionEscaped, Cost, VendorOrCustomer, VendorOrCustomerName, productName, paymentMethod, transactionType, imageLink, paymentDueByDate);
+    // var JSONMSG_ts = await JSONMSGSentResult.ts;
 
     //Sending request to Approvers' channel
       //this function returns the results of the API call if that is something that's needed.
@@ -824,7 +821,6 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
         var JSONWithData = JSON.stringify({
           requesterID: requesterUserID,
           requestID: requestID,
-          JSON_ts: JSONMSG_ts,
           task_description: DescriptionEscaped,
           productName: productName,
           productCost: Cost,
@@ -848,6 +844,29 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
     //this function call returns the results of the API call to Slack to send a message to the approvers' channel. 
     var messageViewsResult = await messageViews.createRequestMessageForApprovers(JSONWithData, app);
 
+
+    var RequesterSummaryMessageMetadata = {
+      "requesterUserID": requesterUserID,
+      "requestID": requestID,
+      "description": DescriptionEscaped,
+      "cost": Cost,
+      "vendorOrCustomer": VendorOrCustomer,
+      "vendorOrCustomerName": VendorOrCustomerName,
+      "productName": productName,
+      "paymentMethod": paymentMethod,
+      "transactionType": transactionType,
+      "imageLink": imageLink,
+      "paymentDueByDate": paymentDueByDate,
+    };
+    var ApproversMessageMetadata = {
+      approversMessageTimestamp: messageViewsResult.ts,
+      approversChannelID: messageViewsResult.channel
+    }
+
+    //DM requester about their submission
+      //this function returns the results of the API call if that is something that's needed.
+    await helperFunctionsFile.DMRequesterAboutRequestSubmission(app, requesterUserID, requestID, DescriptionEscaped, productName, Cost, transactionType_text, paymentMethod_text, VendorOrCustomer, VendorOrCustomerName, imageLink, paymentDueByDate, RequesterSummaryMessageMetadata, ApproversMessageMetadata);
+    //when using reply feature, look for body.messages.metadata to get the metadata of the message with the button that was clicked.
   } catch (error) {
     console.log(error);
   };
@@ -857,6 +876,7 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
 app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client }) => {
   try {
     ack();
+    console.log("Approve Button Clicked\n\n" + JSON.stringify(body));
     var approverUserID = body.user.id;
     
     var messageBlocks = JSON.stringify(body.message.blocks);
@@ -871,6 +891,8 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
       inclusive: true,
       include_all_metadata: true
     });
+    var requesterUserID = messageMetadata.messages[0].metadata.event_payload.requesterUserID;
+    var requestID = messageMetadata.messages[0].metadata.event_payload.requestID;
     var metadataApprovalCount = messageMetadata.messages[0].metadata.event_payload.numberOfApprovals;
     var newMetadataApprovalCount = (metadataApprovalCount + 1)%2;
     var metadataRequestCost = parseFloat(messageMetadata.messages[0].metadata.event_payload.cost).toFixed(2);//basically turn it from a string to an integer.
@@ -893,13 +915,12 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
     //this handles creating the updated message, and updating that message.
     //returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
       //this is to later find the JSON version of the message to POST to Zapier. 
-    var functionResponse = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, userAlreadyApproved, listOfApprovers, listOfApproversTimestamps, "approved");
+    var functionResponse = await helperFunctionsFile.expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, userAlreadyApproved, listOfApprovers, listOfApproversTimestamps, "approved");
     
     if (metadataRequestCost >= 10000) { //this checks if the request is over or equal to $10,000 
       //this part can be fixed later to use the modulus (%) operator.
       if (userAlreadyApproved == true) {
         //if the user has already approved this request, then don't do anything, but send them a message saying that they've already approved this request, and include the requestID.
-        var requestID = messageMetadata.messages[0].metadata.event_payload.requestID;
         var message = `You've already approved this request. You cannot approve the request twice. The request ID is ${requestID}.`;
         await client.chat.postMessage({
           channel: approverUserID,
@@ -924,7 +945,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
           //if count==1, then update it to be reset to 0. 
           //this checks the count before it adds 1 to it. 
           metadata.event_payload.previousApproverID = "";
-            //^if it's the second approver, then reset the metadata to be empty.
+            //^if it's the second approver, then reset the metadataApprovalCount to be empty.
           await client.chat.update({
             channel: channelWithMessageWithBlocks,
             text: originalMessageText,
@@ -932,7 +953,52 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
             metadata: metadata
           });
           console.log("Request has been approved by two approvers. RequestID: " + messageMetadata.messages[0].metadata.event_payload.requestID);
-    
+          
+          var blocksForAccountants = [{
+            "type":"section",
+            "block_id":"blocksForAccountant_2approvers_BlockID",
+            "text":{
+              "type":"mrkdwn",
+              "text":"A request has been approved. It is my understanding that the accountants know what will happen from this point on."
+            }
+            }];
+          for (i=0; i<body.message.blocks.length; i++) {
+            if (body.message.blocks[i].block_id == "approvers_requestDescription_BlockID") {
+              blocksForAccountants.push(body.message.blocks[i]);
+            } else if (body.message.blocks[i].block_id == "approvers_requestInformation_BlockID") {
+              blocksForAccountants.push(body.message.blocks[i]);
+            } else if (body.message.blocks[i].block_id == "approvers_requestID_BlockID") {
+              blocksForAccountants.push(body.message.blocks[i]);
+            }
+          };
+          //this enables the ability to send along the button that allows the accountants to add replies to the message inside of approvers channel. 
+          blocksForAccountants.push({
+            "type":"section",
+            "block_id":"followUpSection_BlockID",
+            "text":{
+              "type":"mrkdwn",
+              "text":"If you have any questions or concerns regarding this request, please message the approver: <@" + approverUserID + "> directly and you can reference the Request ID which is unique for each request.",
+              "verbatim":false
+            }
+          });
+          //if test mode don't send to accountants channel
+          if (testStatusFile.test == "false") {
+            console.log("is test false required 2 approvers")
+            await client.chat.postMessage({
+              channel: process.env.accountantsChannelID,
+              text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
+              blocks: blocksForAccountants
+            });
+          } else if (testStatusFile.test == "true") {
+            console.log("is test true required 2 approvers")
+            await client.chat.postMessage({
+              channel: process.env.devchannel,
+              text: "Request has been approved by 2 people. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
+              blocks: blocksForAccountants
+            });
+          };
+          await helperFunctionsFile.sendMessageUserIDAndMessage(app, requesterUserID, `Your request with the ID of "${requestID}" has been approved. It has been sent to the accountants channel.`)
+
           // //this part only runs if the request has been approved twice.
           // //if it's been approved twice, it'll be reset so that it'll be as if it was never approved
           //   //this means that the request then needs to be approved by two more individuals. 
@@ -955,6 +1021,49 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
         }
       }
     } else {
+      var blocksForAccountants = [{
+        "type":"section",
+        "block_id":"blocksForAccountant_1approver_BlockID",
+        "text":{
+          "type":"mrkdwn",
+          "text":"A request has been approved. It is my understanding that the accountants know what will happen from this point on."
+        }
+      }];
+      for (i=0; i<body.message.blocks.length; i++) {
+        if (body.message.blocks[i].block_id == "approvers_requestDescription_BlockID") {
+          blocksForAccountants.push(body.message.blocks[i]);
+        } else if (body.message.blocks[i].block_id == "approvers_requestInformation_BlockID") {
+          blocksForAccountants.push(body.message.blocks[i]);
+        } else if (body.message.blocks[i].block_id == "approvers_requestID_BlockID") {
+          blocksForAccountants.push(body.message.blocks[i]);
+        }
+      };
+      //this enables the ability to send along the button that allows the accountants to add replies to the message inside of approvers channel. 
+      blocksForAccountants.push({
+        "type":"section",
+        "block_id":"followUpSection_BlockID",
+        "text":{
+          "type":"mrkdwn",
+          "text":"If you have any questions or concerns regarding this request, please message the approver: <@" + approverUserID + "> directly and you can reference the Request ID which is unique for each request.",
+          "verbatim":false
+        }
+      });
+      if (testStatusFile.test == "false") {
+        console.log("is test false");
+        await client.chat.postMessage({
+          channel: process.env.accountantsChannelID,
+          text: "Request has been approved. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
+          blocks: blocksForAccountants
+        });
+      } else if (testStatusFile.test == "true") {
+        console.log("is test true")
+        await client.chat.postMessage({
+          channel: process.env.devchannel,
+          text: "Request has been approved. Please review the request and make the payment if necessary. It is my understanding that the accountants already know what will happen from this point on.",
+          blocks: blocksForAccountants
+        });
+      };
+      await helperFunctionsFile.sendMessageUserIDAndMessage(app, requesterUserID, `Your request with the ID of \`${requestID}\` has been approved. It has been sent to the accountants channel.`)
       //this is the part to just send the request to the accountants channel, no more QBO/Zapier.
       console.log("request is under $10,000, so it doesn't need to be approved by two people.");
     }
@@ -969,226 +1078,89 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
 app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client }) => {
   try {
     ack();
+    console.log(body);
+    var requesterUserID = body.message.metadata.event_payload.requesterUserID;
+    var requestID = body.message.metadata.event_payload.requestID;
     var approverUserID = body.user.id;
-    
+    var message = `Hello, your request with the ID of \`${requestID}\` has been denied. Please contact the approver (<@${approverUserID}>) directly if you have any questions or concerns.`;
+
+    var approverUserID = body.user.id;
     var messageBlocks = JSON.stringify(body.message.blocks);
     var messageBlocksTS = body.message.ts;
     var channelWithMessageWithBlocks = body.channel.id;
 
-    //this handles creating the updated message, and updating that message.
-    //returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
-      //this is to later find the JSON version of the message to POST to Zapier. 
-    var functionResponse = await expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
-    var functionResponse_parsed = JSON.parse(functionResponse);
-    var JSON_Message_ts = functionResponse_parsed.JSON_Message_ts;
-    var JSON_Message_Content_APIResult = await app.client.conversations.history({
-      channel: process.env.requests_googleforms_json,
-      latest: JSON_Message_ts,
-      inclusive: true
-    });
-    var JSON_Message_Content = JSON_Message_Content_APIResult.messages[0].text;
-    await axios
-      .post(process.env.zapierProcessExpenseRequestPart2, {
-        appTokenHeader: process.env.zapierWebhookRequestAppToken,
-        requestContent_JSON: JSON_Message_Content,
-        expense_decision: "denied"
-      })
+    //this update updates the message to show that the request has been denied.
+    var functionResponse = await helperFunctionsFile.expenseRequest_UpdateRequestMSG_denied(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
+    
+    //send message to requester or devchannel depending on test status
+    await helperFunctionsFile.sendMessageUserIDAndMessage(app, requesterUserID, message);
+    
   } catch (error) {
     console.log(error);
   };
 });
-//helper functions that are used by the functions above to prevent cluttering, also just reusability.
-  async function DMRequesterAboutRequestSubmission(requesterUserID, requestID, description, cost, imageLink, paymentDueByDate) {
-    //removing the newline character from the description
-    var description_withoutNewline = description.replace(/\\n/g, ' ');
-    var message = `
-\`\`\`Here is the expense request you submitted:\`\`\`
-\`\`\`RequestID:${requestID}\`\`\`
-Request Content:
-${description_withoutNewline}
 
-Request Cost:
-$${cost}
-
-Images Attached to request (if any):
-${imageLink}
-
-If approved, request must be paid by:
-${paymentDueByDate}
-`
-
-  if (testStatusFile.test == "false") {
-    //for production
-    var messageResults = await app.client.chat.postMessage({
-      channel: requesterUserID,
-      text: message
-    });
-  } else if (testStatusFile.test == "true") {
-      //for testing
-      var messageResults = await app.client.chat.postMessage({
-        channel: process.env.infoUserID,
-        text: message
-      });
-
-    }
-    return messageResults;
-  };
-
-  async function sendJSONVersionOfMSG(requesterUserID, requestID, descriptionEscaped, cost, vendorOrCustomer, vendorOrCustomerName, productName, paymentMethod, transactionType, imageLink, paymentDueByDate) {
-    var message = `
-{
-  "reqID":"${requestID}",
-  "requestedBy":"<@${requesterUserID}>",
-  "requestContent":"${descriptionEscaped}",
-  "requestCost":"${cost}",
-  "vendorOrCustomer":"${vendorOrCustomer}",
-  "vendorOrCustomerName":"${vendorOrCustomerName}",
-  "productName":"${productName}",
-  "paymentMethod":"${paymentMethod}",
-  "transactionType":"${transactionType}",
-  "requestPaidForByDate":"${paymentDueByDate}",
-  "imageLinks":"${imageLink}"
-}
-`
-    
-    var messageResults = await app.client.chat.postMessage({
-      channel: process.env.requests_googleforms_json,
-      text: message
-    });
-    return messageResults;
-  };
-
-  async function sendErrorMessageOnThrow(requesterUserID, errorMsg) {    
-    var messageResults = await app.client.chat.postMessage({
-      channel: requesterUserID,
-      text: errorMsg
-    });
-    return messageResults;
-  };
-
-  async function generateRequestID() {    
-    var requestID = uuidv4(); //this is used to generate a unique ID that's dependent on a UUID v4 and current time
-    requestID += Date.parse(new Date); //this is used to generate a unique ID that's dependent on a UUID v4 and current time
-    return requestID;
-  };
-
-  //this basically handles updating the message with a log of the last user to approve/deny the request
-  async function expenseRequest_UpdateRequestMSG(app, blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, userAlreadyApproved, listOfApprovers, listOfApproversTimestamps, decision) {
-    var blocks = JSON.parse(blocksArray);
-    var newUpdatedBlocks = [];
-    //this returns the current time in UTC in 24 hour clock format.
-      //returns something like this "2022-08-10T13:42:07.847Z"
-    var time = new Date().toISOString();
-    time = time.replace(/T/, ' ').replace(/\..+/, '');
-    //this replace changes the above example into something like this: "2022-08-10 13:42:07"
-
-    for (i=0; i<blocks.length; i++) {
-      var block = blocks[i];
-      //potentially the image that is returned has invalid parameters?
-      //so, re-writing the image block
-      if (block.block_id == "image_BlockID") {
-        var newImageBlock = {
-          "type": "image",
-          "block_id": "image_BlockID",
-          "image_url": "https://slack-requestapp.herokuapp.com/static/whiteLine_600_50.png",
-          "alt_text": "A plain white image that's used to split messages."
-        };
-        newUpdatedBlocks.push(newImageBlock);
-      } else if (block.block_id == "expenseRequestStatus_BlockID") {
-        if (decision == "approved") {
-          var newStatusBlock = `{
-            "type": "section",
-            "block_id": "expenseRequestStatus_BlockID",
-            "text": {
-                "type": "mrkdwn",
-                "text": "*Current Request Status:*\\nApproved by <@${approverUserID}> at ${time} UTC"
-            }
-          }`;
-          newUpdatedBlocks.push(JSON.parse(newStatusBlock));
-        } else if (decision == "denied") {
-          var newStatusBlock = `{
-            "type": "section",
-            "block_id": "expenseRequestStatus_BlockID",
-            "text": {
-                "type": "mrkdwn",
-                "text": "*Current Request Status:*\\nDenied by <@${approverUserID}> at ${time} UTC"
-            }
-          }`;
-          newUpdatedBlocks.push(JSON.parse(newStatusBlock));
-        }
-      } else if (block.block_id == "approvers_JSONts_BlockID") {
-        //matches any string that's in the format of 123.123 but not 123 or 123.
-        var JSON_Message_ts = block.text.text.match(/[0-9]*\.[0-9]*/g)[0];
-      } else if (block.block_id == "expenseRequestStatus_numberOfApproversNeeded_BlockID") {
-        var numberOfApproversNeeded = block.text.text.match(/\d+/g)[0];
-        console.log(numberOfApproversNeeded);
-        if (numberOfApproversNeeded > 0 && userAlreadyApproved == false) {
-          console.log("subtracting...")
-          var newNumberOfApproversNeeded = parseInt(numberOfApproversNeeded) - 1;
-          var newStatus_numberOfApproversNeeded_Block = `{
-            "type": "section",
-            "block_id": "expenseRequestStatus_numberOfApproversNeeded_BlockID",
-            "text": {
-                "type": "mrkdwn",
-                "text": "*Number of Approvers Needed:*\\n${newNumberOfApproversNeeded}"
-            }
-          }`
-          newUpdatedBlocks.push(JSON.parse(newStatus_numberOfApproversNeeded_Block));
-        } else {
-          console.log('not subtracting...')
-          //just push the blocks to the newUpdatedBlocks Array if the number of approvers needed is 0. 
-          newUpdatedBlocks.push(block);
-        }
-      } else if (block.block_id == "expenseRequestStatus_ListOfApproversTimestamps_BlockID") {
-        var newListOfApproversWithTimestampsFormatted = [];
-        // console.log(listOfApprovers);
-        // console.log(listOfApprovers[0]);
-        // console.log(listOfApproversTimestamps);
-        // console.log(listOfApproversTimestamps[0]);
-        // console.log(listOfApprovers.length);
-        // console.log(listOfApproversTimestamps.length);
-        for (let i=0; i<=listOfApprovers.length - 1; i++) {
-          var approver = listOfApprovers[i];
-          var approverTimestamp = listOfApproversTimestamps[i];
-          var newListOfApproversWithTimestamps = `{ "type": "mrkdwn", "text": "\><@${approver}> at ${approverTimestamp} UTC" }`;
-          newListOfApproversWithTimestampsFormatted.push(newListOfApproversWithTimestamps);
-          // console.log(i);
-          // console.log(`listOfApprovers Length: ${listOfApprovers.length}`);
-        };
-        var newListOfApproversWithTimestampsFormattedAsString = JSON.stringify(newListOfApproversWithTimestampsFormatted).replaceAll('[', '(').replaceAll(']', ')').replaceAll('"', '');
-        console.log(newListOfApproversWithTimestampsFormattedAsString)
-        var originalText = block.text;
-        delete originalText.text.verbatim;
-        originalText = JSON.stringify(originalText);
-        var newListOfApproversTimestampsBlock = `{
-          "type": "section",
-          "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
-          "text": ${originalText},
-          "fields": [${newListOfApproversWithTimestampsFormatted}]
-        }`
-        console.log(newListOfApproversTimestampsBlock);
-        newUpdatedBlocks.push(JSON.parse(newListOfApproversTimestampsBlock));
-      } else {
-        newUpdatedBlocks.push(block);
-      };
+//handles when a the requester adds a reply to the request inside of Approvers channel
+app.action("RequestAddReplyButton_ActionID", async ({ ack, body, client }) => {
+  try {
+    ack();
+    console.log("\nRequestAddReplyButton_ActionID.body\n" + JSON.stringify(body));
+    var approversMetadata = body.message.metadata.event_payload.ApproversMessageMetadata;
+    var addReplyButtonChannelAndTS = {
+      channel: body.channel.id,
+      ts: body.message.ts
     };
-    newUpdatedBlocks = JSON.stringify(newUpdatedBlocks);
-    // match &amp;lt; and &amp;gt; to < and >
-    newUpdatedBlocks = newUpdatedBlocks.replace(/&amp;lt;/g, '<');
-    newUpdatedBlocks = newUpdatedBlocks.replace(/&amp;gt;/g, '>');
-    var msgUpdateResult = await app.client.chat.update({
-      channel: blockMessageChannelID,
-      ts: messageBlocksTS,
-      token: process.env.SLACK_BOT_TOKEN,
-      text: "This message has been updated to log the last decision.",
-      blocks: newUpdatedBlocks
+    var metadata = {
+      approversMetadata: approversMetadata, //this contains metadata with the necessary information to trace the same request in the approvers channel.
+      addReplyButtonChanneAndTS: addReplyButtonChannelAndTS //this is the channel and ts of the message with the add reply button
+    };
+    var view = await modalViews.RequestAddReplyView(metadata);
+    var APICallResults = await client.views.open({
+      trigger_id: body.trigger_id,
+      view: view
     });
-    var responseToReturn = {
-      SlackAPIResponse: msgUpdateResult,
-      JSON_Message_ts: JSON_Message_ts
-    }
-    return JSON.stringify(responseToReturn);
-  }
+    console.log(APICallResults);
+  } catch (error) {
+    console.log(error.data.response_metadata.messages);
+  };
+});
+//handles submission of RequestAddReplyButton_ActionID modal
+app.view("RequestAddReplyButton-callback", async ({ ack, body, view, client }) => {
+  try {
+    ack();
+    console.log("\nRequestAddReplyButton-callback.body\n" + JSON.stringify(body));
+    //get private metadata by doing JSON.parse(body.private_metadata)
+    var privateMetadata = JSON.parse(body.view.private_metadata);
+    //four options available
+      //approversMessageTimestamp and approversChannelID under approversMetadata
+      //channel and ts under addReplyButtonChanneAndTS
+    var approversMessageTimestamp = privateMetadata.approversMetadata.approversMessageTimestamp;
+    var approversChannelID = privateMetadata.approversMetadata.approversChannelID;
+    var addReplyButtonChannel = privateMetadata.addReplyButtonChanneAndTS.channel;
+    var addReplyButtonTS = privateMetadata.addReplyButtonChanneAndTS.ts;
+    //get submitted text by doing body.state.values.RequestAddReplyButton_Text_BlockID.RequestAddReplyButton_Text_ActionID.value
+    var submittedText = body.view.state.values.RequestAddReplyButton_Text_BlockID.RequestAddReplyButton_Text_ActionID.value;
+    submittedText = `<!channel>\nNew Reply from <@${body.user.id}>. They said: \n\n` + submittedText
+    //make call to chat.postMessage to reply to the message at the timestamp and channelID specified for approvers channel
+    var APICallResults = await client.chat.postMessage({
+      channel: approversChannelID,
+      text: submittedText,
+      thread_ts: approversMessageTimestamp
+    });
+    console.log("APICallResults\n" + JSON.stringify(APICallResults));
+    // the API call below is to update the message with the add reply button with a new reply to have a log of what's been said.
+    var APICallResultsToRequester = await client.chat.postMessage({
+      channel: addReplyButtonChannel,
+      text: submittedText,
+      thread_ts: addReplyButtonTS
+    });
+    console.log("APICallResultsToRequester\n" + JSON.stringify(APICallResultsToRequester));
+  } catch (error) {
+    console.log(error);
+  };
+});
+
+//helper functions previously found here have been moved to ./helperFunctions.js
 
 
 //handle POST requests that are meant to update the original request maker on the status of the request

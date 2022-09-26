@@ -110,12 +110,12 @@ module.exports.updateMessageContent = function (task_id, task_title, task_descri
     return template;
 };
 
+//this is the message sent to the approvers channel
 module.exports.createRequestMessageForApprovers = async function (inputData, slackApp) {
     //the slackApp parameter is used to pass through Slack's Web APIs so that I can post the message into the channel without sending the msg back.
     var inputData_parsed = JSON.parse(inputData);
     var requesterID = inputData_parsed.requesterID;
     var requestID = inputData_parsed.requestID;
-    var JSON_ts = inputData_parsed.JSON_ts;
     var task_description = inputData_parsed.task_description;
     var productName = inputData_parsed.productName;
     var productCost = inputData_parsed.productCost;
@@ -145,6 +145,11 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
     if (productCost >= 10000) {
         numberOfApproversNeeded = "2";
     }
+    //this just adds the imageSection if there are images being submitted
+    var imageSection = "";
+    if (imageLinksThatWereSubmitted.length > 0) {
+        imageSection = `{"type": "section","block_id": "approvers_imageSection_BlockID","text": {"type": "mrkdwn","text": ">*Any images that may have been attached:*\\n>${imageLinksThatWereSubmitted}"}},`
+    };
 
     var template = `{
         "blocks": [
@@ -172,18 +177,10 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
             },
             {
                 "type": "section",
-                "block_id": "approvers_JSONts_BlockID",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "*Timestamp of JSON version of message:* ${JSON_ts}"
-                }
-            },
-            {
-                "type": "section",
                 "block_id": "approvers_requestDescription_BlockID",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*Description (also part of Memo on Quickbooks Online):*\\n${task_description}"
+                    "text": "*Description:*\\n${task_description}"
                 }
             },
             {
@@ -217,13 +214,9 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                     {
                         "type": "mrkdwn",
                         "text": ">*Payment should be made by:*\\n>${makePaymentByDate}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": ">*Any images that may have been attached:*\\n>${imageLinksThatWereSubmitted}"
                     }
                 ]
-            },
+            },${imageSection}
             {
                 "type": "section",
                 "block_id": "expenseRequestStatus_numberOfApproversNeeded_BlockID",
@@ -313,7 +306,8 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                     "listOfApprovers": [],
                     "listOfApproversTimestamps": [],
                     "cost": productCost,
-                    "numberOfApprovals": 0
+                    "numberOfApprovals": 0,
+                    "requesterUserID": requesterID
                 }
             }
         });
@@ -331,7 +325,8 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                     "listOfApprovers": [],
                     "listOfApproversTimestamps": [],
                     "cost": productCost,
-                    "numberOfApprovals": 0
+                    "numberOfApprovals": 0,
+                    "requesterUserID": requesterID
                 }
             }
         });
