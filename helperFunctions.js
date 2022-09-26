@@ -329,8 +329,7 @@ module.exports.expenseRequest_UpdateRequestMSG = async function (app, blocksArra
     blocks: newUpdatedBlocks
   });
   var responseToReturn = {
-    SlackAPIResponse: msgUpdateResult,
-    JSON_Message_ts: JSON_Message_ts
+    SlackAPIResponse: msgUpdateResult
   }
   return JSON.stringify(responseToReturn);
 }
