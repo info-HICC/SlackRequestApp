@@ -1062,7 +1062,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
           blocks: blocksForAccountants
         });
       };
-      await helperFunctionsFile.sendMessageUserIDAndMessage(app, requesterUserID, `Your request with the ID of "${requestID}" has been approved. It has been sent to the accountants channel.`)
+      await helperFunctionsFile.sendMessageUserIDAndMessage(app, requesterUserID, `Your request with the ID of \`${requestID}\` has been approved. It has been sent to the accountants channel.`)
       //this is the part to just send the request to the accountants channel, no more QBO/Zapier.
       console.log("request is under $10,000, so it doesn't need to be approved by two people.");
     }
