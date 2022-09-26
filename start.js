@@ -1077,30 +1077,38 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
 app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client }) => {
   try {
     ack();
-    var approverUserID = body.user.id;
-    
-    var messageBlocks = JSON.stringify(body.message.blocks);
-    var messageBlocksTS = body.message.ts;
-    var channelWithMessageWithBlocks = body.channel.id;
+    console.log(body);
 
-    //this handles creating the updated message, and updating that message.
-    //returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
-      //this is to later find the JSON version of the message to POST to Zapier. 
-    var functionResponse = await helperFunctionsFile.expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
-    var functionResponse_parsed = JSON.parse(functionResponse);
-    var JSON_Message_ts = functionResponse_parsed.JSON_Message_ts;
-    var JSON_Message_Content_APIResult = await app.client.conversations.history({
-      channel: process.env.requests_googleforms_json,
-      latest: JSON_Message_ts,
-      inclusive: true
-    });
-    var JSON_Message_Content = JSON_Message_Content_APIResult.messages[0].text;
-    await axios
-      .post(process.env.zapierProcessExpenseRequestPart2, {
-        appTokenHeader: process.env.zapierWebhookRequestAppToken,
-        requestContent_JSON: JSON_Message_Content,
-        expense_decision: "denied"
-      })
+    //commenting out just to make sure not to run it.
+    // var approverUserID = body.user.id;
+    
+    // var messageBlocks = JSON.stringify(body.message.blocks);
+    // var messageBlocksTS = body.message.ts;
+    // var channelWithMessageWithBlocks = body.channel.id;
+
+    // //this handles creating the updated message, and updating that message.
+    // //returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
+    //   //this is to later find the JSON version of the message to POST to Zapier. 
+    // var functionResponse = await helperFunctionsFile.expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
+    
+    
+    
+    
+    //this stuff can go.
+    // var functionResponse_parsed = JSON.parse(functionResponse);
+    // var JSON_Message_ts = functionResponse_parsed.JSON_Message_ts;
+    // var JSON_Message_Content_APIResult = await app.client.conversations.history({
+    //   channel: process.env.requests_googleforms_json,
+    //   latest: JSON_Message_ts,
+    //   inclusive: true
+    // });
+    // var JSON_Message_Content = JSON_Message_Content_APIResult.messages[0].text;
+    // await axios
+    //   .post(process.env.zapierProcessExpenseRequestPart2, {
+    //     appTokenHeader: process.env.zapierWebhookRequestAppToken,
+    //     requestContent_JSON: JSON_Message_Content,
+    //     expense_decision: "denied"
+    //   })
   } catch (error) {
     console.log(error);
   };
@@ -1154,6 +1162,7 @@ app.view("RequestAddReplyButton-callback", async ({ ack, body, view, client }) =
       thread_ts: approversMessageTimestamp
     });
     console.log("APICallResults\n" + JSON.stringify(APICallResults));
+    // the API call below is to update the message with the add reply button with a new reply to have a log of what's been said.
     var APICallResultsToRequester = await client.chat.postMessage({
       channel: addReplyButtonChannel,
       text: submittedText,
