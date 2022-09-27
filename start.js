@@ -1161,7 +1161,7 @@ app.view("RequestAddReplyButton-callback", async ({ ack, body, view, client }) =
 });
 
 //handles shortcut for checking the test status of the application
-app.shortcut("request-app-check-status", async ({ ack, body, client }) => {
+app.shortcut("request-app-check-status", async ({ ack, body, client, shortcut}) => {
   try {
     ack();
     var view = await modalViews.checkTestStatus();
