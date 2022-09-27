@@ -999,7 +999,7 @@ var requestApp_showApplicationInTestMode = {
 
 var requestApp_checkTestStatus = async () => {
 	var status = testStatus.test;
-	if(status == true) {
+	if(status == "true") {
 		return JSON.stringify({
 			"type": "modal",
 			"title": {
@@ -1022,7 +1022,7 @@ var requestApp_checkTestStatus = async () => {
 				}
 			]
 		});
-	} else if (status == false) {
+	} else if (status == "false") {
 		return JSON.stringify({
 			"type": "modal",
 			"title": {
