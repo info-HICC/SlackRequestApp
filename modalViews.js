@@ -1,3 +1,5 @@
+const testStatus = require('./testStatus.js');
+
 var requestAppModalView = { //view created using Slack's interactive Block Kit Builder. Just for Google Calendar thing.
     "type": "modal",
     "callback_id": "create-google-cal-task-callback",
@@ -995,6 +997,57 @@ var requestApp_showApplicationInTestMode = {
 	]
 };
 
+var requestApp_checkTestStatus = async () => {
+	var status = testStatus.test;
+	if(status == true) {
+		return JSON.stringify({
+			"type": "modal",
+			"title": {
+				"type": "plain_text",
+				"text": "Slack-RequestApp",
+				"emoji": true
+			},
+			"close": {
+				"type": "plain_text",
+				"text": "Close Notice",
+				"emoji": true
+			},
+			"blocks": [
+				{
+					"type": "section",
+					"text": {
+						"type": "mrkdwn",
+						"text": "Hey! This application is currently in test mode. Only the maintainer (currently the account called 'Info') can access this application to use this function during this time. Check back later. If you believe this is a mistake, please contant the maintainer."
+					}
+				}
+			]
+		});
+	} else if (status == false) {
+		return JSON.stringify({
+			"type": "modal",
+			"title": {
+				"type": "plain_text",
+				"text": "Slack-RequestApp",
+				"emoji": true
+			},
+			"close": {
+				"type": "plain_text",
+				"text": "Close Notice",
+				"emoji": true
+			},
+			"blocks": [
+				{
+					"type": "section",
+					"text": {
+						"type": "mrkdwn",
+						"text": "This application is not currently inside test mode. Everyone should be able to use this application. If there's any concerns or issues, please contact the maintainer, which is currently the account called 'Info' on Slack."
+					}
+				}
+			]
+		});
+	}
+};
+
 async function requestApp_RequestAddReplyView(privateMetadata) {
 	privateMetadata = JSON.stringify(privateMetadata);
 	var requestApp_addReplyView = {
@@ -1888,5 +1941,6 @@ module.exports = {
 	requestApp_CreateRequestModalView_test_cash,
 	createRequestView_Cash: requestApp_CreateRequestModalView_paymentMethod_cash_View,
 	testModeModal: requestApp_showApplicationInTestMode,
-	RequestAddReplyView: requestApp_RequestAddReplyView
+	RequestAddReplyView: requestApp_RequestAddReplyView,
+	checkTestStatus: requestApp_checkTestStatus
 };

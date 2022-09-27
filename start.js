@@ -1160,6 +1160,21 @@ app.view("RequestAddReplyButton-callback", async ({ ack, body, view, client }) =
   };
 });
 
+//handles shortcut for checking the test status of the application
+app.shortcut("request-app-check-status", async ({ ack, body, client }) => {
+  try {
+    ack();
+    var view = await modalViews.checkTestStatus();
+    
+    await client.views.open({
+      trigger_id: shortcut.trigger_id,
+      view: view
+    });
+  } catch (error) {
+    console.log(error);
+  }
+})
+
 //helper functions previously found here have been moved to ./helperFunctions.js
 
 
