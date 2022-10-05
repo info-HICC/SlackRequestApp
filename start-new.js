@@ -10,7 +10,6 @@ const { v4: uuidv4 } = require('uuid');
 const nodecron = require('node-cron');
 //import dotenv for environment variables
 require('dotenv').config();
-console.log(process.env);
 
 //reference local helper function files
 //for test status of application

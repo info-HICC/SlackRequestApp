@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node start.js",
-    "new": "node start-new.js"
+    "new": "node start-new.js",
+    "dev": "npm run new && npm run startTunnel",
+    "startTunnel": "node localtunnel.js"
   },
   "repository": {
     "type": "git",
@@ -18,6 +20,7 @@
     "axios": "^0.27.2",
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
+    "localtunnel": "^2.0.2",
     "node-cron": "^3.0.1",
     "path": "^0.12.7",
     "uuid": "^8.3.2"

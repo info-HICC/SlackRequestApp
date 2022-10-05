@@ -4,3 +4,4 @@ package-lock.json
 /.local/*
 todo.txt
 .env
+localtunnel.js
