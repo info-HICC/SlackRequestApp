@@ -292,50 +292,22 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
     var templateParsed = JSON.stringify(JSON.parse(template).blocks);
     console.log(templateParsed);
 
-    if (testStatusFile.test == "false") {
-        //for production
-        var postMessageResult = slackApp.client.chat.postMessage({
-            channel: process.env.requests_googleforms_approvers, 
-            text: "This is a placeholder for the blocks that define the message. This is a request",
-            blocks: templateParsed,
-            metadata: {
-                "event_type": "requestApprovedAction", 
-                "event_payload": {
-                    "requestID": requestID,
-                    "previousApproverID": "",
-                    "listOfApprovers": [],
-                    "listOfApproversTimestamps": [],
-                    "cost": productCost,
-                    "numberOfApprovals": 0,
-                    "requesterUserID": requesterID
-                }
+    var postMessageResult = slackApp.client.chat.postMessage({
+        channel: process.env.requests_googleforms_approvers, 
+        text: "This is a placeholder for the blocks that define the message. This is a request",
+        blocks: templateParsed,
+        metadata: {
+            "event_type": "requestApprovedAction", 
+            "event_payload": {
+                "requestID": requestID,
+                "previousApproverID": "",
+                "listOfApprovers": [],
+                "listOfApproversTimestamps": [],
+                "cost": productCost,
+                "numberOfApprovals": 0,
+                "requesterUserID": requesterID
             }
-        });
-    } else if (testStatusFile.test == "true") {
-        //for testing
-        var postMessageResult = slackApp.client.chat.postMessage({
-            channel: process.env.devchannel,
-            text: "This is a placeholder for the blocks that define the message. This is a request",
-            blocks: templateParsed,
-            metadata: {
-                "event_type": "requestApprovedAction", 
-                "event_payload": {
-                    "requestID": requestID,
-                    "previousApproverID": "",
-                    "listOfApprovers": [],
-                    "listOfApproversTimestamps": [],
-                    "cost": productCost,
-                    "numberOfApprovals": 0,
-                    "requesterUserID": requesterID
-                }
-            }
-        });
-    };
-
+        }
+    });
     return postMessageResult;
 }
-
-// //export the modal view
-// module.exports = {
-//     updateMessage: taskeeUpdateMessage
-// };

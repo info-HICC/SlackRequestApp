@@ -4,20 +4,24 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node start.js"
+    "start": "node start-script.js",
+    "dev": "node start-new-dev.js",
+    "startTunnel": "node localtunnel.js"
   },
   "repository": {
     "type": "git",
     "url": "-"
   },
-  "author": "",
+  "author": "Jason He",
   "license": "ISC",
   "dependencies": {
     "@slack/bolt": "^3.11.3",
     "axios": "^0.27.2",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.1",
+    "localtunnel": "^2.0.2",
     "node-cron": "^3.0.1",
     "path": "^0.12.7",
-    "uuid": "^8.3.2",
-    "express": "^4.18.1"
+    "uuid": "^8.3.2"
   }
 }

@@ -1,0 +1,19 @@
+There's two workspaces on the Info Account.
+One is the official workspace, the other is just for testing. 
+The application for the testing version relies on the localtunnel NODEJS module. 
+The subdomain can be found by looking at the request URL of the application on Slack's App Dashboard.
+There's no way for me to include it without exposing the subdomain to the internet where anyone else can use the same subdomain.
+For this reason, it's IMPORTANT that the subdomain is not exposed, unless you want to change it to a different subdomain.
+The syntax, after install localtunnel, is "lt --port {port number} -subdomain {subdomain}" By default, the app will use port 3000 on the local machine.
+Yes, it runs on the local machine. If you change the port number, just use that new port number.
+For subdomain, use the subdomain that's found in the request URL (it's just the part before the first period going left to right).
+In both cases, do NOT include the curley braces, that's just there to show user input. 
+The suggestion is to create a new Dev start.js file and make changes there, however, you should use the same environmental variables for testing.
+The name of the env vars should be the same, but the value can be any channel as the entire workspace is for testing (as of me writing this).
+Certain variables like app tokens can be found on Slack's App Management Dashboard.
+NEVER include that inside the source code, and never publish it into Github. 
+For local development, I use the dotenv NODEJS module. Make sure to add it to .gitignore so you don't publish it. 
+If you do, regenerate those app authentication tokens.
+You should make sure everything works in the local version (the dev version in the dev workspace) before pushing to Github. 
+Pushing to the main branch will auto-deploy it in Heroku (the hosting service for the app, at least for now, but hopefully in the future too).
+You should pretty much never directly push to main branch. Always push to dev branch, then manually deploy from dev branch, and if everything works in the real workspace, create a pull request to merge commits from dev branch into main branch, and that'll deploy the app. 
