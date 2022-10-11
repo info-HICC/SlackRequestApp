@@ -105,39 +105,30 @@ module.exports.DMRequesterAboutRequestSubmission = async function (app, requeste
 // ${paymentDueByDate}
 // `
 
-  if (testStatusFile.test == "false") {
-    //for production
-    var messageResults = await app.client.chat.postMessage({
-        channel: requesterUserID,
-        text: "Summary of your expense request",
-        blocks: messageBlock,
-        metadata: {
-          "event_type": "requestApprovedAction", 
-          "event_payload": {
-            "requestDetails": requestDetailMetadata,
-            "ApproversMessageMetadata": ApproversMessageMetadata
-          }
-        }
-    });
-  } else if (testStatusFile.test == "true") {
-      //for testing
-      var messageResults = await app.client.chat.postMessage({
-        channel: process.env.infoUserID,
-        text: "Summary of your expense request",
-        blocks: messageBlock,
-        metadata: {
-          "event_type": "requestApprovedAction", 
-          "event_payload": {
-            "requestDetails": requestDetailMetadata,
-            "ApproversMessageMetadata": ApproversMessageMetadata
-          }
-        }
-      });
-
+//this will message the requester about the request submission. 
+//this serves as a confirmation notice to the requester that their request has been submitted.
+//this previously was based on whether or not it's in test mode
+//if it's in test mode, it would send messages to the info account which develops the app.
+//if not, it would go to the normal channels.
+//Refer to testing_application_notice.txt for more information.
+var messageResults = await app.client.chat.postMessage({
+  channel: requesterUserID,
+  text: "Summary of your expense request",
+  blocks: messageBlock,
+  metadata: {
+    "event_type": "requestApprovedAction", 
+    "event_payload": {
+      "requestDetails": requestDetailMetadata,
+      "ApproversMessageMetadata": ApproversMessageMetadata
     }
+  }
+});
     return messageResults;
   };
 
+//this is a general function that can be used to send a message to a user.
+//it's called when there's an error when the app is processing a request submission.
+//you can ask the user for the error message to figure out what's going on. 
 module.exports.sendErrorMessageOnThrow = async function (app, requesterUserID, errorMsg) {    
   var messageResults = await app.client.chat.postMessage({
     channel: requesterUserID,
@@ -146,30 +137,37 @@ module.exports.sendErrorMessageOnThrow = async function (app, requesterUserID, e
   return messageResults;
 };
 
+//this function can be used anywhere, but as of the time of writing the comment,
+//it's used 3 times in the app.
+//it's used to send a message to the requester about the status of their request when it's approved or denied.
+//sending messages to a channel can be done any specifying a channel ID in the userID parameter.
+//it returns the Slack API response.
 module.exports.sendMessageUserIDAndMessage = async function (app, userID, message) {
   console.log(userID);
   console.log(message);
-  if (testStatusFile.test == "false") {
-    //for production
-    var messageResults = await app.client.chat.postMessage({
-      channel: userID,
-      text: message
-    });
-  } else if (testStatusFile.test == "true") {
-    var messageResults = await app.client.chat.postMessage({
-      channel: process.env.devchannel,
-      text: message
-    });
-  }
+  var messageResults = await app.client.chat.postMessage({
+    channel: userID,
+    text: message
+  });
   return messageResults;
 };
 
+//this is just used to generate a requestID for requests that are submitted.
+//it uses UUIDv4 to generate a random string.
+//then it appends the current date and time to the end of the UUIDv4 string as a epoch timestamp. 
+//this essentially garuntees that the requestID is unique.
 module.exports.generateRequestID = async function () {
   var requestID = uuidv4(); //this is used to generate a unique ID that's dependent on a UUID v4 and current time
   requestID += Date.parse(new Date); //this is used to generate a unique ID that's dependent on a UUID v4 and current time
   return requestID;
 };
 
+//this function will update the Slack message in the approvers channel to reflect that the request has been denied.
+//it will return the Slack API response to the chat.update API call.
+//it will keep everything else the same.
+//it overwrites the white image because it seems to have issues using the one send by the Slack App as it includes additional parameters.
+//it will also update the block ID of "expenseRequestStatus_BlockID" to reflect the new updated status.
+//a future idea is to remove the buttons after denying a request to prevent it from being approved after it's been denied.
 module.exports.expenseRequest_UpdateRequestMSG_denied = async function (app, blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, decision) {
   var blocks = JSON.parse(blocksArray);
   var newUpdatedBlocks = [];
@@ -215,12 +213,13 @@ module.exports.expenseRequest_UpdateRequestMSG_denied = async function (app, blo
     text: "This message has been updated to log the last decision (denied).",
     blocks: newUpdatedBlocks
   });
+  return msgUpdateResult;
 };
 
-  //this basically handles updating the message with a log of the last user to approve/deny the request
-    //and a lot more stuff. So we're separating it into approve and deny functions
-    //approve is the function below
-    //deny is the function above
+//this basically handles updating the message with a log of the last user to approve/deny the request
+  //and a lot more stuff. So we're separating it into approve and deny functions
+  //approve is the function below
+  //deny is the function above
 module.exports.expenseRequest_UpdateRequestMSG = async function (app, blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, userAlreadyApproved, listOfApprovers, listOfApproversTimestamps, decision) {
   var blocks = JSON.parse(blocksArray);
   var newUpdatedBlocks = [];

@@ -156,11 +156,8 @@ var requestApp_CreateRequestModalView = {
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
-				"text": "Throughout the form, anywhere where you can input text, avoid using quotation marks, if possible. Use alternatives like parentheses, or brackets.\nAlso, do NOT use the \\ symbol. If you do, your request will be automatically rejected, and you will have to create another request without that character."
+				"text": "Notice: Wherever you can input text, DO NOT use any quotation marks if possible. You can use alternatives like parentheses, or brackets.\nAlso, DO NOT use the \\ symbol. If you do, your request will be automatically rejected, and you will have to create another request without that character."
 			}
-		},
-		{
-			"type": "divider"
 		},
 		{
 			"type": "divider"
@@ -170,7 +167,7 @@ var requestApp_CreateRequestModalView = {
 			"elements": [
 				{
 					"type": "mrkdwn",
-					"text": "Enter a short, descriptive description about what this request is for. It will be passed on to the accountants so they know what to pay for. This description will also be stored as the memo of this expense."
+					"text": "Enter a description for this request. You should provide however much context you see necessary in order to get this expense approved and so that the accountants can actually pay it."
 				}
 			]
 		},
@@ -192,14 +189,11 @@ var requestApp_CreateRequestModalView = {
 			"type": "divider"
 		},
 		{
-			"type": "divider"
-		},
-		{
 			"type": "context",
 			"elements": [
 				{
 					"type": "mrkdwn",
-					"text": "Enter the cost of the request. You should not include the dollar ($) sign, but it's fine if you do.\nThere is no strict format, other than using only numbers and a single decimal point, but try to express dollar amounts as you would normally like: \"1.00\", \"10\" or even \"1.0\".\nUsage of characters that result in something that isn't a number will result in your request being automatically denied, and you being asked to re-fill out the form"
+					"text": "Enter the cost of this expense. This should be a number, it should not include any currency symbols, and it should not include any commas. For example, if the expense is $1,000.00, you should enter 1000.00. You are not required to enter the cent value if it's zero.\nUsage of characters that result in something that isn't a number will result in your request being automatically denied, and you being asked to re-fill out the form."
 				}
 			]
 		},
@@ -215,9 +209,6 @@ var requestApp_CreateRequestModalView = {
 				"text": "Enter Cost",
 				"emoji": true
 			}
-		},
-		{
-			"type": "divider"
 		},
 		{
 			"type": "divider"
@@ -253,14 +244,11 @@ var requestApp_CreateRequestModalView = {
 			"type": "divider"
 		},
 		{
-			"type": "divider"
-		},
-		{
 			"type": "context",
 			"elements": [
 				{
 					"type": "mrkdwn",
-					"text": "Select whether this payment is being made to a Vendor (like Google), or a Customer. You can also opt for employee, but payment should be logged as a Vendor. Ensure you're making clear that the payment is for an employee reimbursement, and not a Vendor."
+					"text": "Select whether this payment is being made to a Vendor (like Google), or a Customer. You can also opt for employee, but payment should be logged as a Vendor. Ensure you're making clear that the payment is for an employee reimbursement, and not a vendor in the description. It should be one of the first things mentioned."
 				}
 			]
 		},
@@ -302,15 +290,12 @@ var requestApp_CreateRequestModalView = {
 		},
 		{
 			"type": "divider"
-		},
-		{
-			"type": "divider"
 		},{
 			"type": "context",
 			"elements": [
 				{
 					"type": "mrkdwn",
-					"text": "Enter the name of the Vendor or Customer. If it's a Vendor, the phone number will be set at 0000000000."
+					"text": "Enter the name of the Vendor or Customer. This should be the name of the company or person you are paying. If you are paying an employee, enter their name here, or any info that specifies who."
 				}
 			]
 		},
@@ -331,14 +316,11 @@ var requestApp_CreateRequestModalView = {
 			"type": "divider"
 		},
 		{
-			"type": "divider"
-		},
-		{
 			"type": "context",
 			"elements": [
 				{
 					"type": "mrkdwn",
-					"text": "Enter a VERY short (like 2 or 3 words) description of the product name (like Google Voice)."
+					"text": "Enter a VERY short (like 2 or 3 words) description of the product name (like Google Voice or Employee Reimbursement)."
 				}
 			]
 		},
@@ -359,14 +341,11 @@ var requestApp_CreateRequestModalView = {
 			"type": "divider"
 		},
 		{
-			"type": "divider"
-		},
-		{
 			"type": "context",
 			"elements": [
 				{
 					"type": "mrkdwn",
-					"text": "What type of transaction is this?"
+					"text": "What type of transaction is this? If it's uncategorized, you can put a best fit category in the description section."
 				}
 			]
 		},
@@ -434,9 +413,6 @@ var requestApp_CreateRequestModalView = {
 			"type": "divider"
 		},
 		{
-			"type": "divider"
-		},
-		{
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
@@ -475,9 +451,6 @@ var requestApp_CreateRequestModalView = {
 			"type": "divider"
 		},
 		{
-			"type": "divider"
-		},
-		{
 			"type": "section",
 			"text": {
 				"type": "mrkdwn",
@@ -489,7 +462,7 @@ var requestApp_CreateRequestModalView = {
 			"elements": [
 				{
 					"type": "mrkdwn",
-					"text": "Please make sure that your image links are viewable publicly (meaning not signed into a Google Account). Suggestion is to use Google Drive, but make sure the image is set to be viewable by anyone with link; you can find a guide for Google Drive Sharing here: \n[https://slack-requestapp.herokuapp.com/slack/help/GoogleDriveImagePerms]"
+					"text": "Please make sure that your image links are viewable publicly (meaning not signed into a Google Account). Suggestion is to use Google Drive, but make sure the image is set to be viewable by anyone with link; you can find a guide for Google Drive Sharing here: \n[https://slack-requestapp.herokuapp.com/slack/help/GoogleDriveImagePerms].\nYou can also put any relevant links here. If you have multiple, separate them with a comma that way the links don't become messed up."
 				}
 			]
 		},
@@ -501,7 +474,7 @@ var requestApp_CreateRequestModalView = {
 				"type": "plain_text_input",
 				"placeholder": {
 					"type": "plain_text",
-					"text": "Paste Link to Image or Folder",
+					"text": "Paste Link to Image or Folder here",
 					"emoji": true
 				},
 				"action_id": "imageLink_ActionID"
