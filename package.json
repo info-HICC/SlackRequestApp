@@ -4,16 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node start.js",
-    "new": "node start-new.js",
-    "dev": "npm run new && npm run startTunnel",
+    "start": "node start-script.js",
+    "dev": "node start-new-dev.js",
     "startTunnel": "node localtunnel.js"
   },
   "repository": {
     "type": "git",
     "url": "-"
   },
-  "author": "",
+  "author": "Jason He",
   "license": "ISC",
   "dependencies": {
     "@slack/bolt": "^3.11.3",
