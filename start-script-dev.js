@@ -618,7 +618,8 @@ app.command('/userid', async ({ command, ack, say }) => {
 	}
 });
 //this handles the "/request" command
-//"/request" currently sends the Google Forms Link, but will eventually be replaced to send the modal view, if possible.
+//this command will open the modal to create a request
+//it's the same as pressing the "Create Request" button in the #request_start channel, which triggers the "createExpenseRequest" action
 app.command("/request", async ({ command, ack, say }) => {
 	try {
 		await ack();
