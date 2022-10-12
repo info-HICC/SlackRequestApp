@@ -67,31 +67,11 @@ app.action("createExpenseRequest", async ({ ack, client, body }) => {
 	try {
 		await ack();
 		console.log(body);
-		//check if application is in test mode
-		if (testStatusFile.test == "false") {
-			//this is shown to everyone when not in test mode
-			var APICallResults = await client.views.open({
-				trigger_id: body.trigger_id,
-				view: modalViews.createRequestView
-			});
-			console.log(APICallResults);
-		} else {
-			if (body.user.id == process.env.infoUserID) {
-				//if user is info account, then show the form
-				var APICallResults = await client.views.open({
-					trigger_id: body.trigger_id,
-					view: modalViews.createRequestView
-				});
-				console.log(APICallResults);
-			} else {
-				//if user is not info account, then show the notification message
-				var APICallResults = await client.views.open({
-					trigger_id: body.trigger_id,
-					view: modalViews.testModeModal
-				});
-				console.log(APICallResults);
-			}
-		}
+		var APICallResults = await client.views.open({
+			trigger_id: body.trigger_id,
+			view: modalViews.createRequestView
+		});
+		console.log("createExpenseRequest Action Called\n" + APICallResults);
 	} catch (error) {
 		console.log(error);
 	};
@@ -637,7 +617,19 @@ app.command('/userid', async ({ command, ack, say }) => {
 });
 //this handles the "/request" command
 //"/request" currently sends the Google Forms Link, but will eventually be replaced to send the modal view, if possible.
-
+app.command("/request", async ({ command, ack, say }) => {
+	try {
+		await ack();
+		console.log(command);
+		var APICallResults = await app.client.views.open({
+			trigger_id: command.trigger_id,
+			view: modalViews.createRequestView
+		});
+		console.log("/request Command Called\n" + JSON.stringify(APICallResults));
+	} catch (error) {
+		console.log(error);
+	};
+});
 
 
 

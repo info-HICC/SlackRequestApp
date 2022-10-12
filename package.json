@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node start-script.js",
-    "dev": "node start-new-dev.js",
+    "dev": "nodemon start-script-dev.js",
     "startTunnel": "node localtunnel.js"
   },
   "repository": {
