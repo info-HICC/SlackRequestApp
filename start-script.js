@@ -8,6 +8,8 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 //import node-cron to keep server alive
 const nodecron = require('node-cron');
+//import axios for HTTP requests
+const axios = require('axios');
 //import dotenv for environment variables
 require('dotenv').config();
 
