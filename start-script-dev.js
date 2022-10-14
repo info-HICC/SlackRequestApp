@@ -371,14 +371,24 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
 					});
 					console.log("Request has been approved by two approvers. RequestID: " + messageMetadata.messages[0].metadata.event_payload.requestID);
 
-					var blocksForAccountants = [{
-						"type": "section",
-						"block_id": "blocksForAccountant_2approvers_BlockID",
-						"text": {
-							"type": "mrkdwn",
-							"text": "A request has been approved. It is my understanding that the accountants know what will happen from this point on."
+					var blocksForAccountants = [
+						{
+							"type": "header",
+							"text": {
+								"type": "plain_text",
+								"text": "NEW EXPENSE APPROVAL",
+								"emoji": true
+							}
+						},
+						{
+							"type": "section",
+							"block_id": "blocksForAccountant_2approvers_BlockID",//the 2approvers just means that the request only needs 2 approvers to approve it.
+							"text": {
+								"type": "mrkdwn",
+								"text": "A request has been approved. It is my understanding that the accountants know what will happen from this point on."
+							}
 						}
-					}];
+					];
 					for (i = 0; i < body.message.blocks.length; i++) {
 						if (body.message.blocks[i].block_id == "approvers_requestDescription_BlockID") {
 							blocksForAccountants.push(body.message.blocks[i]);
@@ -418,14 +428,25 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
 				}
 			}
 		} else {
-			var blocksForAccountants = [{
-				"type": "section",
-				"block_id": "blocksForAccountant_1approver_BlockID",
-				"text": {
-					"type": "mrkdwn",
-					"text": "A request has been approved. It is my understanding that the accountants know what will happen from this point on."
+			//this part is if the request cost is less than 10,000
+			var blocksForAccountants = [
+				{
+					"type": "header",
+					"text": {
+						"type": "plain_text",
+						"text": "NEW EXPENSE APPROVAL",
+						"emoji": true
+					}
+				},
+				{
+					"type": "section",
+					"block_id": "blocksForAccountant_1approver_BlockID", //the 1approver just means that the request only needs 1 approver to approve it.
+					"text": {
+						"type": "mrkdwn",
+						"text": "A request has been approved. It is my understanding that the accountants know what will happen from this point on."
+					}
 				}
-			}];
+			];
 			for (i = 0; i < body.message.blocks.length; i++) {
 				if (body.message.blocks[i].block_id == "approvers_requestDescription_BlockID") {
 					blocksForAccountants.push(body.message.blocks[i]);
@@ -668,9 +689,33 @@ receiver.router.use((req, res) => {
 
 
 
-
-//this starts the bot
+//this specifies the port that the app will run on
+//and this starts the bot
 (async () => {
-	await app.start(process.env.PORT || 3000);
-	console.log('⚡️ Bolt app started');
+	let port = process.env.PORT || 3000;
+	await app.start(port);
+	console.log('⚡️ Bolt app started on port: ' + port);
+
+//this checks if the env-var "deploymentENV" is set to "development" and if so run the script below it
+//this sees if the repository contains the localtunnel.js file.
+//this file should NEVER be committed to the repository. 
+//this file is used to create a tunnel to the local server for testing purposes.
+//for that reason, it is set in the .gitignore file and should never be pushed as that could cause issues.
+	if (process.env.deploymentENV == "development") {
+		const fs = require('fs');
+		fs.access("localtunnel.js", err => {
+			if (err) {
+				console.log("The file localtunnel.js is not found\nThis is BAD since the environmental variable 'deploymentENV' is set to 'development'. Make sure you configure localtunnel inside of the localtunnel.js file.\nIf this is on Heroku with that environmental variable set to 'development', then this is a problem. Please fix this. You can either change the environmental variable value to something different, or you can unset that environmental variable on Heroku's end.");
+			} else {
+				console.log("This app is being run locally.")
+				let localtunnelFile = require('./localtunnel.js');
+				//create settimeout function then call localtunnelFile.startTunnel() inside of it
+				//this is to make sure that the app is running before the tunnel is created
+				//and for development (which this section is for), it gives localtunnel time to reopen up the subdomain
+				setTimeout(function () {
+					localtunnelFile.startTunnel();
+				}, 1000);
+			}
+		});
+	};
 })();

@@ -154,17 +154,19 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
     var template = `{
         "blocks": [
             {
-                "type": "image",
-                "block_id": "image_BlockID",
-                "image_url": "https://slack-requestapp.herokuapp.com/static/whiteLine_600_50.png",
-                "alt_text": "A plain white image that's used to split messages."
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "NEW EXPENSE REQUEST",
+                    "emoji": true
+                }
             },
             {
                 "type": "section",
                 "block_id": "approvers_requesterNotification_BlockID",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "New Expense request from <@${requesterID}>"
+                    "text": "From: <@${requesterID}>"
                 }
             },
             {
@@ -172,7 +174,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "block_id": "approvers_requestID_BlockID",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*Request ID:* ${requestID}"
+                    "text": "*Request ID:* \`${requestID}\`"
                 }
             },
             {
