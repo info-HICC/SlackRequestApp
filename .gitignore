@@ -5,3 +5,4 @@ package-lock.json
 todo.txt
 .env
 localtunnel.js
+errorLogs/*

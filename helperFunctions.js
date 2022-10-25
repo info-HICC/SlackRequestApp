@@ -1,8 +1,12 @@
 const testStatusFile = require("./testStatus.js");
 const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
+//import path module for cuurrent directory
+const path = require('path');
+//slackAPIApplication is a global variable that references slack's API App.
 
 //helper functions that are used by the functions above to prevent cluttering, also just reusability.
-module.exports.DMRequesterAboutRequestSubmission = async function (app, requesterUserID, requestID, description, productName, productCost, transactionType_asText, paymentMethod, paymentToVendorOrCustomer, paymentToVendorOrCustomer_name, imageLink, paymentDueByDate, requestDetailMetadata, ApproversMessageMetadata) {
+module.exports.DMRequesterAboutRequestSubmission = async function (requesterUserID, requestID, description, productName, productCost, transactionType_asText, paymentMethod, paymentToVendorOrCustomer, paymentToVendorOrCustomer_name, imageLink, paymentDueByDate, requestDetailMetadata, ApproversMessageMetadata) {
     //removing the newline character from the description
     var messageBlock = `{
       "blocks": [
@@ -111,30 +115,61 @@ module.exports.DMRequesterAboutRequestSubmission = async function (app, requeste
 //if it's in test mode, it would send messages to the info account which develops the app.
 //if not, it would go to the normal channels.
 //Refer to testing_application_notice.txt for more information.
-var messageResults = await app.client.chat.postMessage({
-  channel: requesterUserID,
-  text: "Summary of your expense request",
-  blocks: messageBlock,
-  metadata: {
-    "event_type": "requestApprovedAction", 
-    "event_payload": {
-      "requestDetails": requestDetailMetadata,
-      "ApproversMessageMetadata": ApproversMessageMetadata
-    }
-  }
-});
+    var messageResults = await slackAPIApplication.client.chat.postMessage({
+      channel: requesterUserID,
+      text: "Summary of your expense request",
+      blocks: messageBlock,
+      metadata: {
+        "event_type": "requestApprovedAction", 
+        "event_payload": {
+          "requestDetails": requestDetailMetadata,
+          "ApproversMessageMetadata": ApproversMessageMetadata
+        }
+      }
+    });
     return messageResults;
-  };
+};
 
 //this is a general function that can be used to send a message to a user.
 //it's called when there's an error when the app is processing a request submission.
 //you can ask the user for the error message to figure out what's going on. 
-module.exports.sendErrorMessageOnThrow = async function (app, requesterUserID, errorMsg) {    
-  var messageResults = await app.client.chat.postMessage({
-    channel: requesterUserID,
+module.exports.sendErrorMessageOnThrow = async function (userID, errorMsg, errorUUID, errorMsg_logging, errorStack, sendFile, sendFile_text) {
+  //make sure UUID is provided
+  if (errorUUID === null) {
+    errorUUID = uuidv4();
+  };
+  //make sure sendFile is set to true or false, if not, set it to false.
+  //it cannot be any other type of value besides boolean.
+  //if it's a string, it'll be set to false.
+  if ((sendFile !== true && sendFile !== false) || sendFile_text === undefined) {
+    sendFile = false;
+  };
+  var errorStack_noFormatting = errorStack.replaceAll(/\[[0-9]*m/gm, "");
+  var errorMsg = `${errorMsg}\n\nError ID: \`${errorUUID}\`\nProvide this error ID to the developer if you cannot figure out what is wrong.`;
+  var errorMsg_logging = `${errorMsg_logging}\n\nError ID: \`${errorUUID}\`\nError Stack: \`\`\`${errorStack_noFormatting}\`\`\``;
+  var messageResults_requester = await slackAPIApplication.client.chat.postMessage({
+    channel: userID,
     text: errorMsg
   });
-  return messageResults;
+  var messageResults_logging = await slackAPIApplication.client.chat.postMessage({
+    channel: process.env.slackErrorHandleChannel,
+    text: errorMsg_logging
+  });
+  if (sendFile === true) {
+    //create the file
+    fs.writeFile(path.join(__dirname, `./errorLogs/${errorUUID}.txt`), sendFile_text, function (err) {
+      if (err) {
+        console.log(err);
+      };
+    });
+    var messageResults_logging_fileupload = await slackAPIApplication.client.files.upload({
+      channels: process.env.slackErrorHandleChannel,
+      file: fs.createReadStream(path.join(__dirname, `./errorLogs/${errorUUID}.txt`)),
+      filename: `${errorUUID}.txt`,
+      title: `Error Logs for Error ID: ${errorUUID}`
+    });
+  }
+  return {messageResults_requester, messageResults_logging};
 };
 
 //this function can be used anywhere, but as of the time of writing the comment,
@@ -333,29 +368,18 @@ module.exports.expenseRequest_UpdateRequestMSG = async function (app, blocksArra
   return JSON.stringify(responseToReturn);
 }
 
-//Some of these functions were previously useful.
-//they're not used anymore, but I'm keeping them here for reference.
-
-// async function sendJSONVersionOfMSG(requesterUserID, requestID, descriptionEscaped, cost, vendorOrCustomer, vendorOrCustomerName, productName, paymentMethod, transactionType, imageLink, paymentDueByDate) {
-//   var message = `
-// {
-// "reqID":"${requestID}",
-// "requestedBy":"<@${requesterUserID}>",
-// "requestContent":"${descriptionEscaped}",
-// "requestCost":"${cost}",
-// "vendorOrCustomer":"${vendorOrCustomer}",
-// "vendorOrCustomerName":"${vendorOrCustomerName}",
-// "productName":"${productName}",
-// "paymentMethod":"${paymentMethod}",
-// "transactionType":"${transactionType}",
-// "requestPaidForByDate":"${paymentDueByDate}",
-// "imageLinks":"${imageLink}"
-// }
-// `
-  
-//   var messageResults = await app.client.chat.postMessage({
-//     channel: process.env.requests_googleforms_json,
-//     text: message
-//   });
-//   return messageResults;
-// };
+//this function is for handling errors and logging them properly with a UUID. 
+//the goal is that this function is called each time an error occurs and the UUID is returned to the user.
+//then the user can message either the bot or the app dev with the UUID and the app dev can look up the error to help fix the issue.
+module.exports.handleError = async function (error, invokerUserId) {
+  var uuid = uuidv4();
+  slackAPIApplication.chat.postMessage({
+    channel: process.env.slackErrorHandleChannel,
+    text: `An error has occurred. The UUID for this error is: ${uuid}.Error below:\\n\`\`\`${error}\`\`\``, 
+  });
+  slackAPIApplication.chat.postMessage({
+    channel: invokerUserId,
+    text: `An error has occurred. The UUID for this error is: \`${uuid}\`. Please notify the app developer with the UUID (it's the bit of text that looks different from the rest of this message) so that they can look into fixing it.`
+  });
+  console.log(`Error messages have been sent. UUID for this error is: ${uuid}`);
+}
