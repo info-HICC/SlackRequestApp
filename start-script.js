@@ -119,6 +119,10 @@ app.action("PaymentMethod_ActionID", async ({ ack, body, client }) => {
 app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) => {
 	try {
 		await ack();
+		//create an error UUID to start with in case there's an error
+		//this prevents having to put it in each block where there's a throw error statement
+		var errorUUID = uuidv4();
+
 		var customErrorMsg;
 		var requesterUserID = body.user.id;
 		var formSubmittionValues = body.view.state.values;
@@ -162,9 +166,13 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
 		if (Description.match(/\\/)) {
 			//prohibiting the use of the character "\"
 			//alerting user that the "\" character is not allowed.
+			//if this is running, it means the user used the "\" character in the description
 			customErrorMsg = "Do not use the character \"\\\" in your task description. Please resubmit your request but without that character, or else, you will get another message like this."
-			await helperFunctionsFile.sendErrorMessageOnThrow(app, requesterUserID, customErrorMsg);
-			throw "Error: User tried to use a character that's not allowed inside their description. (The backslash character).";
+			var errorObj = new Error("User tried to use a character that's not allowed inside their description. (The backslash character).");
+			errorObj.errorUUID = errorUUID;
+			errorObj.requesterUserID = requesterUserID;
+			errorObj.customErrorMsg = customErrorMsg;
+			throw errorObj;
 			//^ that should end the try statement by throwing an error
 		};
 		//escaping quotation marks inside of the description, if any. 
@@ -179,8 +187,11 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
 		if (isNaN(Cost) == true) {
 			//run if Cost is not a number
 			customErrorMsg = "Please enter a valid number when entering the cost of a request. Please re-fill out the form, making sure that you put a number (like 1, 10, 100, 100.01, 100.91275) for the cost to submit a request, otherwise, you will receive this error message again."
-			await helperFunctionsFile.sendErrorMessageOnThrow(requesterUserID, customErrorMsg);
-			throw "Error: User tried to pass a value that isn't a number into the Cost parameter.";
+			var errorObj = new Error("User tried to pass a value that isn't a number into the Cost parameter.");
+			errorObj.errorUUID = errorUUID;
+			errorObj.requesterUserID = requesterUserID;
+			errorObj.customErrorMsg = customErrorMsg;
+			throw errorObj;
 		} else {
 			//else make the number into a money value format (like 10.00)
 			Cost = parseFloat(Cost).toFixed(2);
@@ -192,9 +203,14 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
 			//prohibiting the use of the character "\"
 			//alerting user that the character is not allowed.
 			customErrorMsg = "Do not use the character \"\\\" in the product name of your request. Please resubmit your request but without that character, or else, you will get another message like this."
-			await helperFunctionsFile.sendErrorMessageOnThrow(requesterUserID, customErrorMsg);
-			throw "Error: User tried to use a character that's not allowed inside their product name. (The backslash character).";
+			var errorObj = new Error("User tried to use a character that's not allowed inside their product name. (The backslash character).");
+			errorObj.errorUUID = errorUUID;
+			errorObj.requesterUserID = requesterUserID;
+			errorObj.customErrorMsg = customErrorMsg;
+			throw errorObj;
 			//^ that should end the try statement by throwing an error
+			//the error object is then caught by the catch statement, and the error is handled there.
+			//the additional properties are added to enable the errors to be handled in the intended menthod.
 		};
 		//this is just removing the quotation marks present in the product name, if there's a quotation mark present.
 		if (productName.match(/"/g)) {
@@ -259,7 +275,14 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
 		});
 
 		//this function call returns the results of the API call to Slack to send a message to the approvers' channel. 
-		var messageViewsResult = await messageViews.createRequestMessageForApprovers(JSONWithData, app);
+		var messageViewsResult = await messageViews.createRequestMessageForApprovers(requesterUserID, JSONWithData, app);
+		//messageViewsResult.sendMsgToApproversOk is a key returned by the previous call that can be set to false
+		//it's false if there was some error that was encountered while trying to send the message to the approvers' channel.
+		//this basically stops this function from continuing if there was an error.
+		//it can't be set to true if the msg was sent successfully (or at least, should be sent successfully assuming Slack's API is working properly)
+		if (messageViewsResult.sendMsgToApproversOk === false) {
+			return;
+		};
 
 
 		var RequesterSummaryMessageMetadata = {
@@ -282,10 +305,28 @@ app.view("createExpenseRequest-callback", async ({ ack, body, view, client }) =>
 
 		//DM requester about their submission
 		//this function returns the results of the API call if that is something that's needed.
-		await helperFunctionsFile.DMRequesterAboutRequestSubmission(app, requesterUserID, requestID, DescriptionEscaped, productName, Cost, transactionType_text, paymentMethod_text, VendorOrCustomer, VendorOrCustomerName, imageLink, paymentDueByDate, RequesterSummaryMessageMetadata, ApproversMessageMetadata);
+		await helperFunctionsFile.DMRequesterAboutRequestSubmission(requesterUserID, requestID, DescriptionEscaped, productName, Cost, transactionType_text, paymentMethod_text, VendorOrCustomer, VendorOrCustomerName, imageLink, paymentDueByDate, RequesterSummaryMessageMetadata, ApproversMessageMetadata);
 		//when using reply feature, look for body.messages.metadata to get the metadata of the message with the button that was clicked.
 	} catch (error) {
-		console.log(error);
+		console.log(error); //use error.stack for the part inside the []
+		let errorJSON = {
+			requesterUserID: requesterUserID,
+			customErrorMsg: "An error was encountered while trying to submit your request. Please try again. If the problem persists, please contact the application maintainer. \`This is an unexpected error with a generic error message.\`",
+			errorUUID: errorUUID,
+			message: "An unexpected error occurred while a user was trying to submit a request. This is a generic error message.",
+		};
+		//this bit below basically checks if there's a error.customErrorMsg which is basically a message that's attached to the error object before the error is thrown.
+		//if there is, then it will use that message instead of the generic error message.
+		if (error.customErrorMsg != null || error.customErrorMsg != undefined) {
+			errorJSON.customErrorMsg = error.customErrorMsg;
+		};
+		//this bit below basically checks if there's a error.message which is basically a message that's attached to the error object before the error is thrown.
+		//this is a bit less descriptive than the customErrorMsg which is shown in the end user. That contains instructions on how to fix the error. error.message does not have that. It is meant to be a short and simple error message.
+		//if there is, then it will use that message instead of the generic error message.
+		if (error.message != null || error.message != undefined) {
+			errorJSON.message = error.message;
+		};
+		await helperFunctionsFile.sendErrorMessageOnThrow(errorJSON.requesterUserID, errorJSON.customErrorMsg, errorJSON.errorUUID, errorJSON.message, error.stack, false, undefined);
 	};
 });
 //handles the "approve_approvers_ApproveDeny_BTN_ActionID" action
@@ -714,8 +755,21 @@ receiver.router.use((req, res) => {
 				//and for development (which this section is for), it gives localtunnel time to reopen up the subdomain
 				setTimeout(function () {
 					localtunnelFile.startTunnel();
-				}, 1000);
+				}, 500);//change this timeout value if the tunnel begins using random subdomains
+			}
+		});
+		//also using this for the pretty-error package
+		//this is to make the errors look nicer
+		const prettyeditor = require('pretty-error').start(); //https://www.npmjs.com/package/pretty-error
+		//this modification below basically makes it so that the file location of each trace isn't shown. 
+		//No real point in showing that since it'll show the file name and the line number.
+		prettyeditor.appendStyle({
+			'pretty-error > trace > item > footer > addr': {
+				display: 'none'
 			}
 		});
 	};
 })();
+
+//this creates a global variable called slackAPIApplication which is the Slack App so that it can be used in other files
+global.slackAPIApplication = app;
