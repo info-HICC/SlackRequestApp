@@ -110,12 +110,12 @@ module.exports.updateMessageContent = function (task_id, task_title, task_descri
     return template;
 };
 
+//this is the message sent to the approvers channel
 module.exports.createRequestMessageForApprovers = async function (inputData, slackApp) {
     //the slackApp parameter is used to pass through Slack's Web APIs so that I can post the message into the channel without sending the msg back.
     var inputData_parsed = JSON.parse(inputData);
     var requesterID = inputData_parsed.requesterID;
     var requestID = inputData_parsed.requestID;
-    var JSON_ts = inputData_parsed.JSON_ts;
     var task_description = inputData_parsed.task_description;
     var productName = inputData_parsed.productName;
     var productCost = inputData_parsed.productCost;
@@ -125,21 +125,48 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
     var paymentToVendorOrCustomer_name = inputData_parsed.paymentToVendorOrCustomer_name;
     var makePaymentByDate = inputData_parsed.makePaymentByDate;
     var imageLinksThatWereSubmitted = inputData_parsed.imageLinksThatWereSubmitted;
+    var paymentMethodIsCash = inputData_parsed.paymentMethodIsCash;
+    //these 5 options are only available if the paymentMethodIsCash is true.
+    //if it's false, then it will be set to "null". 
+    var cash_accountName = inputData_parsed.cash_accountName;
+    var cash_bankName = inputData_parsed.cash_bankName;
+    var cash_AccountNumber = inputData_parsed.cash_AccountNumber;
+    var cash_RoutingNumber = inputData_parsed.cash_RoutingNumber;
+    var cash_SWIFTCode = inputData_parsed.cash_SWIFTCode;
+    //creating JSON from above 5 variables
+    var cash_JSON = {
+        "accountName": cash_accountName,
+        "bankName": cash_bankName,
+        "AccountNumber": cash_AccountNumber,
+        "RoutingNumber": cash_RoutingNumber,
+        "SWIFTCode": cash_SWIFTCode
+    };
+    var numberOfApproversNeeded = "1";
+    if (productCost >= 10000) {
+        numberOfApproversNeeded = "2";
+    }
+    //this just adds the imageSection if there are images being submitted
+    var imageSection = "";
+    if (imageLinksThatWereSubmitted.length > 0) {
+        imageSection = `{"type": "section","block_id": "approvers_imageSection_BlockID","text": {"type": "mrkdwn","text": ">*Any images that may have been attached:*\\n>${imageLinksThatWereSubmitted}"}},`
+    };
 
     var template = `{
         "blocks": [
             {
-                "type": "image",
-                "block_id": "image_BlockID",
-                "image_url": "https://slack-requestapp.herokuapp.com/static/whiteLine_600_50.png",
-                "alt_text": "A plain white image that's used to split messages."
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "NEW EXPENSE REQUEST",
+                    "emoji": true
+                }
             },
             {
                 "type": "section",
                 "block_id": "approvers_requesterNotification_BlockID",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "New Expense request from <@${requesterID}>"
+                    "text": "From: <@${requesterID}>"
                 }
             },
             {
@@ -147,15 +174,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "block_id": "approvers_requestID_BlockID",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*Request ID:* ${requestID}"
-                }
-            },
-            {
-                "type": "section",
-                "block_id": "approvers_JSONts_BlockID",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "*Timestamp of JSON version of message:* ${JSON_ts}"
+                    "text": "*Request ID:* \`${requestID}\`"
                 }
             },
             {
@@ -163,7 +182,7 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                 "block_id": "approvers_requestDescription_BlockID",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*Description (also part of Memo on Quickbooks Online):*\\n${task_description}"
+                    "text": "*Description:*\\n${task_description}"
                 }
             },
             {
@@ -197,12 +216,24 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
                     {
                         "type": "mrkdwn",
                         "text": ">*Payment should be made by:*\\n>${makePaymentByDate}"
-                    },
-                    {
-                        "type": "mrkdwn",
-                        "text": ">*Any images that may have been attached:*\\n>${imageLinksThatWereSubmitted}"
                     }
                 ]
+            },${imageSection}
+            {
+                "type": "section",
+                "block_id": "expenseRequestStatus_numberOfApproversNeeded_BlockID",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*Number of Additional Approvers Needed:*\\n${numberOfApproversNeeded}"
+                }
+            },
+            {
+                "type": "section",
+                "block_id": "expenseRequestStatus_ListOfApproversTimestamps_BlockID",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*List of Users Already Approved:*\\n"
+                }
             },
             {
                 "type": "section",
@@ -263,26 +294,22 @@ module.exports.createRequestMessageForApprovers = async function (inputData, sla
     var templateParsed = JSON.stringify(JSON.parse(template).blocks);
     console.log(templateParsed);
 
-    if (testStatusFile.test == "false") {
-        //for production
-        var postMessageResult = slackApp.client.chat.postMessage({
-            channel: process.env.requests_googleforms_approvers, 
-            text: "This is a placeholder for the blocks that define the message. This is a request",
-            blocks: templateParsed
-        });
-    } else if (testStatusFile.test == "true") {
-        //for testing
-        var postMessageResult = slackApp.client.chat.postMessage({
-            channel: process.env.infoUserID,
-            text: "This is a placeholder for the blocks that define the message. This is a request",
-            blocks: templateParsed
-        });
-    };
-
+    var postMessageResult = slackApp.client.chat.postMessage({
+        channel: process.env.requests_googleforms_approvers, 
+        text: "This is a placeholder for the blocks that define the message. This is a request",
+        blocks: templateParsed,
+        metadata: {
+            "event_type": "requestApprovedAction", 
+            "event_payload": {
+                "requestID": requestID,
+                "previousApproverID": "",
+                "listOfApprovers": [],
+                "listOfApproversTimestamps": [],
+                "cost": productCost,
+                "numberOfApprovals": 0,
+                "requesterUserID": requesterID
+            }
+        }
+    });
     return postMessageResult;
 }
-
-// //export the modal view
-// module.exports = {
-//     updateMessage: taskeeUpdateMessage
-// };
