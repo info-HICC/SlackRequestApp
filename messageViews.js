@@ -284,7 +284,7 @@ module.exports.createRequestMessageForApprovers = async function (requesterUserI
                         }
                     ]
                 }
-            ]a
+            ]
         }`;
         //add a check to see if the created template is valid JSON
         if (template) {
