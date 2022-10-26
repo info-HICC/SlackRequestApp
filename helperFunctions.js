@@ -1,5 +1,10 @@
-const testStatusFile = require("./testStatus.js");
+/**
+ * Refer to ./docs/info/helperFunctions.md for more information.
+ */
 const { v4: uuidv4 } = require('uuid');
+//import uuidv4 validation
+const { validate: uuidValidate } = require('uuid');
+
 const fs = require('fs');
 //import path module for cuurrent directory
 const path = require('path');
@@ -135,7 +140,7 @@ module.exports.DMRequesterAboutRequestSubmission = async function (requesterUser
 //you can ask the user for the error message to figure out what's going on. 
 module.exports.sendErrorMessageOnThrow = async function (userID, errorMsg, errorUUID, errorMsg_logging, errorStack, sendFile, sendFile_text) {
   //make sure UUID is provided
-  if (errorUUID === null) {
+  if ((errorUUID === null) || uuidValidate(errorUUID) === false) {
     errorUUID = uuidv4();
   };
   //make sure sendFile is set to true or false, if not, set it to false.
@@ -144,7 +149,7 @@ module.exports.sendErrorMessageOnThrow = async function (userID, errorMsg, error
   if ((sendFile !== true && sendFile !== false) || sendFile_text === undefined) {
     sendFile = false;
   };
-  var errorStack_noFormatting = errorStack.replaceAll(/\[[0-9]*m/gm, "");
+  var errorStack_noFormatting = errorStack.replaceAll(/\[[0-9]*m/gm, ""); //this gets rid of some formatting in the error stack when using it with pretty-error.
   var errorMsg = `${errorMsg}\n\nError ID: \`${errorUUID}\`\nProvide this error ID to the developer if you cannot figure out what is wrong.`;
   var errorMsg_logging = `${errorMsg_logging}\n\nError ID: \`${errorUUID}\`\nError Stack: \`\`\`${errorStack_noFormatting}\`\`\``;
   var messageResults_requester = await slackAPIApplication.client.chat.postMessage({
@@ -203,7 +208,7 @@ module.exports.generateRequestID = async function () {
 //it overwrites the white image because it seems to have issues using the one send by the Slack App as it includes additional parameters.
 //it will also update the block ID of "expenseRequestStatus_BlockID" to reflect the new updated status.
 //a future idea is to remove the buttons after denying a request to prevent it from being approved after it's been denied.
-module.exports.expenseRequest_UpdateRequestMSG_denied = async function (app, blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, decision) {
+module.exports.expenseRequest_UpdateRequestMSG_denied = async function (blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, decision) {
   var blocks = JSON.parse(blocksArray);
   var newUpdatedBlocks = [];
   //this returns the current time in UTC in 24 hour clock format.
@@ -214,15 +219,7 @@ module.exports.expenseRequest_UpdateRequestMSG_denied = async function (app, blo
 
   for (i=0; i<blocks.length; i++) {
     var block = blocks[i];
-    if (block.block_id == "image_BlockID") {
-      var newImageBlock = {
-        "type": "image",
-        "block_id": "image_BlockID",
-        "image_url": "https://slack-requestapp.herokuapp.com/static/whiteLine_600_50.png",
-        "alt_text": "A plain white image that's used to split messages."
-      };
-      newUpdatedBlocks.push(newImageBlock);
-    } else if (block.block_id == "expenseRequestStatus_BlockID") {
+    if (block.block_id == "expenseRequestStatus_BlockID") {
       var newStatusBlock = `{
         "type": "section",
         "block_id": "expenseRequestStatus_BlockID",
@@ -241,7 +238,7 @@ module.exports.expenseRequest_UpdateRequestMSG_denied = async function (app, blo
   // match &amp;lt; and &amp;gt; to < and >
   newUpdatedBlocks = newUpdatedBlocks.replace(/&amp;lt;/g, '<');
   newUpdatedBlocks = newUpdatedBlocks.replace(/&amp;gt;/g, '>');
-  var msgUpdateResult = await app.client.chat.update({
+  var msgUpdateResult = await slackAPIApplication.client.chat.update({
     channel: blockMessageChannelID,
     ts: messageBlocksTS,
     token: process.env.SLACK_BOT_TOKEN,
@@ -255,7 +252,7 @@ module.exports.expenseRequest_UpdateRequestMSG_denied = async function (app, blo
   //and a lot more stuff. So we're separating it into approve and deny functions
   //approve is the function below
   //deny is the function above
-module.exports.expenseRequest_UpdateRequestMSG = async function (app, blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, userAlreadyApproved, listOfApprovers, listOfApproversTimestamps, decision) {
+module.exports.expenseRequest_UpdateRequestMSG = async function (blocksArray, approverUserID, blockMessageChannelID, messageBlocksTS, userAlreadyApproved, listOfApprovers, listOfApproversTimestamps, decision) {
   var blocks = JSON.parse(blocksArray);
   var newUpdatedBlocks = [];
   //this returns the current time in UTC in 24 hour clock format.
@@ -266,17 +263,7 @@ module.exports.expenseRequest_UpdateRequestMSG = async function (app, blocksArra
 
   for (i=0; i<blocks.length; i++) {
     var block = blocks[i];
-    //potentially the image that is returned has invalid parameters?
-    //so, re-writing the image block
-    if (block.block_id == "image_BlockID") {
-      var newImageBlock = {
-        "type": "image",
-        "block_id": "image_BlockID",
-        "image_url": "https://slack-requestapp.herokuapp.com/static/whiteLine_600_50.png",
-        "alt_text": "A plain white image that's used to split messages."
-      };
-      newUpdatedBlocks.push(newImageBlock);
-    } else if (block.block_id == "expenseRequestStatus_BlockID") {
+    if (block.block_id == "expenseRequestStatus_BlockID") {
       if (decision == "approved") {
         var newStatusBlock = `{
           "type": "section",
@@ -284,16 +271,6 @@ module.exports.expenseRequest_UpdateRequestMSG = async function (app, blocksArra
           "text": {
               "type": "mrkdwn",
               "text": "*Current Request Status:*\\nApproved by <@${approverUserID}> at ${time} UTC"
-          }
-        }`;
-        newUpdatedBlocks.push(JSON.parse(newStatusBlock));
-      } else if (decision == "denied") {
-        var newStatusBlock = `{
-          "type": "section",
-          "block_id": "expenseRequestStatus_BlockID",
-          "text": {
-              "type": "mrkdwn",
-              "text": "*Current Request Status:*\\nDenied by <@${approverUserID}> at ${time} UTC"
           }
         }`;
         newUpdatedBlocks.push(JSON.parse(newStatusBlock));
@@ -355,7 +332,7 @@ module.exports.expenseRequest_UpdateRequestMSG = async function (app, blocksArra
   // match &amp;lt; and &amp;gt; to < and >
   newUpdatedBlocks = newUpdatedBlocks.replace(/&amp;lt;/g, '<');
   newUpdatedBlocks = newUpdatedBlocks.replace(/&amp;gt;/g, '>');
-  var msgUpdateResult = await app.client.chat.update({
+  var msgUpdateResult = await slackAPIApplication.client.chat.update({
     channel: blockMessageChannelID,
     ts: messageBlocksTS,
     token: process.env.SLACK_BOT_TOKEN,
@@ -366,20 +343,4 @@ module.exports.expenseRequest_UpdateRequestMSG = async function (app, blocksArra
     SlackAPIResponse: msgUpdateResult
   }
   return JSON.stringify(responseToReturn);
-}
-
-//this function is for handling errors and logging them properly with a UUID. 
-//the goal is that this function is called each time an error occurs and the UUID is returned to the user.
-//then the user can message either the bot or the app dev with the UUID and the app dev can look up the error to help fix the issue.
-module.exports.handleError = async function (error, invokerUserId) {
-  var uuid = uuidv4();
-  slackAPIApplication.chat.postMessage({
-    channel: process.env.slackErrorHandleChannel,
-    text: `An error has occurred. The UUID for this error is: ${uuid}.Error below:\\n\`\`\`${error}\`\`\``, 
-  });
-  slackAPIApplication.chat.postMessage({
-    channel: invokerUserId,
-    text: `An error has occurred. The UUID for this error is: \`${uuid}\`. Please notify the app developer with the UUID (it's the bit of text that looks different from the rest of this message) so that they can look into fixing it.`
-  });
-  console.log(`Error messages have been sent. UUID for this error is: ${uuid}`);
-}
+};

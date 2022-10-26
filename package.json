@@ -2,7 +2,7 @@
   "name": "slack-requestapp",
   "version": "2.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "start-script.js",
   "scripts": {
     "start": "node start-script.js",
     "dev": "nodemon start-script-dev.js"

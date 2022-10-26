@@ -373,7 +373,7 @@ app.action("approve_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, cli
 		//this handles creating the updated message, and updating that message.
 		//returns a stringified JSON of Slack API call results and the ts of the JSON version of the message. 
 		//this is to later find the JSON version of the message to POST to Zapier. 
-		var functionResponse = await helperFunctionsFile.expenseRequest_UpdateRequestMSG(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, userAlreadyApproved, listOfApprovers, listOfApproversTimestamps, "approved");
+		var functionResponse = await helperFunctionsFile.expenseRequest_UpdateRequestMSG(messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, userAlreadyApproved, listOfApprovers, listOfApproversTimestamps, "approved");
 
 		if (metadataRequestCost >= 10000) { //this checks if the request is over or equal to $10,000 
 			//this part can be fixed later to use the modulus (%) operator.
@@ -548,7 +548,7 @@ app.action("deny_approvers_ApproveDeny_BTN_ActionID", async ({ ack, body, client
 		var channelWithMessageWithBlocks = body.channel.id;
 
 		//this update updates the message to show that the request has been denied.
-		var functionResponse = await helperFunctionsFile.expenseRequest_UpdateRequestMSG_denied(app, messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
+		var functionResponse = await helperFunctionsFile.expenseRequest_UpdateRequestMSG_denied(messageBlocks, approverUserID, channelWithMessageWithBlocks, messageBlocksTS, "denied");
 
 		//send message to requester or devchannel depending on test status
 		await helperFunctionsFile.sendMessageUserIDAndMessage(app, requesterUserID, message);
